@@ -1,2 +1,2 @@
 # pagopa-ecommerce-payment-requests-service
-agoPA - ecommerce microservice to retrieve payment request data or manage carts (a set of payment requests) with redirects to pagoPa - checkout.
+_pagoPA - ecommerce_ microservice to retrieve _payment requests_ data or manage _carts_ (a set of _payment requests_) with redirects to _pagoPa - checkout_.
