@@ -21,7 +21,6 @@ microservice-chart:
       REDIS_PORT: "6380"
       REDIS_SSL_ENABLED: "true"
     envSecret:
-      JWT_SECRET: payment-requests-jwt-secret
       REDIS_PASSWORD: redis-ecommerce-password
       APPLICATIONINSIGHTS_CONNECTION_STRING: applicationinsights-connection-string
   image:
@@ -90,7 +89,6 @@ microservice-chart:
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
   envSecret:
-    JWT_SECRET: payment-requests-jwt-secret
     REDIS_PASSWORD: redis-ecommerce-password
     APPLICATIONINSIGHTS_CONNECTION_STRING: applicationinsights-connection-string
   keyvault:
