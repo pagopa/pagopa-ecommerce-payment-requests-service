@@ -1,0 +1,69 @@
+microservice-chart:
+  namespace: "ecommerce"
+  nameOverride: ""
+  fullnameOverride: ""
+  deployment:
+    create: true
+    livenessProbePath: /actuator/health/liveness
+    readinessProbePath: /actuator/health/readiness
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
+    tag: "0.1.0" #improve
+    pullPolicy: Always
+    port: 8080
+  ingress:
+    host: "weudev.ecommerce.internal.dev.platform.pagopa.it"
+    path: "/ecommerce"
+    pathType: "ImplementationSpecific"
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+  podAnnotations: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    requests:
+      memory: "384Mi"
+      cpu: "200m"
+    limits:
+      memory: "384Mi"
+      cpu: "200m"
+  autoscaling:
+    minReplica: 1
+    maxReplica: 2
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 300 # seconds
+    triggers:
+      - type: azure-monitor
+        metadata:
+          tenantId: 7788edaf-0346-4068-9d79-c868aed15b3d
+          subscriptionId: bbe47ad4-08b3-4925-94c5-1278e5819b86
+          resourceGroupName: pagopa-d-ecommerce-sec-rg
+          resourceURI: Microsoft.KeyVault/vaults/pagopa-d-ecommerce-kv
+          metricName: ServiceApiHit
+          # metricNamespace: Microsoft.KeyVault/vaults
+          # metricFilter: namespace eq 'default'
+          # metricAggregationInterval: "-1:1:0"
+          metricAggregationType: Count
+          targetValue: "30"
+  envConfig:
+    REDIS_HOST: pagopa-d-pagopa-proxy-redis.redis.cache.windows.net
+    REDIS_PORT: "6380"
+    REDIS_SSL_ENABLED: "true"
+  envSecret:
+    JWT_SECRET: payment-requests-jwt-secret
+    REDIS_PASSWORD: redis-ecommerce-password
+    APPLICATIONINSIGHTS_CONNECTION_STRING: applicationinsights-connection-string
+  keyvault:
+    name: "pagopa-d-ecommerce-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
