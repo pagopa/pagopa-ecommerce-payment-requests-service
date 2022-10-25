@@ -94,7 +94,7 @@ stages:
   - stage: 'Deploy_for_DEV'
     displayName: 'Deploy DEV'
     dependsOn: Build_for_DEV
-    condition: or(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true) )
+    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true) )
     jobs:
       - deployment: "deploy"
         environment: 'DEV'
