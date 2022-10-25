@@ -4,8 +4,20 @@ microservice-chart:
   fullnameOverride: ""
   deployment:
     create: true
-    livenessProbePath: /actuator/health/liveness
-    readinessProbePath: /actuator/health/readiness
+  livenessProbe:
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    initialDelaySeconds: 60
+    failureThreshold: 6
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+    initialDelaySeconds: 60
+    failureThreshold: 6
+    periodSeconds: 10
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
     tag: "0.0.1" #improve
