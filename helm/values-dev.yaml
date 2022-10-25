@@ -8,7 +8,7 @@ microservice-chart:
     readinessProbePath: /actuator/health/readiness
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "0.1.0" #improve
+    tag: "0.0.1" #improve
     pullPolicy: Always
     port: 8080
   ingress:
