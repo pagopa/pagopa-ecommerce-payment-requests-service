@@ -12,6 +12,8 @@ parameters:
     type: string
   - name: "VALUE_FILE"
     type: string
+  - name: "GREEN_VERSION"
+    type: string
   # Optional
   - name: "DO_BLUE_GREEN_DEPLOY"
     type: boolean
@@ -54,7 +56,7 @@ steps:
       install: true
       waitForExecution: ${{ parameters.WAIT_FOR_EXECUTION }}
       arguments: ${{ parameters.ARGUMENTS }}
-      overrideValues: microservice-chart.canaryDelivery.create=${{ parameters.DO_BLUE_GREEN_DEPLOY }},microservice-chart.canaryDelivery.deployment.image.tag=${{ parameters.BLUE_VERSION }}
+      overrideValues: microservice-chart.image.tag=${{ parameters.GREEN_VERSION }},microservice-chart.canaryDelivery.create=${{ parameters.DO_BLUE_GREEN_DEPLOY }},microservice-chart.canaryDelivery.deployment.image.tag=${{ parameters.BLUE_VERSION }}
   - template: ./chart-current-version.yml
   - ${{ if ne(parameters['APPINSIGHTS_SERVICE_CONN'], 'none') }}:
       - task: AzureCLI@2

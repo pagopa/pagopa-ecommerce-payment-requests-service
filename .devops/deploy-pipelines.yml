@@ -120,6 +120,7 @@ stages:
                     NAMESPACE: ecommerce
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-dev.yaml"
+                    GREEN_VERSION: $(Build.SourceVersion)
 
   - stage: "Build_release_candidate"
     displayName: 'Build release candidate'
@@ -147,6 +148,7 @@ stages:
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+          - template: azure-templates/chart-current-version.yml
 
   - stage: "Deploy_UAT_Blue"
     displayName: 'UAT blue deployment'
@@ -156,6 +158,8 @@ stages:
       succeeded(), 
       eq(${{parameters.UAT_SKIP_BLUE_DEPLOYMENT}}, False)
       )
+    variables:
+      green_version: $[ stageDependencies.Build_release_candidate.build.outputs['chart_current_version.appVersion'] ]
     jobs:
       - deployment: "Blue_deployment"
         displayName: "Blue deployment"
@@ -185,6 +189,7 @@ stages:
                     NAMESPACE: ecommerce
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-uat.yaml"
+                    GREEN_VERSION: $(green_version)
                     BLUE_VERSION: $(Build.SourceVersion)
 
 
@@ -287,6 +292,8 @@ stages:
       dependsOn: Release
     ${{ if eq(parameters['SKIP_RELEASE'], False) }}:
        dependsOn: [ Release_tag_docker,Release ]
+    variables:
+      green_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
     jobs:
       - deployment: "Green_deployment"
         displayName: "Green deployment"
@@ -316,3 +323,4 @@ stages:
                     NAMESPACE: ecommerce
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-uat.yaml"
+                    GREEN_VERSION: $(green_version)
