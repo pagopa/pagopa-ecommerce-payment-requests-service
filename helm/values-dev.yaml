@@ -24,14 +24,15 @@ microservice-chart:
     pullPolicy: Always
     port: 8080
   ingress:
+    create: true
     host: "weudev.ecommerce.internal.dev.platform.pagopa.it"
     path: /pagopa-ecommerce-payment-requests-service/(.*)
     pathType: "ImplementationSpecific"
   serviceAccount:
     create: false
-    annotations: {}
+    annotations: { }
     name: ""
-  podAnnotations: {}
+  podAnnotations: { }
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -39,7 +40,7 @@ microservice-chart:
     allowPrivilegeEscalation: false
   service:
     type: ClusterIP
-    port: 80
+    port: 8080
   resources:
     requests:
       memory: "384Mi"
@@ -76,6 +77,6 @@ microservice-chart:
   keyvault:
     name: "pagopa-d-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
+  nodeSelector: { }
+  tolerations: [ ]
+  affinity: { }
