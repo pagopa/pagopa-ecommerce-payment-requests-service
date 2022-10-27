@@ -153,9 +153,9 @@ stages:
   - stage: "Deploy_UAT_Blue"
     displayName: 'UAT blue deployment'
     dependsOn: Build_release_candidate
-    condition: 
-      and(	  
-      succeeded(), 
+    condition:
+      and(
+      succeeded(),
       eq(${{parameters.UAT_SKIP_BLUE_DEPLOYMENT}}, False)
       )
     variables:
@@ -193,7 +193,7 @@ stages:
                     BLUE_VERSION: $(Build.SourceVersion)
 
 
-  - stage: "Blue_API_UAT_test" 
+  - stage: "Blue_API_UAT_test"
     displayName: 'Running API test on blue app'
     dependsOn: Deploy_UAT_Blue
     jobs:
@@ -220,7 +220,7 @@ stages:
               searchFolder: '$(System.DefaultWorkingDirectory)'
 
 
-  - stage: "Bluegreen_WaitForApproval" 
+  - stage: "Bluegreen_WaitForApproval"
     displayName: 'UAT approve blue deployment'
     dependsOn: Blue_API_UAT_test
     jobs:
@@ -257,13 +257,13 @@ stages:
                   semver_chart: '${{ parameters.RELEASE_CHART_SEMVER }}'
                   semver: '${{ parameters.RELEASE_SEMVER }}'
           - template: azure-templates/chart-current-version.yml
-          
+
   - stage: "Release_tag_docker"
     displayName: 'Docker tag release'
     dependsOn: Release
-    condition: 
-      and(	  
-      succeeded(), 
+    condition:
+      and(
+      succeeded(),
       eq(${{parameters.SKIP_RELEASE}}, False)
       )
     variables:
@@ -291,7 +291,7 @@ stages:
     ${{ if eq(parameters['SKIP_RELEASE'], True) }}:
       dependsOn: Release
     ${{ if eq(parameters['SKIP_RELEASE'], False) }}:
-       dependsOn: [ Release_tag_docker,Release ]
+      dependsOn: [ Release_tag_docker,Release ]
     variables:
       green_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
     jobs:
