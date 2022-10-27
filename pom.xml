@@ -148,10 +148,10 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>5.4.0</version>
+                <version>6.2.0</version>
                 <executions>
                     <execution>
-                        <id>session-api</id>
+                        <id>payment-requests-api</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -171,6 +171,7 @@
                                 <interfaceOnly>true</interfaceOnly>
                                 <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <skipDefaultInterface>true</skipDefaultInterface>
+                                <useBeanValidation>true</useBeanValidation>
                                 <useSwaggerUI>false</useSwaggerUI>
                                 <reactive>true</reactive>
                             </configOptions>
