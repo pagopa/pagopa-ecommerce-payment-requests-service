@@ -207,7 +207,7 @@ stages:
               yarn global add newman
             displayName: 'Newman installation'
           - script: |
-              newman run tests/api-tests/payment-requests.api.tests.json -e tests/api-tests/uat-environment.json --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
+              newman run tests/api-tests/payment-requests.api.tests.json -e tests/api-tests/uat-environment.json --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
             displayName: 'Run api test on blue app'
             continueOnError: true
           - task: PublishTestResults@2
