@@ -88,6 +88,7 @@ microservice-chart:
     REDIS_HOST: pagopa-u-weu-ecommerce-redis.redis.cache.windows.net
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
+    CHECKOUT_URL: "https://uat.checkout.pagopa.it"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     APPLICATIONINSIGHTS_CONNECTION_STRING: applicationinsights-connection-string
