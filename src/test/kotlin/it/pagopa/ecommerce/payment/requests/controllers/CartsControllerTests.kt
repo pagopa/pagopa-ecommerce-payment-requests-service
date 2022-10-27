@@ -52,13 +52,13 @@ class CartsControllerTests {
         val request = CartRequestes.withMultiplePaymentNotice()
         given(cartService.processCart(request)).willThrow(
             RestApiException(
-                httpStatus = HttpStatus.BAD_REQUEST,
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 title = "Multiple payment notices not processable",
                 description = "Too many payment notices, expected max one"
             )
         )
         val errorResponse = ProblemJsonDto(
-            status = 400,
+            status = 422,
             title = "Multiple payment notices not processable",
             detail = "Too many payment notices, expected max one"
         )
@@ -68,7 +68,7 @@ class CartsControllerTests {
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
-            .expectStatus().isBadRequest
+            .expectStatus().isEqualTo(422)
             .expectBody().json(objectMapper.writeValueAsString(errorResponse))
     }
 

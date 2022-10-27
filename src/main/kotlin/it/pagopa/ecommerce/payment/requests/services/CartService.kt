@@ -51,7 +51,7 @@ class CartService {
             logger.error("Too many payment notices, expected only one")
             //TODO capire la risposta di errore da mettere qui
             throw RestApiException(
-                httpStatus = HttpStatus.BAD_REQUEST,
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 title = "Multiple payment notices not processable",
                 description = "Too many payment notices, expected max one"
             )

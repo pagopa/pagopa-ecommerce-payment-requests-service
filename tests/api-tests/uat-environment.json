@@ -1,0 +1,12 @@
+{
+	"id": "500bc050-0da0-4f40-8eb8-ef5c7c0b15c0",
+	"name": "UAT",
+	"values": [
+		{
+			"key": "host",
+			"value": "api.uat.platform.pagopa.it",
+			"type": "default",
+			"enabled": true
+		}
+	]
+}

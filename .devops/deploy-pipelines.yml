@@ -191,7 +191,10 @@ stages:
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(green_version)
                     BLUE_VERSION: $(Build.SourceVersion)
-
+                - script: |
+                    echo "##[group]Waiting max 3 minute for blue deployment to be up and running..."
+                    timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null --header "deployment:blue" -w ''%{http_code}'' https://weuuat.ecommerce.internal.uat.platform.pagopa.it/beta/pagopa-ecommerce-payment-requests-service/actuator/health)" != "200" ]]; do echo "##[debug]App not alive, sleeping"&&sleep 5; done' || exit 1
+                  displayName: 'Waiting App to be running'
 
   - stage: "Blue_API_UAT_test"
     displayName: 'Running API test on blue app'
@@ -203,14 +206,8 @@ stages:
           - script: |
               yarn global add newman
             displayName: 'Newman installation'
-            #TODO definire l'host verso cui indirizzare le richieste di health
           - script: |
-              echo "##[group]Waiting max 3 minute for blue deployment to be up and running..."
-              timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null --header "deployment:blue" -w ''%{http_code}'' https://api.uat.platform.pagopa.it/ecommerce/TODO/actuator/health)" != "200" ]]; do echo "##[debug]App not alive, sleeping"&&sleep 5; done' || exit 1
-            displayName: 'Waiting App to be running'
-            #TODO definire i test da effettuarsi con newman
-          - script: |
-              newman run tests/api-tests/TODO.api.tests.json -e tests/api-tests/uat-environment.json --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
+              newman run tests/api-tests/payment-requests.api.tests.json -e tests/api-tests/uat-environment.json --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
             displayName: 'Run api test on blue app'
             continueOnError: true
           - task: PublishTestResults@2
