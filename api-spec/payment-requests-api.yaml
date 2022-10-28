@@ -84,6 +84,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '422':
+          description: More than one payment notice present into request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
   /carts/{id_cart}:
     get:
       operationId: GetCarts
