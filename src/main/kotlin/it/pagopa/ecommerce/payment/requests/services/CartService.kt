@@ -3,16 +3,28 @@ package it.pagopa.ecommerce.payment.requests.services
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnurlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
+import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
+import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
+import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
+import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.net.URI
+import java.util.*
 
 @Service
-class CartService {
+class CartService(
+    @Value("\${checkout.url}") private val checkoutUrl: String,
+    @Autowired private val cartInfoRepository: CartInfoRepository
+) {
 
     /*
      * Logger instance
@@ -25,27 +37,46 @@ class CartService {
          * The carts redirect url is composed as follow
          * {host}/{fiscalCode}{noticeNumber}
          */
-        const val CARTS_REDIRECT_URL_FORMAT: String = "%s/%s%s"
-    }
+        const val CARTS_REDIRECT_URL_FORMAT: String = "%s/carts/%s"
 
-    @Value("\${checkout.url}")
-    lateinit var checkoutUrl: String
+        const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 1
+    }
 
     /*
      * Process input cartRequestDto:
      * - 1 payment notice is present -> redirect response is given to the checkout location
      * - 2 or more payment notices are present -> error response
      */
-    fun processCart(cartRequestDto: CartRequestDto): String {
+    suspend fun processCart(cartRequestDto: CartRequestDto): String {
         val paymentsNotices = cartRequestDto.paymentNotices
         val receivedNotices = paymentsNotices.size
         logger.info("Received [$receivedNotices] payment notices")
-        return if (receivedNotices == 1) {
-            val paymentNotice = paymentsNotices[0]
+
+        return if (receivedNotices == CartServiceConstants.MAX_ALLOWED_PAYMENT_NOTICES) {
+            val paymentInfos = paymentsNotices.map {
+                PaymentInfo(RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
+            }
+
+            val cart = CartInfo(
+                UUID.randomUUID(),
+                paymentInfos,
+                ReturnUrls(
+                    returnSuccessUrl = cartRequestDto.returnurls.returnOkUrl.toString(),
+                    returnErrorUrl = cartRequestDto.returnurls.retunErrorUrl.toString(),
+                    returnCancelUrl = cartRequestDto.returnurls.returnCancelUrl.toString()
+                ),
+                cartRequestDto.emailNotice
+            )
+
+            logger.info("Saving cart ${cart.cartId} for payments $paymentInfos")
+
+            withContext(Dispatchers.IO) {
+                cartInfoRepository.save(cart)
+            }
+
             CartServiceConstants.CARTS_REDIRECT_URL_FORMAT.format(
                 checkoutUrl,
-                paymentNotice.fiscalCode,
-                paymentNotice.noticeNumber
+                cart.cartId,
             )
         } else {
             logger.error("Too many payment notices, expected only one")

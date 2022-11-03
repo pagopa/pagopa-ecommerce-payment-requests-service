@@ -19,6 +19,8 @@
         <java.version>17</java.version>
         <kotlin.version>1.6.21</kotlin.version>
         <jacoco.version>0.8.8</jacoco.version>
+        <kotlinx-coroutines.version>1.6.4</kotlinx-coroutines.version>
+        <mockito-kotlin.version>4.0.0</mockito-kotlin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -56,6 +58,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-reactor</artifactId>
+            <version>${kotlinx-coroutines.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openapitools</groupId>
@@ -88,9 +91,25 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>${jacoco.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito.kotlin</groupId>
+            <artifactId>mockito-kotlin</artifactId>
+            <version>${mockito-kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-test</artifactId>
+            <version>${kotlinx-coroutines.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

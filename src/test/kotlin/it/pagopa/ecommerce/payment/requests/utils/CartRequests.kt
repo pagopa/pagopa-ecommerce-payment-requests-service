@@ -5,7 +5,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestRe
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import java.net.URI
 
-object CartRequestes {
+object CartRequests {
 
     fun withOnePaymentNotice(): CartRequestDto {
         return CartRequestDto(

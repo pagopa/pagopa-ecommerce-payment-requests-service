@@ -7,8 +7,10 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNotice
 import it.pagopa.ecommerce.generated.payment.requests.server.model.ProblemJsonDto
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.services.CartService
-import it.pagopa.ecommerce.payment.requests.utils.CartRequestes
+import it.pagopa.ecommerce.payment.requests.utils.CartRequests
 import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,6 +23,7 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.net.URI
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @WebFluxTest
 @Import(BeanValidationConfiguration::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
@@ -33,8 +36,8 @@ class CartsControllerTests {
     lateinit var cartService: CartService
 
     @Test
-    fun `post cart succeeded with one payment notice`() {
-        val request = CartRequestes.withOnePaymentNotice()
+    fun `post cart succeeded with one payment notice`() = runTest {
+        val request = CartRequests.withOnePaymentNotice()
         val locationUrl = "http://checkout-url.it/77777777777302000100440009424"
         given(cartService.processCart(request)).willReturn(locationUrl)
         webClient.post()
@@ -47,9 +50,9 @@ class CartsControllerTests {
     }
 
     @Test
-    fun `post cart KO with multiple payment notices`() {
+    fun `post cart KO with multiple payment notices`() = runTest {
         val objectMapper = ObjectMapper()
-        val request = CartRequestes.withMultiplePaymentNotice()
+        val request = CartRequests.withMultiplePaymentNotice()
         given(cartService.processCart(request)).willThrow(
             RestApiException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
@@ -73,9 +76,9 @@ class CartsControllerTests {
     }
 
     @Test
-    fun `invalid request ko`() {
+    fun `invalid request ko`() = runTest {
         val objectMapper = ObjectMapper()
-        val request = CartRequestes.invalidRequest()
+        val request = CartRequests.invalidRequest()
         val errorResponse = ProblemJsonDto(
             status = 400,
             title = "Request validation error",
@@ -92,9 +95,9 @@ class CartsControllerTests {
     }
 
     @Test
-    fun `controller throw generic exception`() {
+    fun `controller throw generic exception`() = runTest {
         val objectMapper = ObjectMapper()
-        val request = CartRequestes.withOnePaymentNotice()
+        val request = CartRequests.withOnePaymentNotice()
         val errorResponse = ProblemJsonDto(
             title = "Error processing the request",
             detail = "An internal error occurred processing the request",
