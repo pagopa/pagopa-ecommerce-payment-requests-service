@@ -30,9 +30,9 @@ microservice-chart:
     pathType: "ImplementationSpecific"
   serviceAccount:
     create: false
-    annotations: {}
+    annotations: { }
     name: ""
-  podAnnotations: {}
+  podAnnotations: { }
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -70,13 +70,19 @@ microservice-chart:
     REDIS_HOST: pagopa-d-pagopa-proxy-redis.redis.cache.windows.net
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
-    CHECKOUT_URL: "https://dev.checkout.pagopa.it"
+    CHECKOUT_URL: https://dev.checkout.pagopa.it
+    NODO_HOSTNAME: https://api.dev.platform.pagopa.it
+    NODO_PER_PSP_URI: /nodo/nodo-per-psp/v1
+    NODE_FOR_PSP_URI: /nodo/node-for-psp/v1
+    NODO_READ_TIMEOUT: "10000"
+    NODO_CONNECTION_TIMEOUT: "10000"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     APPLICATIONINSIGHTS_CONNECTION_STRING: applicationinsights-connection-string
+    NODO_CONNECTION_STRING: nodo-connection-string
   keyvault:
     name: "pagopa-d-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
+  nodeSelector: { }
+  tolerations: [ ]
+  affinity: { }

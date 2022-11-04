@@ -31,7 +31,7 @@ class CartService(
      */
     var logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
-    object CartServiceConstants {
+    companion object CartServiceConstants {
         /*
          * Carts redirect URL format.
          * The carts redirect url is composed as follow
@@ -52,10 +52,17 @@ class CartService(
         val receivedNotices = paymentsNotices.size
         logger.info("Received [$receivedNotices] payment notices")
 
-        return if (receivedNotices == CartServiceConstants.MAX_ALLOWED_PAYMENT_NOTICES) {
+        return if (receivedNotices == MAX_ALLOWED_PAYMENT_NOTICES) {
+            val paymentNotice = paymentsNotices[0]
             val paymentInfos = paymentsNotices.map {
                 PaymentInfo(RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
             }
+
+            val returnUrl = CARTS_REDIRECT_URL_FORMAT.format(
+                checkoutUrl,
+                paymentNotice.fiscalCode,
+                paymentNotice.noticeNumber
+            )
 
             val cart = CartInfo(
                 UUID.randomUUID(),
@@ -74,7 +81,7 @@ class CartService(
                 cartInfoRepository.save(cart)
             }
 
-            CartServiceConstants.CARTS_REDIRECT_URL_FORMAT.format(
+            CARTS_REDIRECT_URL_FORMAT.format(
                 checkoutUrl,
                 cart.cartId,
             )

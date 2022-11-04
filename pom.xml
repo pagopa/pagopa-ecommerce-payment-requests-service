@@ -40,6 +40,10 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web-services</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
         </dependency>
@@ -125,6 +129,10 @@
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-core</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -264,6 +272,7 @@
                 <configuration>
                     <excludes>
                         <exclude>it/pagopa/generated/**</exclude>
+                        <exclude>it/pagopa/ecommerce/payment/requests/utils/soap/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
