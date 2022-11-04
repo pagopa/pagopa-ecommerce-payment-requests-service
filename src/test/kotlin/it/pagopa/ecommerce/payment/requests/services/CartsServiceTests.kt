@@ -4,33 +4,51 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDt
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnurlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
-import it.pagopa.ecommerce.payment.requests.utils.CartRequestes
+import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
+import it.pagopa.ecommerce.payment.requests.utils.CartRequests
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.TestPropertySource
+import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import java.net.URI
+import java.util.*
 
-@SpringBootTest
-@TestPropertySource(locations = ["classpath:application.test.properties"])
+@OptIn(ExperimentalCoroutinesApi::class)
 class CartsServiceTests {
+    companion object {
+        const val TEST_CHECKOUT_URL: String = "https://test-checkout.url";
+    }
 
-    @Autowired
-    lateinit var cartService: CartService
+    private val cartInfoRepository: CartInfoRepository = mock()
+
+    private val cartService: CartService = CartService(TEST_CHECKOUT_URL, cartInfoRepository)
 
 
     @Test
-    fun `post cart succeeded with one payment notice`() {
-        val request = CartRequestes.withOnePaymentNotice()
-        val locationUrl = "http://checkout-url.it/77777777777302000100440009424"
-        assertEquals(locationUrl, cartService.processCart(request))
+    fun `post cart succeeded with one payment notice`() = runTest {
+        val cartId = UUID.randomUUID()
+
+        Mockito.mockStatic(UUID::class.java).use { uuidMock ->
+            uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
+
+            val request = CartRequests.withOnePaymentNotice()
+            val locationUrl = "${TEST_CHECKOUT_URL}/carts/${cartId}"
+
+            assertEquals(locationUrl, cartService.processCart(request))
+
+            verify(cartInfoRepository, times(1)).save(any())
+        }
     }
 
     @Test
-    fun `post cart ko with multiple payment notices`() {
-        val request = CartRequestes.withMultiplePaymentNotice()
+    fun `post cart ko with multiple payment notices`() = runTest {
+        val request = CartRequests.withMultiplePaymentNotice()
         assertThrows<RestApiException> {
             cartService.processCart(request)
         }

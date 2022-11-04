@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  pagopa-ecommerce-payment-requests-service:
+    container_name: pagopa-ecommerce-payment-requests-service
+    build:
+      context: .
+    ports:
+      - "8089:8080"
+    networks:
+      - pagopa-ecommerce-net
+    env_file: .env
+
+networks:
+  pagopa-ecommerce-net:
+    name: pagopa-ecommerce-net
+    driver: bridge
