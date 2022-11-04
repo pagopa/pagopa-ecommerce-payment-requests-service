@@ -112,6 +112,20 @@
             <version>${kotlinx-coroutines.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
@@ -198,6 +212,47 @@
                                 <useSwaggerUI>false</useSwaggerUI>
                                 <reactive>true</reactive>
                             </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.15.1</version>
+                <executions>
+                    <execution>
+                        <id>node-for-psp</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaLanguage>WSDL</schemaLanguage>
+                            <generatePackage>it.pagopa.generated.transactions.model</generatePackage>
+                            <schemas>
+                                <schema>
+                                    <url>
+                                        https://raw.githubusercontent.com/pagopa/pagopa-infra/main/src/core/api/nodopagamenti_api/nodeForPsp/v1/nodeForPsp.wsdl
+                                    </url>
+                                </schema>
+                            </schemas>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>nodo-per-psp</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaLanguage>WSDL</schemaLanguage>
+                            <generatePackage>it.pagopa.generated.nodoperpsp.model</generatePackage>
+                            <schemas>
+                                <schema>
+                                    <url>
+                                        ${project.basedir}/nodo-wsdl/nodoPerPsp.wsdl
+                                    </url>
+                                </schema>
+                            </schemas>
                         </configuration>
                     </execution>
                 </executions>
