@@ -53,16 +53,9 @@ class CartService(
         logger.info("Received [$receivedNotices] payment notices")
 
         return if (receivedNotices == MAX_ALLOWED_PAYMENT_NOTICES) {
-            val paymentNotice = paymentsNotices[0]
             val paymentInfos = paymentsNotices.map {
                 PaymentInfo(RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
             }
-
-            val returnUrl = CARTS_REDIRECT_URL_FORMAT.format(
-                checkoutUrl,
-                paymentNotice.fiscalCode,
-                paymentNotice.noticeNumber
-            )
 
             val cart = CartInfo(
                 UUID.randomUUID(),
@@ -87,7 +80,6 @@ class CartService(
             )
         } else {
             logger.error("Too many payment notices, expected only one")
-            //TODO capire la risposta di errore da mettere qui
             throw RestApiException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 title = "Multiple payment notices not processable",

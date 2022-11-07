@@ -3,7 +3,6 @@ package it.pagopa.ecommerce.payment.requests.client
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
 import it.pagopa.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.generated.transactions.model.VerifyPaymentNoticeRes
-import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -16,14 +15,14 @@ import reactor.core.publisher.Mono
 import javax.xml.bind.JAXBElement
 
 @Component
-class NodoForPspClient(
+class NodeForPspClient(
     @Value("\${nodo.nodeforpsp.uri}") val nodoForPspUrl: String,
     @Autowired val nodoWebClient: WebClient,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    suspend fun verifyPaymentNotice(request: JAXBElement<VerifyPaymentNoticeReq>): VerifyPaymentNoticeRes =
+    fun verifyPaymentNotice(request: JAXBElement<VerifyPaymentNoticeReq>): Mono<VerifyPaymentNoticeRes> =
         nodoWebClient.post()
             .uri(nodoForPspUrl)
             .header("Content-Type", MediaType.TEXT_XML_VALUE)
@@ -43,6 +42,6 @@ class NodoForPspClient(
                 )
             }.doOnError(ResponseStatusException::class.java) {
                 logger.error("Response status error", it)
-            }.doOnError(Exception::class.java) { logger.error("Generic error", it) }.awaitSingle()
+            }.doOnError(Exception::class.java) { logger.error("Generic error", it) }
 
 }

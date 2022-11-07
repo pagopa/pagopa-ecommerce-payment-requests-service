@@ -1,4 +1,4 @@
-package it.pagopa.ecommerce.payment.requests.configurations.nodo
+package it.pagopa.ecommerce.payment.requests.configurations.webclients
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -22,7 +22,7 @@ import reactor.netty.http.client.HttpClient
 import java.util.concurrent.TimeUnit
 
 @Configuration
-class NodoWebClient {
+class WebClientsConfig {
 
     @Bean
     fun nodoWebClient(

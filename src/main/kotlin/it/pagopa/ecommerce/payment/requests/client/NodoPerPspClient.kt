@@ -3,7 +3,6 @@ package it.pagopa.ecommerce.payment.requests.client
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
 import it.pagopa.generated.nodoperpsp.model.NodoVerificaRPT
 import it.pagopa.generated.nodoperpsp.model.NodoVerificaRPTRisposta
-import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -24,7 +23,7 @@ class NodoPerPspClient(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    suspend fun verificaRpt(request: JAXBElement<NodoVerificaRPT>) =
+    fun verificaRpt(request: JAXBElement<NodoVerificaRPT>) =
         nodoWebClient.post()
             .uri(nodoPerPspUrl)
             .header("Content-Type", MediaType.TEXT_XML_VALUE)
@@ -43,8 +42,8 @@ class NodoPerPspClient(
                 }
             }.bodyToMono(NodoVerificaRPTRisposta::class.java)
             .doOnSuccess() { logger.debug("Payment info for {}", request.value.codiceIdRPT) }
-            .doOnError() { logger.error("ResponseStatus Error: ", it) }
-            .doOnError() { logger.error("Generic exception: ", it) }.awaitSingle()
+            .doOnError(ResponseStatusException::class.java) { logger.error("ResponseStatus Error: ", it) }
+            .doOnError(Exception::class.java) { logger.error("Generic exception: ", it) }
 
 
 }

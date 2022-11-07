@@ -9,11 +9,11 @@ import org.springframework.data.redis.core.RedisHash
 @RedisHash(value = "keys", timeToLive = 10 * 60)
 class PaymentRequestInfo @PersistenceCreator constructor(
     @Id val rptId: RptId,
-    val paFiscalCode: String,
-    val paName: String,
+    val paFiscalCode: String?,
+    val paName: String?,
     val description: String,
     val amount: Int,
-    val dueDate: String,
+    val dueDate: String?,
     val isNm3: Boolean,
     val paymentToken: String?,
     val idempotencyKey: IdempotencyKey?,
