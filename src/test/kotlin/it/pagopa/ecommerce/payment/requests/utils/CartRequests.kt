@@ -19,7 +19,7 @@ object CartRequests {
             returnurls = CartRequestReturnurlsDto(
                 returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
                 returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
-                retunErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
+                returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
             ),
             emailNotice = "my_email@mail.it"
         )
@@ -42,7 +42,7 @@ object CartRequests {
             returnurls = CartRequestReturnurlsDto(
                 returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
                 returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
-                retunErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
+                returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
             )
         )
     }
@@ -59,7 +59,7 @@ object CartRequests {
             returnurls = CartRequestReturnurlsDto(
                 returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
                 returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
-                retunErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
+                returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
             )
         )
     }

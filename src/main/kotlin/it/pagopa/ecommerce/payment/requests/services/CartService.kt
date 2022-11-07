@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDt
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnurlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import it.pagopa.ecommerce.payment.requests.domain.RptId
+import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
@@ -15,6 +16,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.net.URI
@@ -62,7 +64,7 @@ class CartService(
                 paymentInfos,
                 ReturnUrls(
                     returnSuccessUrl = cartRequestDto.returnurls.returnOkUrl.toString(),
-                    returnErrorUrl = cartRequestDto.returnurls.retunErrorUrl.toString(),
+                    returnErrorUrl = cartRequestDto.returnurls.returnErrorUrl.toString(),
                     returnCancelUrl = cartRequestDto.returnurls.returnCancelUrl.toString()
                 ),
                 cartRequestDto.emailNotice
@@ -93,20 +95,20 @@ class CartService(
      * Fetch the cart with the input cart id
      */
     fun getCart(cartId: String): CartRequestDto {
+        val cart = cartInfoRepository.findByIdOrNull(UUID.fromString(cartId)) ?: throw CartNotFoundException(cartId)
+
         return CartRequestDto(
-            paymentNotices = listOf(
-                PaymentNoticeDto(
-                    noticeNumber = "302000100440009424",
-                    fiscalCode = "77777777777",
-                    amount = 10000
+            paymentNotices = cart.payments.map {
+                PaymentNoticeDto(it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
+            },
+            returnurls = cart.returnUrls.let {
+                CartRequestReturnurlsDto(
+                    returnOkUrl = URI(it.returnSuccessUrl),
+                    returnCancelUrl = URI(it.returnCancelUrl),
+                    returnErrorUrl = URI(it.returnErrorUrl)
                 )
-            ),
-            returnurls = CartRequestReturnurlsDto(
-                retunErrorUrl = URI.create("https://returnErrorUrl"),
-                returnOkUrl = URI.create("https://returnOkUrl"),
-                returnCancelUrl = URI.create("https://returnCancelUrl")
-            ),
-            emailNotice = "test@test.it"
+            },
+            emailNotice = cart.email
         )
     }
 }
