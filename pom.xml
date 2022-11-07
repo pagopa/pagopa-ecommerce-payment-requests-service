@@ -165,6 +165,7 @@
                     <sourceDirs>
                         <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin</sourceDir>
                         <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                        <sourceDir>${project.basedir}/src/main/java</sourceDir>
                     </sourceDirs>
                 </configuration>
                 <dependencies>
@@ -185,6 +186,8 @@
                             <sourceDirs>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                                <sourceDir>${project.basedir}/src/test/java</sourceDir>
                             </sourceDirs>
                         </configuration>
                     </execution>
