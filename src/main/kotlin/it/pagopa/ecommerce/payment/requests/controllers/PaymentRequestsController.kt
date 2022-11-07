@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class PaymentRequestsController(
-    @Autowired
-    val paymentRequestsService: PaymentRequestsService
-) : PaymentRequestsApi {
 
+) : PaymentRequestsApi {
+    @Autowired
+    private lateinit var paymentRequestsService: PaymentRequestsService
     override suspend fun getPaymentRequestInfo(rptId: String): ResponseEntity<PaymentRequestsGetResponseDto> {
         return ResponseEntity.ok(
             paymentRequestsService.getPaymentRequestInfo(rptId)

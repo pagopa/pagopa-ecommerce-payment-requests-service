@@ -13,6 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
+import org.mockito.InjectMocks
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -24,7 +25,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import java.net.URI
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@WebFluxTest
+@WebFluxTest(CartsController::class)
 @Import(BeanValidationConfiguration::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
 class CartsControllerTests {
@@ -34,6 +35,9 @@ class CartsControllerTests {
 
     @MockBean
     lateinit var cartService: CartService
+
+    @InjectMocks
+    val cartsController: CartsController = CartsController()
 
     @Test
     fun `post cart succeeded with one payment notice`() = runTest {

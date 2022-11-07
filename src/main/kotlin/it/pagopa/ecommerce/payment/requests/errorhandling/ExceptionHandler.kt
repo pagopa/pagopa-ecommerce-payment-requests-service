@@ -89,7 +89,7 @@ class ExceptionHandler {
                 ResponseEntity(
                     PartyConfigurationFaultPaymentProblemJsonDto(
                         title = "EC error",
-                        faultCodeCategory = FaultCategoryDto.pAYMENTUNAVAILABLE,
+                        faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE,
                         faultCodeDetail = PartyConfigurationFaultDto.valueOf(faultCode)
                     ), HttpStatus.BAD_GATEWAY
                 )
@@ -97,7 +97,7 @@ class ExceptionHandler {
                 ResponseEntity(
                     ValidationFaultPaymentProblemJsonDto(
                         title = "Validation Fault",
-                        faultCodeCategory = FaultCategoryDto.pAYMENTUNKNOWN,
+                        faultCodeCategory = FaultCategoryDto.PAYMENT_UNKNOWN,
                         faultCodeDetail = ValidationFaultDto.valueOf(faultCode)
                     ), HttpStatus.NOT_FOUND
                 )
@@ -105,7 +105,7 @@ class ExceptionHandler {
                 ResponseEntity(
                     GatewayFaultPaymentProblemJsonDto(
                         title = "Payment unavailable",
-                        faultCodeCategory = FaultCategoryDto.gENERICERROR,
+                        faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
                         faultCodeDetail = GatewayFaultDto.valueOf(faultCode)
                     ), HttpStatus.BAD_GATEWAY
                 )
@@ -113,7 +113,7 @@ class ExceptionHandler {
                 ResponseEntity(
                     PartyTimeoutFaultPaymentProblemJsonDto(
                         title = "Gateway Timeout",
-                        faultCodeCategory = FaultCategoryDto.gENERICERROR,
+                        faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
                         faultCodeDetail = PartyTimeoutFaultDto.valueOf(faultCode)
                     ), HttpStatus.GATEWAY_TIMEOUT
                 )
@@ -121,7 +121,7 @@ class ExceptionHandler {
                 ResponseEntity(
                     PaymentStatusFaultPaymentProblemJsonDto(
                         title = "Payment Status Fault",
-                        faultCodeCategory = FaultCategoryDto.pAYMENTUNAVAILABLE,
+                        faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE,
                         faultCodeDetail = PaymentStatusFaultDto.valueOf(faultCode)
                     ), HttpStatus.CONFLICT
                 )

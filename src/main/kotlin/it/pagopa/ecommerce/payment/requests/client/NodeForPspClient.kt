@@ -16,8 +16,8 @@ import javax.xml.bind.JAXBElement
 
 @Component
 class NodeForPspClient(
-    @Value("\${nodo.nodeforpsp.uri}") val nodoForPspUrl: String,
-    @Autowired val nodoWebClient: WebClient,
+    @Value("\${nodo.nodeforpsp.uri}") private val nodoForPspUrl: String,
+    @Autowired private val nodoWebClient: WebClient,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)

@@ -222,7 +222,9 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <useSwaggerUI>false</useSwaggerUI>
                                 <reactive>true</reactive>
+                                <enumPropertyNaming>UPPERCASE</enumPropertyNaming>
                             </configOptions>
+
                         </configuration>
                     </execution>
                 </executions>

@@ -5,12 +5,13 @@ import org.springframework.data.annotation.PersistenceCreator
 import java.util.regex.Pattern
 
 class IdempotencyKey {
-    private val key: String
+    val key: String
 
     constructor(pspFiscalCode: String, keyIdentifier: String) {
         validateComponents(pspFiscalCode, keyIdentifier)
         key = pspFiscalCode + "_" + keyIdentifier
     }
+
 
     @PersistenceCreator
     constructor(key: String) {
@@ -21,6 +22,7 @@ class IdempotencyKey {
         validateComponents(pspFiscalCode, keyIdentifier)
         this.key = key
     }
+
 
     companion object {
         private val pspFiscalCodeRegex = Pattern.compile("\\d{11}")
@@ -35,5 +37,24 @@ class IdempotencyKey {
                 keyIdentifierRegex.matcher(keyIdentifier).matches()
             ) { "Key identifier doesn't match regex: " + keyIdentifierRegex.pattern() }
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as IdempotencyKey
+
+        if (key != other.key) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return key.hashCode()
+    }
+
+    override fun toString(): String {
+        return "IdempotencyKey(key='$key')"
     }
 }

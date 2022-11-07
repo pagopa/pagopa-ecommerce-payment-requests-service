@@ -3,7 +3,8 @@ package it.pagopa.ecommerce.payment.requests.exceptions
 import it.pagopa.generated.nodoperpsp.model.FaultBean
 import java.util.regex.Pattern
 
-class NodoErrorException(val faultCode: String) : RuntimeException() {
+class NodoErrorException(val faultCode: String) :
+    RuntimeException("Exception communication with nodo. Fault code: [${faultCode}]") {
 
     constructor(faultBean: FaultBean) : this(getFaultCodeFromBean(faultBean))
 
