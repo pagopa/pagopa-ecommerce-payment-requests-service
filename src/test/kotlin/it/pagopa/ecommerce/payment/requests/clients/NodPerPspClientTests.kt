@@ -123,8 +123,6 @@ class NodPerPspClientTests {
         val password = "password"
         val identificativoIntermediarioPSP = "identificativoIntermediarioPSP"
         val esito = "KO"
-        val importoSingoloVersamento = BigDecimal.valueOf(1200)
-        val causaleVersamento = "causaleVersamento"
         val faultError = "PAA_PAGAMENTO_DUPLICATO"
 
         val request = objectFactory.createNodoVerificaRPT()

@@ -290,8 +290,6 @@ class PaymentRequestsServiceTests {
     fun `should return payment info request from nodo with VerifyPaymentNotice with due date`() = runTest {
         val rptIdAsString = "77777777777302016723749670035"
         val rptIdAsObject = RptId(rptIdAsString)
-        val paTaxCode = "77777777777"
-        val paName = "Pa Name"
         val description = "Payment request description"
         val amount = 1000
         val amountForNodo = BigDecimal.valueOf(amount.toLong())

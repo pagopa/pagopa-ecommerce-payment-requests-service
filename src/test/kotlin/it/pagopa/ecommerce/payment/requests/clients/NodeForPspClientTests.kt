@@ -102,7 +102,6 @@ class NodeForPspClientTests {
         val objectFactory = ObjectFactory()
         val fiscalCode = "77777777777"
         val paymentNotice = "302000100000009424"
-        val paymentDescription = "paymentDescription"
         val faultError = "PAA_PAGAMENTO_DUPLICATO"
         val request = objectFactory.createVerifyPaymentNoticeReq()
         val qrCode = CtQrCode()

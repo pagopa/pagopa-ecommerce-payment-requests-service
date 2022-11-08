@@ -18,7 +18,7 @@ class IdempotencyKeyTests {
     @Test
     fun `should throw invalid fiscal code`() {
         val exception = assertThrows<IllegalArgumentException> {
-            val idempotencyKey = IdempotencyKey(INVALID_FISCAL_CODE, VALID_KEY_ID)
+            IdempotencyKey(INVALID_FISCAL_CODE, VALID_KEY_ID)
         }
         assertEquals("PSP fiscal code doesn't match regex: \\d{11}", exception.message)
     }
@@ -27,7 +27,7 @@ class IdempotencyKeyTests {
     @Test
     fun `should throw invalid key id`() {
         val exception = assertThrows<IllegalArgumentException> {
-            val idempotencyKey = IdempotencyKey(VALID_FISCAL_CODE, INVALID_KEY_ID)
+            IdempotencyKey(VALID_FISCAL_CODE, INVALID_KEY_ID)
         }
         assertEquals("Key identifier doesn't match regex: [a-zA-Z\\d]{10}", exception.message)
     }

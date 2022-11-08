@@ -1,9 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.services
 
-import it.pagopa.ecommerce.generated.nodoperpsp.model.EsitoNodoVerificaRPTRisposta
-import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoTipoCodiceIdRPT
-import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoVerificaRPT
-import it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory
+import it.pagopa.ecommerce.generated.nodoperpsp.model.*
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
 import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
@@ -107,7 +104,7 @@ class PaymentRequestsService(
             val isNodoError = isNodoError(esitoNodoVerificaRPTRisposta)
             logger.info(
                 "Verifica RPT: fault code: [{}] isNm3: [{}], nodo error: [{}]",
-                esitoNodoVerificaRPTRisposta.fault.faultCode,
+                esitoNodoVerificaRPTRisposta?.fault?.faultCode,
                 isNm3,
                 isNodoError
             )
@@ -152,7 +149,8 @@ class PaymentRequestsService(
                     )
                 }
             } else {
-                val enteBeneficiario = esitoNodoVerificaRPTRisposta.datiPagamentoPA.enteBeneficiario
+                val enteBeneficiario: CtEnteBeneficiario? =
+                    esitoNodoVerificaRPTRisposta.datiPagamentoPA?.enteBeneficiario
                 paymentRequestInfo = Mono.just(
                     PaymentRequestInfo(
                         rptId = rptId,
@@ -175,13 +173,13 @@ class PaymentRequestsService(
     fun isNm3(esitoNodoVerificaRPTRisposta: EsitoNodoVerificaRPTRisposta): Boolean {
         val outcome = esitoNodoVerificaRPTRisposta.esito
         val ko = StOutcome.KO.value().equals(outcome)
-        return ko && (RPT_VERIFY_MULTI_BENEFICIARY_RESPONSE_CODE == (esitoNodoVerificaRPTRisposta.fault.faultCode))
+        return ko && (RPT_VERIFY_MULTI_BENEFICIARY_RESPONSE_CODE == (esitoNodoVerificaRPTRisposta.fault?.faultCode))
     }
 
     fun isNodoError(esitoNodoVerificaRPTRisposta: EsitoNodoVerificaRPTRisposta): Boolean {
         val outcome = esitoNodoVerificaRPTRisposta.esito
         val ko = StOutcome.KO.value().equals(outcome)
-        return ko && (RPT_VERIFY_MULTI_BENEFICIARY_RESPONSE_CODE != (esitoNodoVerificaRPTRisposta.fault.faultCode))
+        return ko && (RPT_VERIFY_MULTI_BENEFICIARY_RESPONSE_CODE != (esitoNodoVerificaRPTRisposta.fault?.faultCode))
     }
 
     fun getDueDateString(date: XMLGregorianCalendar?): String? =
