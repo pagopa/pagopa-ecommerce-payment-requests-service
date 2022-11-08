@@ -10,6 +10,41 @@ services:
     networks:
       - pagopa-ecommerce-net
     env_file: .env
+  redis:
+    container_name: pagopa-ecommerce-redis
+    image: redis
+    command: [ "sh", "-c", 'exec redis-server --requirepass "$$REDIS_PASSWORD"' ]
+    ports:
+      - "6379:6379"
+    networks:
+      - pagopa-ecommerce-net
+
+  redis-insight:
+    image: redislabs/redisinsight
+    ports:
+      - "8001:8001"
+    networks:
+      - pagopa-ecommerce-net
+
+  pagopa-node-mock:
+    container_name: pagopa-node-mock
+    build:
+      context: .
+      dockerfile: Dockerfile.nodo-mock
+    environment:
+      PORT: 3002
+      PAGOPA_PROXY_PORT: 3000
+      PAGOPA_PROXY_HOST: http://pagopaproxy
+      PAGOPA_NODO_HOST: http://pagopa-node-mock
+      PAGOPA_ID_CANALE: 97735020584_02
+      PAGOPA_ID_CANALE_PAGAMENTO: 97735020584_xx
+      PAGOPA_ID_INT_PSP: 97735020584
+      PAGOPA_ID_PSP: PAGOPA_01
+      PAGOPA_NODO_PASSWORD: password
+    ports:
+      - "3002:3002"
+    networks:
+      - pagopa-ecommerce-net
 
 networks:
   pagopa-ecommerce-net:
