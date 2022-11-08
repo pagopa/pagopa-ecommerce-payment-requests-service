@@ -1,8 +1,9 @@
 {
   "info": {
-    "_postman_id": "9fcb0a47-be05-4cfd-b34e-4522f56e94a4",
-    "name": "ecommerce payment request service uat deployment",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "_postman_id": "bc9474c8-f96d-4ea3-bc1c-c3435e1dde4a",
+    "name": "PagoPA ecommerce payment requests test collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "23963988"
   },
   "item": [
     {
@@ -14,7 +15,8 @@
             "exec": [
               "pm.test(\"Status code is 302 with one payment notice\", () => {",
               "  pm.expect(pm.response.code).to.eql(302);",
-              "  pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"https://uat.checkout.pagopa.it/77777777777302000100440009424\")",
+              "  pm.expect(pm.response.to.have.header(\"Location\"))",
+              "  pm.environment.set(\"CART_ID\", pm.response.headers.get(\"Location\").substring((pm.response.headers.get(\"Location\").lastIndexOf(\"/\"))+1));",
               "});"
             ],
             "type": "text/javascript"
@@ -32,7 +34,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"paymentNotices\": [\n        {\n            \"noticeNumber\": \"302000100440009424\",\n            \"fiscalCode\": \"77777777777\",\n            \"amount\": 10000,\n            \"companyName\": null,\n            \"description\": null\n        }\n    ],\n    \"returnurls\": {\n        \"returnOkUrl\": \"https://returnOkUrl\",\n        \"returnCancelUrl\": \"https://returnCancelUrl\",\n        \"retunErrorUrl\": \"https://returnErrorUrl\"\n    },\n    \"emailNotice\": \"test@test.it\"\n}",
+          "raw": "{\n    \"paymentNotices\": [\n        {\n            \"noticeNumber\": \"302000100440009424\",\n            \"fiscalCode\": \"77777777777\",\n            \"amount\": 10000,\n            \"companyName\": null,\n            \"description\": null\n        }\n    ],\n    \"returnurls\": {\n        \"returnOkUrl\": \"https://returnOkUrl\",\n        \"returnCancelUrl\": \"https://returnCancelUrl\",\n        \"returnErrorUrl\": \"https://returnErrorUrl\"\n    },\n    \"emailNotice\": \"test@test.it\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -50,6 +52,64 @@
             "ecommerce",
             "v1",
             "carts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get cart OK",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 retrieving cart\", () => {",
+              "  pm.expect(pm.response.code).to.eql(200);",
+              "  var jsonData = pm.response.json();",
+              "  pm.expect(jsonData.paymentNotices).to.not.be.empty",
+              "});",
+              "",
+              "",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "deployment",
+            "value": "blue",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"paymentNotices\": [\n        {\n            \"noticeNumber\": \"302000100440009424\",\n            \"fiscalCode\": \"77777777777\",\n            \"amount\": 10000,\n            \"companyName\": null,\n            \"description\": null\n        }\n    ],\n    \"returnurls\": {\n        \"returnOkUrl\": \"https://returnOkUrl\",\n        \"returnCancelUrl\": \"https://returnCancelUrl\",\n        \"returnErrorUrl\": \"https://returnErrorUrl\"\n    },\n    \"emailNotice\": \"test@test.it\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://{{host}}/checkout/ecommerce/v1/carts/{{CART_ID}}",
+          "protocol": "https",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "checkout",
+            "ecommerce",
+            "v1",
+            "carts",
+            "{{CART_ID}}"
           ]
         }
       },
@@ -153,6 +213,61 @@
             "carts"
           ]
         }
+      },
+      "response": []
+    },
+    {
+      "name": "Payment Request Info NM3",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Payment request test\", () => {",
+              "  pm.expect(pm.response.code).to.eql(200);",
+              "  var jsonData = pm.response.json();",
+              "  pm.expect(jsonData.rptId).to.eql(pm.environment.get(\"RPTID_NM3\"))",
+              "  pm.expect(jsonData.paFiscalCode).to.eql(pm.environment.get(\"RPTID_NM3\").substring(0,11))",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.environment.set(\"RPTID_NM3\", \"77777777777\"+_.random(302001000000000000, 302001999999999999));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "",
+            "type": "text",
+            "value": "",
+            "disabled": true
+          }
+        ],
+        "url": {
+          "raw": "https://{{host}}/checkout/ecommerce/v1/payment-requests/{{RPTID_NM3}}",
+          "protocol": "https",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "checkout",
+            "ecommerce",
+            "v1",
+            "payment-requests",
+            "{{RPTID_NM3}}"
+          ]
+        },
+        "description": "1. recupero info relativi alla request payment con verificaRPT se non presente in cache dato rptId\n2. cache info su redis dato rptId"
       },
       "response": []
     }

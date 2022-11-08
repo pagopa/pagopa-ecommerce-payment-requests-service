@@ -1,12 +1,24 @@
 {
-	"id": "500bc050-0da0-4f40-8eb8-ef5c7c0b15c0",
-	"name": "UAT",
-	"values": [
-		{
-			"key": "host",
-			"value": "api.uat.platform.pagopa.it",
-			"type": "default",
-			"enabled": true
-		}
-	]
+  "id": "1c775833-6b8a-4a11-a04f-833b6854b6a4",
+  "name": "UAT",
+  "values": [
+    {
+      "key": "host",
+      "value": "api.uat.platform.pagopa.it",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "CART_ID",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "RPTID_NM3",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ]
 }
