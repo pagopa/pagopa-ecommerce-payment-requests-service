@@ -7,7 +7,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNotice
 import it.pagopa.ecommerce.generated.payment.requests.server.model.ProblemJsonDto
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.services.CartService
-import it.pagopa.ecommerce.payment.requests.utils.CartRequests
+import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
 import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

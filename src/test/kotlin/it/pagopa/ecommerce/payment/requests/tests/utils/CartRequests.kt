@@ -1,4 +1,4 @@
-package it.pagopa.ecommerce.payment.requests.utils
+package it.pagopa.ecommerce.payment.requests.tests.utils
 
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnurlsDto

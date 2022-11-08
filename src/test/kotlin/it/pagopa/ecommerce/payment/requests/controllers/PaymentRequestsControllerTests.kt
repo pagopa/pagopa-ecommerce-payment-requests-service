@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import it.pagopa.ecommerce.generated.payment.requests.server.model.*
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.services.PaymentRequestsService
-import it.pagopa.ecommerce.payment.requests.utils.PaymentRequests
+import it.pagopa.ecommerce.payment.requests.tests.utils.PaymentRequests
 import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
 import it.pagopa.generated.nodoperpsp.model.FaultBean
 import kotlinx.coroutines.ExperimentalCoroutinesApi

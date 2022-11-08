@@ -1,42 +1,38 @@
 package it.pagopa.ecommerce.payment.requests.clients
 
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
+import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
 import it.pagopa.generated.transactions.model.CtQrCode
 import it.pagopa.generated.transactions.model.ObjectFactory
 import it.pagopa.generated.transactions.model.StOutcome
 import it.pagopa.generated.transactions.model.VerifyPaymentNoticeRes
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClient.*
-import org.springframework.ws.soap.SoapEnvelope
 import reactor.core.publisher.Mono
 import java.util.function.Function
 import java.util.function.Predicate
 
 
-@ExtendWith(SpringExtension::class)
+@ExtendWith(MockitoExtension::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
 class NodeForPspClientTests {
 
-
-    @Autowired
     private lateinit var client: NodeForPspClient
 
-
-    @MockBean
+    @Mock
     private lateinit var nodoWebClient: WebClient
 
     @Mock
@@ -48,6 +44,11 @@ class NodeForPspClientTests {
     @Mock
     private lateinit var responseSpec: ResponseSpec
 
+
+    @BeforeEach
+    fun init() {
+        client = NodeForPspClient("", nodoWebClient)
+    }
 
     @Test
     fun `should return verify payment response given valid payment notice`() = runTest {

@@ -57,11 +57,10 @@ class PaymentRequestsService(
         val rptIdRecord = RptId(rptId)
         val paymentContextCode = UUID.randomUUID().toString().replace("-", "")
         val paymentInfo = getPaymentInfoFromCache(rptIdRecord)
-            .doOnNext { paymentRequestFromCache: PaymentRequestInfo? ->
+            .doOnNext {
                 logger.info(
-                    "PaymentRequestInfo cache hit for {} : {}",
-                    rptId,
-                    paymentRequestFromCache != null
+                    "PaymentRequestInfo cache hit for {}",
+                    rptId
                 )
             }.switchIfEmpty(
                 Mono.defer {
@@ -84,7 +83,7 @@ class PaymentRequestsService(
                     amount = paymentInfo.amount,
                     paymentContextCode = paymentContextCode
                 )
-            }.doOnNext { logger.info("PaymentRequestInfo retrieved for {}: {}", rptId, it != null) }
+            }.doOnNext { logger.info("PaymentRequestInfo retrieved for {}", rptId) }
         return paymentInfo.awaitSingle()
     }
 

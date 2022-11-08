@@ -27,7 +27,7 @@ class NodeForPspClient(
             .uri(nodoForPspUrl)
             .header("Content-Type", MediaType.TEXT_XML_VALUE)
             .header("SOAPAction", "verifyPaymentNotice")
-            .body(SoapEnvelope("", request), SoapEnvelope::class.java)
+            .body(Mono.just(SoapEnvelope("", request)), SoapEnvelope::class.java)
             .retrieve()
             .onStatus(HttpStatus::isError) { clientResponse ->
                 clientResponse.bodyToMono(String::class.java).flatMap { errorResponseBody: String ->

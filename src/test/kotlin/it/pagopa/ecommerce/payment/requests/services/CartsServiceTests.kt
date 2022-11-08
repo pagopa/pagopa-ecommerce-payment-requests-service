@@ -5,7 +5,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestRe
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
-import it.pagopa.ecommerce.payment.requests.utils.CartRequests
+import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals

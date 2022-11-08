@@ -28,7 +28,7 @@ class NodoPerPspClient(
             .uri(nodoPerPspUrl)
             .header("Content-Type", MediaType.TEXT_XML_VALUE)
             .header("SOAPAction", "nodoVerificaRPT")
-            .body(SoapEnvelope("", request), SoapEnvelope::class.java)
+            .body(Mono.just(SoapEnvelope("", request)), SoapEnvelope::class.java)
             .retrieve()
             .onStatus(
                 HttpStatus::isError

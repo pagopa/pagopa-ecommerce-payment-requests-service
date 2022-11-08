@@ -24,6 +24,5 @@ class NodoErrorException(val faultCode: String) :
                 faultBean.faultCode
             }
         }
-
     }
 }
