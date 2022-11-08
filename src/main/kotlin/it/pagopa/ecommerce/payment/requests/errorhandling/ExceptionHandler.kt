@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.reactive.function.client.WebClientRequestException
+import org.springframework.web.server.ServerWebInputException
 import java.util.*
 import javax.validation.ValidationException
 
@@ -43,12 +44,26 @@ class ExceptionHandler {
         )
     }
 
+    @ExceptionHandler(ApiError::class)
+    fun handleException(e: ApiError): ResponseEntity<ProblemJsonDto> {
+        val restApiException = e.toRestException()
+        logger.error("Exception processing request", e)
+        return ResponseEntity.status(restApiException.httpStatus).body(
+            ProblemJsonDto(
+                title = restApiException.title,
+                detail = restApiException.description,
+                status = restApiException.httpStatus.value()
+            )
+        )
+    }
+
     /*
      * Validation request exception handler
      */
     @ExceptionHandler(
         MethodArgumentNotValidException::class,
         MethodArgumentTypeMismatchException::class,
+        ServerWebInputException::class,
         ValidationException::class,
         HttpMessageNotReadableException::class,
         WebExchangeBindException::class

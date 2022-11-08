@@ -468,7 +468,7 @@ components:
           required:
             - returnOkUrl
             - returnCancelUrl
-            - retunErrorUrl
+            - returnErrorUrl
           properties:
             returnOkUrl:
               type: string
@@ -478,7 +478,7 @@ components:
               type: string
               format: uri
               example: "www.comune.di.prova.it/pagopa/cancel.html"
-            retunErrorUrl:
+            returnErrorUrl:
               type: string
               format: uri
               example: "www.comune.di.prova.it/pagopa/error.html"

@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDt
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnurlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.ProblemJsonDto
+import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.services.CartService
 import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
@@ -22,7 +23,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.reactive.server.expectBody
 import java.net.URI
+import java.util.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @WebFluxTest(CartsController::class)
@@ -130,7 +133,7 @@ class CartsControllerTests {
                 )
             ),
             returnurls = CartRequestReturnurlsDto(
-                retunErrorUrl = URI.create("https://returnErrorUrl"),
+                returnErrorUrl = URI.create("https://returnErrorUrl"),
                 returnOkUrl = URI.create("https://returnOkUrl"),
                 returnCancelUrl = URI.create("https://returnCancelUrl")
             ),
@@ -145,4 +148,24 @@ class CartsControllerTests {
             .expectBody().json(objectMapper.writeValueAsString(response))
     }
 
+    @Test
+    fun `get cart by id with non-existing cart returns 404`() {
+        val cartId = UUID.randomUUID().toString()
+        val exception = CartNotFoundException(cartId)
+        val expected = ProblemJsonDto(
+            title = "Cart not found",
+            detail = exception.message ?: "",
+            status = HttpStatus.NOT_FOUND.value()
+        )
+
+        given(cartService.getCart(cartId)).willThrow(exception)
+
+        val parameters = mapOf("cartId" to cartId)
+        webClient.get()
+            .uri("/carts/{cartId}", parameters)
+            .exchange()
+            .expectStatus().isNotFound
+            .expectBody<ProblemJsonDto>()
+            .isEqualTo(expected)
+    }
 }

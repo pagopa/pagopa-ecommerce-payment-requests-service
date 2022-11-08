@@ -1,22 +1,20 @@
 package it.pagopa.ecommerce.payment.requests.services
 
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnurlsDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
+import it.pagopa.ecommerce.payment.requests.domain.RptId
+import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
-import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
+import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
+import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.utils.CartRequests
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import java.net.URI
+import org.mockito.kotlin.*
 import java.util.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,21 +54,42 @@ class CartsServiceTests {
 
     @Test
     fun `get cart by id`() {
-        val request = CartRequestDto(
-            paymentNotices = listOf(
-                PaymentNoticeDto(
-                    noticeNumber = "302000100440009424",
-                    fiscalCode = "77777777777",
-                    amount = 10000
+        val cartId = UUID.randomUUID()
+
+        Mockito.mockStatic(UUID::class.java).use { uuidMock ->
+            uuidMock.`when`<UUID> { UUID.fromString(cartId.toString()) }.thenReturn(cartId)
+
+            val request = CartRequests.withOnePaymentNotice()
+
+            given(cartInfoRepository.findById(cartId)).willReturn(request.let { req ->
+                val cartInfo = CartInfo(
+                    cartId,
+                    req.paymentNotices.map { PaymentInfo(RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName) },
+                    req.returnurls.let {
+                        ReturnUrls(
+                            returnSuccessUrl = it.returnOkUrl.toString(),
+                            returnErrorUrl = it.returnErrorUrl.toString(),
+                            returnCancelUrl = it.returnCancelUrl.toString()
+                        )
+                    },
+                    req.emailNotice
                 )
-            ),
-            returnurls = CartRequestReturnurlsDto(
-                retunErrorUrl = URI.create("https://returnErrorUrl"),
-                returnOkUrl = URI.create("https://returnOkUrl"),
-                returnCancelUrl = URI.create("https://returnCancelUrl")
-            ),
-            emailNotice = "test@test.it"
-        )
-        assertEquals(request, cartService.getCart("cartId"))
+
+                Optional.of(cartInfo)
+            })
+
+            assertEquals(request, cartService.getCart(cartId.toString()))
+        }
+    }
+
+    @Test
+    fun `non-existing id throws CartNotFoundException`() {
+        val cartId = UUID.randomUUID()
+
+        given(cartInfoRepository.findById(cartId)).willReturn(Optional.empty())
+
+        assertThrows<CartNotFoundException> {
+            cartService.getCart(cartId.toString())
+        }
     }
 }
