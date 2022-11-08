@@ -164,6 +164,7 @@
                     </compilerPlugins>
                     <sourceDirs>
                         <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin</sourceDir>
+                        <sourceDir>${project.build.directory}/generated-sources/xjc</sourceDir>
                         <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
                         <sourceDir>${project.basedir}/src/main/java</sourceDir>
                     </sourceDirs>
@@ -188,8 +189,39 @@
                                 <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/java</sourceDir>
                                 <sourceDir>${project.basedir}/src/test/java</sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin
+                                </sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/xjc</sourceDir>
                             </sourceDirs>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>java-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>java-test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -241,7 +273,7 @@
                         </goals>
                         <configuration>
                             <schemaLanguage>WSDL</schemaLanguage>
-                            <generatePackage>it.pagopa.generated.transactions.model</generatePackage>
+                            <generatePackage>it.pagopa.ecommerce.generated.transactions.model</generatePackage>
                             <schemas>
                                 <schema>
                                     <url>
@@ -258,7 +290,7 @@
                         </goals>
                         <configuration>
                             <schemaLanguage>WSDL</schemaLanguage>
-                            <generatePackage>it.pagopa.generated.nodoperpsp.model</generatePackage>
+                            <generatePackage>it.pagopa.ecommerce.generated.nodoperpsp.model</generatePackage>
                             <schemas>
                                 <schema>
                                     <url>

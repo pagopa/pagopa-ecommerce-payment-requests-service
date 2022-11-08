@@ -1,7 +1,9 @@
 package it.pagopa.ecommerce.payment.requests.services
 
+import it.pagopa.ecommerce.generated.nodoperpsp.model.*
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentStatusFaultDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultDto
+import it.pagopa.ecommerce.generated.transactions.model.*
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPspClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
@@ -10,9 +12,6 @@ import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfoRepository
 import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
 import it.pagopa.ecommerce.payment.requests.utils.NodoUtils
-import it.pagopa.generated.nodoperpsp.model.*
-import it.pagopa.generated.nodoperpsp.model.ObjectFactory
-import it.pagopa.generated.transactions.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -66,8 +65,8 @@ class PaymentRequestsServiceTests {
             paymentRequestsInfoRepository,
             nodoPerPspClient,
             nodeForPspClient,
-            ObjectFactory(),
-            it.pagopa.generated.transactions.model.ObjectFactory(),
+            it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory(),
+            it.pagopa.ecommerce.generated.transactions.model.ObjectFactory(),
             baseNodoVerificaRPTRequest,
             baseVerifyPaymentNoticeReq,
             nodoUtilities,

@@ -1,6 +1,13 @@
 package it.pagopa.ecommerce.payment.requests.services
 
+import it.pagopa.ecommerce.generated.nodoperpsp.model.EsitoNodoVerificaRPTRisposta
+import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoTipoCodiceIdRPT
+import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoVerificaRPT
+import it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
+import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
+import it.pagopa.ecommerce.generated.transactions.model.StOutcome
+import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPspClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
@@ -9,13 +16,6 @@ import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfoRepository
 import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
 import it.pagopa.ecommerce.payment.requests.utils.NodoUtils
-import it.pagopa.generated.nodoperpsp.model.EsitoNodoVerificaRPTRisposta
-import it.pagopa.generated.nodoperpsp.model.NodoTipoCodiceIdRPT
-import it.pagopa.generated.nodoperpsp.model.NodoVerificaRPT
-import it.pagopa.generated.nodoperpsp.model.ObjectFactory
-import it.pagopa.generated.transactions.model.CtQrCode
-import it.pagopa.generated.transactions.model.StOutcome
-import it.pagopa.generated.transactions.model.VerifyPaymentNoticeReq
 import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -36,7 +36,7 @@ class PaymentRequestsService(
 
     @Autowired private val objectFactoryNodoPerPsp: ObjectFactory,
 
-    @Autowired private val objectFactoryNodeForPsp: it.pagopa.generated.transactions.model.ObjectFactory,
+    @Autowired private val objectFactoryNodeForPsp: it.pagopa.ecommerce.generated.transactions.model.ObjectFactory,
 
     @Autowired private val baseNodoVerificaRPTRequest: NodoVerificaRPT,
 

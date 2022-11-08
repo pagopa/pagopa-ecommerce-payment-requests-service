@@ -1,11 +1,11 @@
 package it.pagopa.ecommerce.payment.requests.clients
 
+import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
+import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
+import it.pagopa.ecommerce.generated.transactions.model.StOutcome
+import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
-import it.pagopa.generated.transactions.model.CtQrCode
-import it.pagopa.generated.transactions.model.ObjectFactory
-import it.pagopa.generated.transactions.model.StOutcome
-import it.pagopa.generated.transactions.model.VerifyPaymentNoticeRes
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach

@@ -8,7 +8,7 @@ import javax.xml.bind.Unmarshaller;
 final class JaxbContextContainer {
 
     private static final String PACKAGE_NODE =
-            "it.pagopa.generated.transactions.model:it.pagopa.generated.nodoperpsp.model";
+            "it.pagopa.ecommerce.generated.transactions.model:it.pagopa.ecommerce.generated.nodoperpsp.model";
 
     private static JAXBContext jaxbContext = null;
 

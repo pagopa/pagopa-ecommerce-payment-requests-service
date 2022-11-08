@@ -1,9 +1,9 @@
 package it.pagopa.ecommerce.payment.requests.configurations.nodo
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoVerificaRPT
+import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.payment.requests.configurations.nodo.util.NodoConnectionString
-import it.pagopa.generated.nodoperpsp.model.NodoVerificaRPT
-import it.pagopa.generated.transactions.model.VerifyPaymentNoticeReq
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -23,7 +23,7 @@ class NodoConfig {
 
     @Bean
     suspend fun baseNodoVerificaRPTRequest(@Value("\${nodo.connection.string}") connectionString: String): NodoVerificaRPT {
-        val objectFactory = it.pagopa.generated.nodoperpsp.model.ObjectFactory()
+        val objectFactory = it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory()
         val request: NodoVerificaRPT = objectFactory.createNodoVerificaRPT()
         val nodoConnectionParams = nodoConnectionString(connectionString)
         request.identificativoPSP = nodoConnectionParams.idPSP
@@ -36,7 +36,7 @@ class NodoConfig {
 
     @Bean
     suspend fun baseVerifyPaymentNoticeReq(@Value("\${nodo.connection.string}") connectionString: String): VerifyPaymentNoticeReq {
-        val objectFactory = it.pagopa.generated.transactions.model.ObjectFactory()
+        val objectFactory = it.pagopa.ecommerce.generated.transactions.model.ObjectFactory()
         val request: VerifyPaymentNoticeReq = objectFactory.createVerifyPaymentNoticeReq()
         val nodoConnectionParams = nodoConnectionString(connectionString)
         request.idPSP = nodoConnectionParams.idPSP

@@ -1,8 +1,8 @@
 package it.pagopa.ecommerce.payment.requests.client
 
+import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoVerificaRPT
+import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoVerificaRPTRisposta
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
-import it.pagopa.generated.nodoperpsp.model.NodoVerificaRPT
-import it.pagopa.generated.nodoperpsp.model.NodoVerificaRPTRisposta
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value

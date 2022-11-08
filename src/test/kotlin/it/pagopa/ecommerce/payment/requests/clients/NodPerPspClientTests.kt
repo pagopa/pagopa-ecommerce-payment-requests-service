@@ -1,8 +1,8 @@
 package it.pagopa.ecommerce.payment.requests.clients
 
+import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoVerificaRPTRisposta
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPspClient
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
-import it.pagopa.generated.nodoperpsp.model.NodoVerificaRPTRisposta
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -51,7 +51,7 @@ class NodPerPspClientTests {
 
     @Test
     fun `should return verify payment response given valid payment notice`() = runTest {
-        val objectFactory = it.pagopa.generated.nodoperpsp.model.ObjectFactory()
+        val objectFactory = it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory()
         val ccp = UUID.randomUUID().toString()
         val codificaInfrastrutturaPSP = "codificaInfrastrutturaPSP"
         val identificativoPSP = "identificativoPSP"
@@ -115,7 +115,7 @@ class NodPerPspClientTests {
 
     @Test
     fun `should return verify fault given duplicate payment notice`() = runTest {
-        val objectFactory = it.pagopa.generated.nodoperpsp.model.ObjectFactory()
+        val objectFactory = it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory()
         val ccp = UUID.randomUUID().toString()
         val codificaInfrastrutturaPSP = "codificaInfrastrutturaPSP"
         val identificativoPSP = "identificativoPSP"

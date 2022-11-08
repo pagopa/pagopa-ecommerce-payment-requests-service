@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.exceptions
 
-import it.pagopa.generated.nodoperpsp.model.FaultBean
+import it.pagopa.ecommerce.generated.nodoperpsp.model.FaultBean
 import java.util.regex.Pattern
 
 class NodoErrorException(val faultCode: String) :

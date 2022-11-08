@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.utils
 
+import it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory
 import it.pagopa.ecommerce.payment.requests.domain.RptId
-import it.pagopa.generated.nodoperpsp.model.ObjectFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach

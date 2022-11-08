@@ -1,14 +1,14 @@
 package it.pagopa.ecommerce.payment.requests.utils
 
+import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoTipoCodiceIdRPT
+import it.pagopa.ecommerce.generated.nodoperpsp.model.QrCode
 import it.pagopa.ecommerce.payment.requests.domain.RptId
-import it.pagopa.generated.nodoperpsp.model.NodoTipoCodiceIdRPT
-import it.pagopa.generated.nodoperpsp.model.QrCode
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class NodoUtils(
-    @Autowired private val objectFactoryNodoPerPsp: it.pagopa.generated.nodoperpsp.model.ObjectFactory
+    @Autowired private val objectFactoryNodoPerPsp: it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory
 ) {
     fun getCodiceIdRpt(rptId: RptId): NodoTipoCodiceIdRPT {
         val nodoTipoCodiceIdRPT = objectFactoryNodoPerPsp.createNodoTipoCodiceIdRPT()
