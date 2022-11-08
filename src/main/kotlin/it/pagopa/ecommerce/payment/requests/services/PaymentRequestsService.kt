@@ -57,12 +57,7 @@ class PaymentRequestsService(
         val rptIdRecord = RptId(rptId)
         val paymentContextCode = UUID.randomUUID().toString().replace("-", "")
         val paymentInfo = getPaymentInfoFromCache(rptIdRecord)
-            .doOnNext {
-                logger.info(
-                    "PaymentRequestInfo cache hit for {}",
-                    rptId
-                )
-            }.switchIfEmpty(
+            .switchIfEmpty(
                 Mono.defer {
                     getPaymentInfoFromNodo(rptIdRecord, paymentContextCode)
                         .doOnNext { paymentRequestFromNodo ->
@@ -89,11 +84,17 @@ class PaymentRequestsService(
 
     suspend fun getPaymentInfoFromCache(rptId: RptId): Mono<PaymentRequestInfo> {
         val paymentRequestInfoOptional: Optional<PaymentRequestInfo> = paymentRequestInfoRepository.findById(rptId)
+        logger.info("PaymentRequestInfo cache hit for {}: {}", rptId, paymentRequestInfoOptional.isPresent)
         return paymentRequestInfoOptional.map { Mono.just(it) }.orElseGet { Mono.empty() }
     }
 
     fun getPaymentInfoFromNodo(rptId: RptId, paymentContextCode: String): Mono<PaymentRequestInfo> =
         Mono.just(rptId).flatMap { request: RptId ->
+            logger.info(
+                "Calling Nodo VerificaRPT for get payment info for rptId: [{}]. PaymentContextCode: [{}]",
+                rptId.value,
+                paymentContextCode
+            )
             val nodoVerificaRPTRequest = baseNodoVerificaRPTRequest
             val nodoTipoCodiceIdRPT: NodoTipoCodiceIdRPT = nodoUtils.getCodiceIdRpt(request)
             nodoVerificaRPTRequest.codiceIdRPT = nodoTipoCodiceIdRPT
@@ -104,6 +105,12 @@ class PaymentRequestsService(
             val faultBean = esitoNodoVerificaRPTRisposta.fault
             val isNm3 = isNm3(esitoNodoVerificaRPTRisposta)
             val isNodoError = isNodoError(esitoNodoVerificaRPTRisposta)
+            logger.info(
+                "Verifica RPT: fault code: [{}] isNm3: [{}], nodo error: [{}]",
+                esitoNodoVerificaRPTRisposta.fault.faultCode,
+                isNm3,
+                isNodoError
+            )
             if (isNodoError) Mono.error(NodoErrorException(faultBean))
             else Mono.just(
                 Tuples.of(
@@ -116,6 +123,7 @@ class PaymentRequestsService(
             val isNm3: Boolean = it.t2
             val paymentRequestInfo: Mono<PaymentRequestInfo>
             if (isNm3) {
+                logger.info("Calling Nodo for VerifyPaymentNotice")
                 val verifyPaymentNoticeReq = baseVerifyPaymentNoticeReq
                 val qrCode = CtQrCode()
                 qrCode.fiscalCode = rptId.fiscalCode

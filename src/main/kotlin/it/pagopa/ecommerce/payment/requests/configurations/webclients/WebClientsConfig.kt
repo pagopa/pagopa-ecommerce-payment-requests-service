@@ -46,8 +46,26 @@ class WebClientsConfig {
                 .register(Jackson2JsonDecoder(mapper, MediaType.APPLICATION_JSON))
             clientCodecConfigurer.customCodecs()
                 .register(Jackson2JsonEncoder(mapper, MediaType.APPLICATION_JSON))
+            clientCodecConfigurer.customCodecs()
+                .register(Jackson2JsonDecoder(mapper, MediaType.TEXT_HTML))
+            clientCodecConfigurer.customCodecs()
+                .register(Jackson2JsonEncoder(mapper, MediaType.TEXT_HTML))
+            clientCodecConfigurer.customCodecs()
+                .register(Jackson2JsonDecoder(mapper, MediaType.APPLICATION_XML))
+            clientCodecConfigurer.customCodecs()
+                .register(Jackson2JsonEncoder(mapper, MediaType.APPLICATION_XML))
         }.build()
         return WebClient.builder().baseUrl(nodoHostname)
             .clientConnector(ReactorClientHttpConnector(httpClient)).exchangeStrategies(exchangeStrategies).build()
     }
+
+    @Bean
+    fun objectFactoryNodeForPsp(): it.pagopa.ecommerce.generated.transactions.model.ObjectFactory =
+        it.pagopa.ecommerce.generated.transactions.model.ObjectFactory()
+
+
+    @Bean
+    fun objectFactoryNodoPerPSP(): it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory =
+        it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory()
+
 }

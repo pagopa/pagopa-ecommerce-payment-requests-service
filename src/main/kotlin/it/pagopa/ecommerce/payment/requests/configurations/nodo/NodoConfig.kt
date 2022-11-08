@@ -18,11 +18,11 @@ class NodoConfig {
     }
 
     @Bean
-    suspend fun nodoConnectionString(@Value("\${nodo.connection.string}") connectionString: String): NodoConnectionString =
+    fun nodoConnectionString(@Value("\${nodo.connection.string}") connectionString: String): NodoConnectionString =
         objectMapper.readValue(connectionString, NodoConnectionString::class.java)
 
     @Bean
-    suspend fun baseNodoVerificaRPTRequest(@Value("\${nodo.connection.string}") connectionString: String): NodoVerificaRPT {
+    fun baseNodoVerificaRPTRequest(@Value("\${nodo.connection.string}") connectionString: String): NodoVerificaRPT {
         val objectFactory = it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory()
         val request: NodoVerificaRPT = objectFactory.createNodoVerificaRPT()
         val nodoConnectionParams = nodoConnectionString(connectionString)
@@ -35,7 +35,7 @@ class NodoConfig {
     }
 
     @Bean
-    suspend fun baseVerifyPaymentNoticeReq(@Value("\${nodo.connection.string}") connectionString: String): VerifyPaymentNoticeReq {
+    fun baseVerifyPaymentNoticeReq(@Value("\${nodo.connection.string}") connectionString: String): VerifyPaymentNoticeReq {
         val objectFactory = it.pagopa.ecommerce.generated.transactions.model.ObjectFactory()
         val request: VerifyPaymentNoticeReq = objectFactory.createVerifyPaymentNoticeReq()
         val nodoConnectionParams = nodoConnectionString(connectionString)
