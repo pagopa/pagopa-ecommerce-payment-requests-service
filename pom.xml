@@ -136,20 +136,29 @@
         </dependency>
     </dependencies>
     <build>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/main/kotlin</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -161,13 +170,8 @@
                     </args>
                     <compilerPlugins>
                         <plugin>spring</plugin>
+                        <plugin>lombok</plugin>
                     </compilerPlugins>
-                    <sourceDirs>
-                        <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin</sourceDir>
-                        <sourceDir>${project.build.directory}/generated-sources/xjc</sourceDir>
-                        <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                        <sourceDir>${project.basedir}/src/main/java</sourceDir>
-                    </sourceDirs>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -175,8 +179,28 @@
                         <artifactId>kotlin-maven-allopen</artifactId>
                         <version>${kotlin.version}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-lombok</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
                 </dependencies>
                 <executions>
+                    <execution>
+                        <id>compile</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin
+                                </sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/xjc</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>test-compile</id>
                         <phase>test-compile</phase>
@@ -185,13 +209,13 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                                <sourceDir>${project.basedir}/src/main/java</sourceDir>
-                                <sourceDir>${project.basedir}/src/test/java</sourceDir>
                                 <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin
                                 </sourceDir>
                                 <sourceDir>${project.build.directory}/generated-sources/xjc</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/test/java</sourceDir>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -202,22 +226,14 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-compile</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>default-testCompile</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>java-compile</id>
+                        <id>compile</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>java-test-compile</id>
+                        <id>testCompile</id>
                         <phase>test-compile</phase>
                         <goals>
                             <goal>testCompile</goal>
@@ -308,7 +324,7 @@
                 <version>${jacoco.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>it/pagopa/generated/**</exclude>
+                        <exclude>it/pagopa/ecommerce/generated/**</exclude>
                         <exclude>it/pagopa/ecommerce/payment/requests/utils/soap/**</exclude>
                     </excludes>
                 </configuration>

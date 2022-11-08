@@ -20,7 +20,7 @@ class WebClientsConfigTests {
     @Test
     fun `should return valid WebClient`() = runTest {
         assertDoesNotThrow {
-            //webClientsConfig.nodoWebClient(NODO_HOST_NAME, NODO_READ_TIMEOUT, NODO_CONNECTION_TIMEOUT)
+            webClientsConfig.nodoWebClient(NODO_HOST_NAME, NODO_READ_TIMEOUT, NODO_CONNECTION_TIMEOUT)
         }
 
 
