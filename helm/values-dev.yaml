@@ -67,7 +67,7 @@ microservice-chart:
           metricAggregationType: Count
           targetValue: "30"
   envConfig:
-    REDIS_HOST: pagopa-d-pagopa-proxy-redis.redis.cache.windows.net
+    REDIS_HOST: pagopa-d-weu-ecommerce-redis.redis.cache.windows.net
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
     CHECKOUT_URL: https://dev.checkout.pagopa.it
