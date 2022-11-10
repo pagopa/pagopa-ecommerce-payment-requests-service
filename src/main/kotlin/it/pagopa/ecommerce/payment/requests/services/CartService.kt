@@ -33,7 +33,7 @@ class CartService(
      */
     var logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
-    object CartServiceConstants {
+    companion object CartServiceConstants {
         /*
          * Carts redirect URL format.
          * The carts redirect url is composed as follow
@@ -54,7 +54,7 @@ class CartService(
         val receivedNotices = paymentsNotices.size
         logger.info("Received [$receivedNotices] payment notices")
 
-        return if (receivedNotices == CartServiceConstants.MAX_ALLOWED_PAYMENT_NOTICES) {
+        return if (receivedNotices == MAX_ALLOWED_PAYMENT_NOTICES) {
             val paymentInfos = paymentsNotices.map {
                 PaymentInfo(RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
             }
@@ -76,13 +76,12 @@ class CartService(
                 cartInfoRepository.save(cart)
             }
 
-            CartServiceConstants.CARTS_REDIRECT_URL_FORMAT.format(
+            CARTS_REDIRECT_URL_FORMAT.format(
                 checkoutUrl,
                 cart.cartId,
             )
         } else {
             logger.error("Too many payment notices, expected only one")
-            //TODO capire la risposta di errore da mettere qui
             throw RestApiException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 title = "Multiple payment notices not processable",

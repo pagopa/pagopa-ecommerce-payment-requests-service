@@ -21,6 +21,10 @@
         <jacoco.version>0.8.8</jacoco.version>
         <kotlinx-coroutines.version>1.6.4</kotlinx-coroutines.version>
         <mockito-kotlin.version>4.0.0</mockito-kotlin.version>
+        <sonar.coverage.exclusions>
+            **/it/pagopa/generated/**/*,
+            **/it/pagopa/ecommerce/payment/requests/utils/soap/**/*
+        </sonar.coverage.exclusions>
     </properties>
     <dependencies>
         <dependency>
@@ -38,6 +42,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web-services</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
@@ -112,22 +120,49 @@
             <version>${kotlinx-coroutines.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-core</artifactId>
+        </dependency>
     </dependencies>
     <build>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/main/kotlin</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -139,11 +174,8 @@
                     </args>
                     <compilerPlugins>
                         <plugin>spring</plugin>
+                        <plugin>lombok</plugin>
                     </compilerPlugins>
-                    <sourceDirs>
-                        <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin</sourceDir>
-                        <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                    </sourceDirs>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -151,8 +183,28 @@
                         <artifactId>kotlin-maven-allopen</artifactId>
                         <version>${kotlin.version}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-lombok</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
                 </dependencies>
                 <executions>
+                    <execution>
+                        <id>compile</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin
+                                </sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/xjc</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>test-compile</id>
                         <phase>test-compile</phase>
@@ -161,10 +213,35 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
+                                <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin
+                                </sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/xjc</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/java</sourceDir>
                                 <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/test/java</sourceDir>
                             </sourceDirs>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>testCompile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -197,7 +274,50 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <useSwaggerUI>false</useSwaggerUI>
                                 <reactive>true</reactive>
+                                <enumPropertyNaming>UPPERCASE</enumPropertyNaming>
                             </configOptions>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.15.1</version>
+                <executions>
+                    <execution>
+                        <id>node-for-psp</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaLanguage>WSDL</schemaLanguage>
+                            <generatePackage>it.pagopa.ecommerce.generated.transactions.model</generatePackage>
+                            <schemas>
+                                <schema>
+                                    <url>
+                                        https://raw.githubusercontent.com/pagopa/pagopa-infra/main/src/core/api/nodopagamenti_api/nodeForPsp/v1/nodeForPsp.wsdl
+                                    </url>
+                                </schema>
+                            </schemas>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>nodo-per-psp</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaLanguage>WSDL</schemaLanguage>
+                            <generatePackage>it.pagopa.ecommerce.generated.nodoperpsp.model</generatePackage>
+                            <schemas>
+                                <schema>
+                                    <url>
+                                        ${project.basedir}/nodo-wsdl/nodoPerPsp.wsdl
+                                    </url>
+                                </schema>
+                            </schemas>
                         </configuration>
                     </execution>
                 </executions>
@@ -208,7 +328,8 @@
                 <version>${jacoco.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>it/pagopa/generated/**</exclude>
+                        <exclude>it/pagopa/ecommerce/generated/**</exclude>
+                        <exclude>it/pagopa/ecommerce/payment/requests/utils/soap/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

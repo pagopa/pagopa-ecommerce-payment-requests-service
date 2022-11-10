@@ -7,7 +7,7 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
-import it.pagopa.ecommerce.payment.requests.utils.CartRequests
+import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -64,7 +64,14 @@ class CartsServiceTests {
             given(cartInfoRepository.findById(cartId)).willReturn(request.let { req ->
                 val cartInfo = CartInfo(
                     cartId,
-                    req.paymentNotices.map { PaymentInfo(RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName) },
+                    req.paymentNotices.map {
+                        PaymentInfo(
+                            RptId(it.fiscalCode + it.noticeNumber),
+                            it.description,
+                            it.amount,
+                            it.companyName
+                        )
+                    },
                     req.returnurls.let {
                         ReturnUrls(
                             returnSuccessUrl = it.returnOkUrl.toString(),
