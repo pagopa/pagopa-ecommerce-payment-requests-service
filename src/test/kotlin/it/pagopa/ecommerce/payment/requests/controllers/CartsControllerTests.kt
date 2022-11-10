@@ -13,7 +13,7 @@ import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfigurati
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.*
 import org.mockito.InjectMocks
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -100,6 +100,7 @@ class CartsControllerTests {
             .expectStatus().isBadRequest
             .expectBody().json(objectMapper.writeValueAsString(errorResponse))
     }
+
 
     @Test
     fun `controller throw generic exception`() = runTest {

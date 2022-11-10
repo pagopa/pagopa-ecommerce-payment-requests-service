@@ -63,4 +63,22 @@ object CartRequests {
             )
         )
     }
+
+    fun invalidEmailRequest(): CartRequestDto {
+        return CartRequestDto(
+            paymentNotices = listOf(
+                PaymentNoticeDto(
+                    noticeNumber = "302000100440009424",
+                    fiscalCode = "77777777777",
+                    amount = 10000
+                )
+            ),
+            returnurls = CartRequestReturnurlsDto(
+                returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
+                returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
+                returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
+            ),
+            emailNotice = "my_email@mail.it."
+        )
+    }
 }

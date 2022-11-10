@@ -4,12 +4,15 @@ import io.lettuce.core.RedisConnectionException
 import it.pagopa.ecommerce.generated.payment.requests.server.model.*
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.exceptions.ValidationFailedException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.RedisSystemException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -25,9 +28,13 @@ import javax.validation.ValidationException
  * Exception handler used to output a custom message in case an incoming request
  * is invalid or an api encounter an error and throw an RestApiException
  */
-class ExceptionHandler {
+class ExceptionHandler(
+    @Value("#{\${fields_to_obscure}}")
+    val fieldToObscure: Set<String>
+) {
 
     val logger: Logger = LoggerFactory.getLogger(javaClass)
+
 
     /*
      * Custom rest api exception handler
@@ -69,7 +76,21 @@ class ExceptionHandler {
         WebExchangeBindException::class
     )
     fun handleRequestValidationException(e: Exception): ResponseEntity<ProblemJsonDto> {
-        logger.error("Input request is not valid", e)
+        val bindingResult: BindingResult? =
+            when (e) {
+                is WebExchangeBindException -> e.bindingResult
+                is MethodArgumentNotValidException -> e.bindingResult
+                else -> null
+            }
+        val exceptionToLog = if (bindingResult != null) {
+            ValidationFailedException.fromBindingResult(
+                bindingResult,
+                fieldToObscure
+            )
+        } else {
+            e
+        }
+        logger.error("Input request is not valid", exceptionToLog)
         return ResponseEntity.badRequest().body(
             ProblemJsonDto(
                 title = "Request validation error",
