@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.services
 
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnurlsDto
+import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
@@ -37,9 +37,15 @@ class CartService(
         /*
          * Carts redirect URL format.
          * The carts redirect url is composed as follow
-         * {host}/{fiscalCode}{noticeNumber}
+         * {host}/carts/{cartId}
          */
-        const val CARTS_REDIRECT_URL_FORMAT: String = "%s/carts/%s"
+        //const val CARTS_REDIRECT_URL_FORMAT: String = "%s/carts/%s"
+        /**
+         * TODO change to the above constant when front-end application
+         * will correctly manage carts.
+         * For now return url is formatted as {host}/{fiscalCode}{noticeNumber} to redirect to checkout
+         */
+        const val CARTS_REDIRECT_URL_FORMAT: String = "%s/%s%s"
 
         const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 1
     }
@@ -63,9 +69,9 @@ class CartService(
                 UUID.randomUUID(),
                 paymentInfos,
                 ReturnUrls(
-                    returnSuccessUrl = cartRequestDto.returnurls.returnOkUrl.toString(),
-                    returnErrorUrl = cartRequestDto.returnurls.returnErrorUrl.toString(),
-                    returnCancelUrl = cartRequestDto.returnurls.returnCancelUrl.toString()
+                    returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
+                    returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
+                    returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()
                 ),
                 cartRequestDto.emailNotice
             )
@@ -76,9 +82,16 @@ class CartService(
                 cartInfoRepository.save(cart)
             }
 
+            /**
+             * TODO change to the above constant when front-end application
+             * will correctly manage carts.
+             * For now return url is formatted as {host}/{fiscalCode}{noticeNumber} to redirect to checkout
+             */
             CARTS_REDIRECT_URL_FORMAT.format(
                 checkoutUrl,
-                cart.cartId,
+                //cart.cartId,
+                cart.payments[0].rptId.fiscalCode,
+                cart.payments[0].rptId.noticeId
             )
         } else {
             logger.error("Too many payment notices, expected only one")
@@ -100,8 +113,8 @@ class CartService(
             paymentNotices = cart.payments.map {
                 PaymentNoticeDto(it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
             },
-            returnurls = cart.returnUrls.let {
-                CartRequestReturnurlsDto(
+            returnUrls = cart.returnUrls.let {
+                CartRequestReturnUrlsDto(
                     returnOkUrl = URI(it.returnSuccessUrl),
                     returnCancelUrl = URI(it.returnCancelUrl),
                     returnErrorUrl = URI(it.returnErrorUrl)

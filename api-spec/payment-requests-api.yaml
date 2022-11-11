@@ -446,7 +446,7 @@ components:
       type: object
       required:
         - paymentNotices
-        - returnurls
+        - returnUrls
       properties:
         emailNotice:
           type: string
@@ -463,7 +463,7 @@ components:
               fiscalCode: "7777777777"
             - noticeNumber: "302012387654312385"
               fiscalCode: "7777777777"
-        returnurls:
+        returnUrls:
           type: object
           required:
             - returnOkUrl
