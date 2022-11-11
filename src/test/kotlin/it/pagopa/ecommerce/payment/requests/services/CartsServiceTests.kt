@@ -36,7 +36,14 @@ class CartsServiceTests {
             uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
 
             val request = CartRequests.withOnePaymentNotice()
-            val locationUrl = "${TEST_CHECKOUT_URL}/carts/${cartId}"
+
+            /**
+             * TODO change this test when enable redirect to cart
+             * decommenting the below line
+             */
+            //val locationUrl = "${TEST_CHECKOUT_URL}/carts/${cartId}"
+            val locationUrl =
+                "${TEST_CHECKOUT_URL}/${request.paymentNotices[0].fiscalCode}${request.paymentNotices[0].noticeNumber}"
 
             assertEquals(locationUrl, cartService.processCart(request))
 
@@ -72,7 +79,7 @@ class CartsServiceTests {
                             it.companyName
                         )
                     },
-                    req.returnurls.let {
+                    req.returnUrls.let {
                         ReturnUrls(
                             returnSuccessUrl = it.returnOkUrl.toString(),
                             returnErrorUrl = it.returnErrorUrl.toString(),

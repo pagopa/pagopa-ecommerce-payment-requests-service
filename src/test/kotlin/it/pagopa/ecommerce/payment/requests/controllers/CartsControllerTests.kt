@@ -2,7 +2,7 @@ package it.pagopa.ecommerce.payment.requests.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnurlsDto
+import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.ProblemJsonDto
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
@@ -132,7 +132,7 @@ class CartsControllerTests {
                     amount = 10000
                 )
             ),
-            returnurls = CartRequestReturnurlsDto(
+            returnUrls = CartRequestReturnUrlsDto(
                 returnErrorUrl = URI.create("https://returnErrorUrl"),
                 returnOkUrl = URI.create("https://returnOkUrl"),
                 returnCancelUrl = URI.create("https://returnCancelUrl")
