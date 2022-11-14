@@ -59,15 +59,15 @@ class PaymentRequestsService(
                     getPaymentInfoFromNodo(rptIdRecord, paymentContextCode)
                         .doOnNext { paymentRequestFromNodo ->
                             logger.info(
-                                "PaymentRequestInfo from nodo pagoPA for {}, isNm3 {}",
+                                "PaymentRequestInfo from nodo pagoPA for {}, isNM3 {}",
                                 rptId,
-                                paymentRequestFromNodo.isNm3
+                                paymentRequestFromNodo.isNM3
                             )
                         }.doOnSuccess { paymentRequestInfoRepository.save(it) }
                 }
             ).map { paymentInfo ->
                 PaymentRequestsGetResponseDto(
-                    rptId = paymentInfo.rptId.value,
+                    rptId = paymentInfo.id.value,
                     paFiscalCode = paymentInfo.paFiscalCode,
                     paName = paymentInfo.paName,
                     dueDate = paymentInfo.dueDate,
@@ -100,26 +100,26 @@ class PaymentRequestsService(
         }.flatMap {
             val esitoNodoVerificaRPTRisposta = it.nodoVerificaRPTRisposta
             val faultBean = esitoNodoVerificaRPTRisposta.fault
-            val isNm3 = isNm3(esitoNodoVerificaRPTRisposta)
+            val isNM3 = isNM3(esitoNodoVerificaRPTRisposta)
             val isNodoError = isNodoError(esitoNodoVerificaRPTRisposta)
             logger.info(
-                "Verifica RPT: fault code: [{}] isNm3: [{}], nodo error: [{}]",
+                "Verifica RPT: fault code: [{}] isNM3: [{}], nodo error: [{}]",
                 esitoNodoVerificaRPTRisposta?.fault?.faultCode,
-                isNm3,
+                isNM3,
                 isNodoError
             )
             if (isNodoError) Mono.error(NodoErrorException(faultBean))
             else Mono.just(
                 Tuples.of(
                     esitoNodoVerificaRPTRisposta,
-                    isNm3
+                    isNM3
                 )
             )
         }.flatMap {
             val esitoNodoVerificaRPTRisposta: EsitoNodoVerificaRPTRisposta = it.t1
-            val isNm3: Boolean = it.t2
+            val isNM3: Boolean = it.t2
             val paymentRequestInfo: Mono<PaymentRequestInfo>
-            if (isNm3) {
+            if (isNM3) {
                 logger.info("Calling Nodo for VerifyPaymentNotice")
                 val verifyPaymentNoticeReq = baseVerifyPaymentNoticeReq
                 val qrCode = CtQrCode()
@@ -132,7 +132,7 @@ class PaymentRequestsService(
                     )
                 ).map { verifyPaymentNoticeResponse ->
                     PaymentRequestInfo(
-                        rptId = rptId,
+                        id = rptId,
                         paFiscalCode = verifyPaymentNoticeResponse.fiscalCodePA,
                         paName = verifyPaymentNoticeResponse.paymentDescription,
                         description = verifyPaymentNoticeResponse.paymentDescription,
@@ -142,7 +142,7 @@ class PaymentRequestsService(
                         dueDate = getDueDateString(
                             verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].dueDate
                         ),
-                        isNm3 = true,
+                        isNM3 = true,
                         paymentToken = null,
                         idempotencyKey = null,
                         isCart = false
@@ -153,13 +153,13 @@ class PaymentRequestsService(
                     esitoNodoVerificaRPTRisposta.datiPagamentoPA?.enteBeneficiario
                 paymentRequestInfo = Mono.just(
                     PaymentRequestInfo(
-                        rptId = rptId,
+                        id = rptId,
                         paFiscalCode = enteBeneficiario?.identificativoUnivocoBeneficiario?.codiceIdentificativoUnivoco,
                         paName = enteBeneficiario?.denominazioneBeneficiario,
                         description = esitoNodoVerificaRPTRisposta.datiPagamentoPA.causaleVersamento,
                         amount = nodoOperations.getEuroCentsFromNodoAmount(esitoNodoVerificaRPTRisposta.datiPagamentoPA.importoSingoloVersamento),
                         dueDate = null,
-                        isNm3 = false,
+                        isNM3 = false,
                         paymentToken = null,
                         idempotencyKey = null,
                         isCart = false
@@ -170,7 +170,7 @@ class PaymentRequestsService(
         }
 
 
-    fun isNm3(esitoNodoVerificaRPTRisposta: EsitoNodoVerificaRPTRisposta): Boolean {
+    fun isNM3(esitoNodoVerificaRPTRisposta: EsitoNodoVerificaRPTRisposta): Boolean {
         val outcome = esitoNodoVerificaRPTRisposta.esito
         val ko = StOutcome.KO.value().equals(outcome)
         return ko && (RPT_VERIFY_MULTI_BENEFICIARY_RESPONSE_CODE == (esitoNodoVerificaRPTRisposta.fault?.faultCode))
