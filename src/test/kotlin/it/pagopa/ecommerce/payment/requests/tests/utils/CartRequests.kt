@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.tests.utils
 
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnurlsDto
+import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import java.net.URI
 
@@ -16,7 +16,7 @@ object CartRequests {
                     amount = 10000
                 )
             ),
-            returnurls = CartRequestReturnurlsDto(
+            returnUrls = CartRequestReturnUrlsDto(
                 returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
                 returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
                 returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
@@ -39,7 +39,7 @@ object CartRequests {
                     amount = 10000
                 )
             ),
-            returnurls = CartRequestReturnurlsDto(
+            returnUrls = CartRequestReturnUrlsDto(
                 returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
                 returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
                 returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
@@ -56,7 +56,7 @@ object CartRequests {
                     amount = 10000
                 )
             ),
-            returnurls = CartRequestReturnurlsDto(
+            returnUrls = CartRequestReturnUrlsDto(
                 returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
                 returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
                 returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
