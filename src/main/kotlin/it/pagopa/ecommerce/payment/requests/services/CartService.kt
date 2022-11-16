@@ -39,13 +39,7 @@ class CartService(
          * The carts redirect url is composed as follow
          * {host}/carts/{cartId}
          */
-        //const val CARTS_REDIRECT_URL_FORMAT: String = "%s/carts/%s"
-        /**
-         * TODO change to the above constant when front-end application
-         * will correctly manage carts.
-         * For now return url is formatted as {host}/{fiscalCode}{noticeNumber} to redirect to checkout
-         */
-        const val CARTS_REDIRECT_URL_FORMAT: String = "%s/%s%s"
+        const val CARTS_REDIRECT_URL_FORMAT: String = "%s/carts/%s"
 
         const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 1
     }
@@ -81,18 +75,12 @@ class CartService(
             withContext(Dispatchers.IO) {
                 cartInfoRepository.save(cart)
             }
-
-            /**
-             * TODO change to the above constant when front-end application
-             * will correctly manage carts.
-             * For now return url is formatted as {host}/{fiscalCode}{noticeNumber} to redirect to checkout
-             */
+            
             CARTS_REDIRECT_URL_FORMAT.format(
                 checkoutUrl,
-                //cart.cartId,
-                cart.payments[0].rptId.fiscalCode,
-                cart.payments[0].rptId.noticeId
-            )
+                cart.cartId,
+
+                )
         } else {
             logger.error("Too many payment notices, expected only one")
             throw RestApiException(
