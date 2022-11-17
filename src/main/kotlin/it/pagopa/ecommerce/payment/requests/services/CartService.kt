@@ -37,9 +37,9 @@ class CartService(
         /*
          * Carts redirect URL format.
          * The carts redirect url is composed as follow
-         * {host}/carts/{cartId}
+         * {host}/c/{cartId}
          */
-        const val CARTS_REDIRECT_URL_FORMAT: String = "%s/carts/%s"
+        const val CARTS_REDIRECT_URL_FORMAT: String = "%s/c/%s"
 
         const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 1
     }

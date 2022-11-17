@@ -36,7 +36,7 @@ class CartsServiceTests {
             uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
 
             val request = CartRequests.withOnePaymentNotice()
-            val locationUrl = "${TEST_CHECKOUT_URL}/carts/${cartId}"
+            val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
             assertEquals(locationUrl, cartService.processCart(request))
             verify(cartInfoRepository, times(1)).save(any())
         }
