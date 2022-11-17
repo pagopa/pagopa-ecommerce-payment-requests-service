@@ -75,7 +75,7 @@ class CartService(
             withContext(Dispatchers.IO) {
                 cartInfoRepository.save(cart)
             }
-            
+
             CARTS_REDIRECT_URL_FORMAT.format(
                 checkoutUrl,
                 cart.cartId,
@@ -94,8 +94,8 @@ class CartService(
     /*
      * Fetch the cart with the input cart id
      */
-    fun getCart(cartId: String): CartRequestDto {
-        val cart = cartInfoRepository.findByIdOrNull(UUID.fromString(cartId)) ?: throw CartNotFoundException(cartId)
+    fun getCart(cartId: UUID): CartRequestDto {
+        val cart = cartInfoRepository.findByIdOrNull(cartId) ?: throw CartNotFoundException(cartId.toString())
 
         return CartRequestDto(
             paymentNotices = cart.payments.map {

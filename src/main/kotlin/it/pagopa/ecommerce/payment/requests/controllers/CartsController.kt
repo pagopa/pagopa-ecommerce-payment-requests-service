@@ -25,7 +25,7 @@ class CartsController(
     }
 
 
-    override suspend fun getCarts(idCart: String): ResponseEntity<CartRequestDto> {
+    override suspend fun getCarts(idCart: java.util.UUID): ResponseEntity<CartRequestDto> {
         return ResponseEntity.ok(
             cartService.getCart(idCart)
         )

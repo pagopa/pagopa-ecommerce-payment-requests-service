@@ -123,7 +123,7 @@ class CartsControllerTests {
 
     @Test
     fun `get cart by id`() {
-        val cartId = "1234"
+        val cartId = UUID.randomUUID()
         val objectMapper = ObjectMapper()
         val response = CartRequestDto(
             paymentNotices = listOf(
@@ -151,8 +151,8 @@ class CartsControllerTests {
 
     @Test
     fun `get cart by id with non-existing cart returns 404`() {
-        val cartId = UUID.randomUUID().toString()
-        val exception = CartNotFoundException(cartId)
+        val cartId = UUID.randomUUID()
+        val exception = CartNotFoundException(cartId.toString())
         val expected = ProblemJsonDto(
             title = "Cart not found",
             detail = exception.message ?: "",

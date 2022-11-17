@@ -83,7 +83,7 @@ class CartsServiceTests {
                 Optional.of(cartInfo)
             })
 
-            assertEquals(request, cartService.getCart(cartId.toString()))
+            assertEquals(request, cartService.getCart(cartId))
         }
     }
 
@@ -94,7 +94,7 @@ class CartsServiceTests {
         given(cartInfoRepository.findById(cartId)).willReturn(Optional.empty())
 
         assertThrows<CartNotFoundException> {
-            cartService.getCart(cartId.toString())
+            cartService.getCart(cartId)
         }
     }
 }
