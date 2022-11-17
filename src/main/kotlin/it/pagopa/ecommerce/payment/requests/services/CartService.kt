@@ -10,6 +10,7 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.Logger
@@ -25,7 +26,8 @@ import java.util.*
 @Service
 class CartService(
     @Value("\${checkout.url}") private val checkoutUrl: String,
-    @Autowired private val cartInfoRepository: CartInfoRepository
+    @Autowired private val cartInfoRepository: CartInfoRepository,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
     /*
@@ -72,7 +74,7 @@ class CartService(
 
             logger.info("Saving cart ${cart.cartId} for payments $paymentInfos")
 
-            withContext(Dispatchers.IO) {
+            withContext(defaultDispatcher) {
                 cartInfoRepository.save(cart)
             }
 
