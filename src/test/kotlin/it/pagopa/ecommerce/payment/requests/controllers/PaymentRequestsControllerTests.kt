@@ -12,15 +12,22 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.mockito.BDDMockito.any
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.client.RestTemplate
+import java.util.*
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -35,7 +42,7 @@ class PaymentRequestsControllerTests {
     lateinit var paymentRequestsService: PaymentRequestsService
 
     @InjectMocks
-    val paymentRequestController: PaymentRequestsController = PaymentRequestsController()
+    private val paymentRequestController: PaymentRequestsController = PaymentRequestsController()
 
     companion object {
         fun faultBeanWithCode(faultCode: String): FaultBean {
@@ -165,5 +172,23 @@ class PaymentRequestsControllerTests {
             .uri("/payment-requests/{rpt_id}", parameters)
             .exchange()
             .expectStatus().isEqualTo(HttpStatus.BAD_GATEWAY)
+    }
+
+    @Test
+    fun `warm up controller`() {
+        val restTemplate = mock(RestTemplate::class.java)
+        given(
+            restTemplate.getForEntity(
+                any(),
+                any<Class<*>>(),
+                any()
+            )
+        ).willReturn(ResponseEntity.of(Optional.of(PaymentRequests.validResponse("00000000000000000000000000000"))))
+        PaymentRequestsController(restTemplate).warmupGetPaymentRequest()
+        verify(restTemplate, times(1)).getForEntity(
+            any(),
+            any<Class<*>>(),
+            any()
+        )
     }
 }

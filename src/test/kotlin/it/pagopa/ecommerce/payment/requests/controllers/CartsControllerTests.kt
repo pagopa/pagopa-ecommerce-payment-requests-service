@@ -24,6 +24,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.web.client.RestTemplate
 import java.net.URI
 import java.util.*
 
@@ -38,6 +39,7 @@ class CartsControllerTests {
 
     @MockBean
     lateinit var cartService: CartService
+
 
     @InjectMocks
     val cartsController: CartsController = CartsController()
@@ -168,5 +170,13 @@ class CartsControllerTests {
             .expectStatus().isNotFound
             .expectBody<ProblemJsonDto>()
             .isEqualTo(expected)
+    }
+
+    @Test
+    fun `warm up controller`() {
+        val restTemplate = mock(RestTemplate::class.java)
+        given(restTemplate.postForLocation(any<String>(), any())).willReturn(URI.create("http://redirect"))
+        CartsController(restTemplate).warmupPostCarts()
+        verify(restTemplate, times(1)).postForLocation(any<String>(), any())
     }
 }
