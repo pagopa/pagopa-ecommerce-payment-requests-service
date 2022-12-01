@@ -41,7 +41,7 @@ class NodoPerPspClient(
                     )
                 }
             }.bodyToMono(NodoVerificaRPTRisposta::class.java)
-            .doOnSuccess() { logger.debug("Payment info for {}", request.value.codiceIdRPT) }
+            .doOnSuccess { logger.debug("Payment info for {}", request.value.codiceIdRPT) }
             .doOnError(ResponseStatusException::class.java) { logger.error("ResponseStatus Error: ", it) }
             .doOnError(Exception::class.java) { logger.error("Generic exception: ", it) }
 

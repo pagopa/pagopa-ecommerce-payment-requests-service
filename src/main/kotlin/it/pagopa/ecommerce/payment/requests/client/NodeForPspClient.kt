@@ -36,7 +36,7 @@ class NodeForPspClient(
                     )
                 }
             }.bodyToMono(VerifyPaymentNoticeRes::class.java)
-            .doOnSuccess() {
+            .doOnSuccess {
                 logger.debug(
                     "Payment activated with payment token [{}]", request.value.qrCode.noticeNumber
                 )

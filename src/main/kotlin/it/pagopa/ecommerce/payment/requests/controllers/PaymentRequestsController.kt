@@ -4,15 +4,20 @@ import it.pagopa.ecommerce.generated.payment.requests.server.api.PaymentRequests
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
 import it.pagopa.ecommerce.payment.requests.services.PaymentRequestsService
 import it.pagopa.ecommerce.payment.requests.warmup.annotations.WarmupFunction
+import it.pagopa.ecommerce.payment.requests.warmup.exceptions.WarmUpException
 import it.pagopa.ecommerce.payment.requests.warmup.utils.WarmupRequests
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.client.RestTemplate
+import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
+import java.time.Duration
+import java.time.temporal.ChronoUnit
 
 @RestController
 class PaymentRequestsController(
-    private val restTemplate: RestTemplate = RestTemplate()
+    private val webClient: WebClient = WebClient.create()
 ) : PaymentRequestsApi {
 
     @Autowired
@@ -29,10 +34,18 @@ class PaymentRequestsController(
      */
     @WarmupFunction
     fun warmupGetPaymentRequest() {
-        restTemplate.getForEntity(
+        webClient.get().uri(
             "http://localhost:8080/payment-requests/{rpt_id}",
-            PaymentRequestsGetResponseDto::class.java,
-            mapOf<String, String>("rpt_id" to WarmupRequests.getPaymentRequest())
-        )
+            mapOf("rpt_id" to WarmupRequests.getPaymentRequest())
+        ).retrieve()
+            .onStatus(HttpStatus::isError) {
+                Mono.error(
+                    WarmUpException(
+                        "PaymentRequestsController",
+                        "warmupGetPaymentRequest"
+                    )
+                )
+            }
+            .toBodilessEntity().block(Duration.of(10, ChronoUnit.SECONDS))
     }
 }
