@@ -11,7 +11,7 @@ class PaymentRequestInfo @PersistenceCreator constructor(
     @Id val id: RptId,
     val paFiscalCode: String?,
     val paName: String?,
-    val description: String,
+    val description: String?,
     val amount: Int,
     val dueDate: String?,
     val isNM3: Boolean,
