@@ -30,7 +30,7 @@ class PaymentRequestsController(
     }
 
     /**
-     * Controller warm up function, used to send a POST carts request
+     * Controller warm up function, used to send a GET payment-request
      */
     @WarmupFunction
     fun warmupGetPaymentRequest() {
