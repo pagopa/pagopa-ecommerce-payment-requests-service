@@ -36,17 +36,8 @@ class CartsServiceTests {
             uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
 
             val request = CartRequests.withOnePaymentNotice()
-
-            /**
-             * TODO change this test when enable redirect to cart
-             * decommenting the below line
-             */
-            //val locationUrl = "${TEST_CHECKOUT_URL}/carts/${cartId}"
-            val locationUrl =
-                "${TEST_CHECKOUT_URL}/${request.paymentNotices[0].fiscalCode}${request.paymentNotices[0].noticeNumber}"
-
+            val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
             assertEquals(locationUrl, cartService.processCart(request))
-
             verify(cartInfoRepository, times(1)).save(any())
         }
     }
@@ -92,7 +83,7 @@ class CartsServiceTests {
                 Optional.of(cartInfo)
             })
 
-            assertEquals(request, cartService.getCart(cartId.toString()))
+            assertEquals(request, cartService.getCart(cartId))
         }
     }
 
@@ -103,7 +94,7 @@ class CartsServiceTests {
         given(cartInfoRepository.findById(cartId)).willReturn(Optional.empty())
 
         assertThrows<CartNotFoundException> {
-            cartService.getCart(cartId.toString())
+            cartService.getCart(cartId)
         }
     }
 }

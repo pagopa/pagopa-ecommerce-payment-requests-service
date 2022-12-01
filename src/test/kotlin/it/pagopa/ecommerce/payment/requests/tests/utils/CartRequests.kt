@@ -13,7 +13,9 @@ object CartRequests {
                 PaymentNoticeDto(
                     noticeNumber = "302000100440009424",
                     fiscalCode = "77777777777",
-                    amount = 10000
+                    amount = 10000,
+                    companyName = "companyName",
+                    description = "description"
                 )
             ),
             returnUrls = CartRequestReturnUrlsDto(
@@ -31,12 +33,16 @@ object CartRequests {
                 PaymentNoticeDto(
                     noticeNumber = "302000100440009420",
                     fiscalCode = "77777777777",
-                    amount = 10000
+                    amount = 10000,
+                    companyName = "companyName",
+                    description = "description"
                 ),
                 PaymentNoticeDto(
                     noticeNumber = "302000100440009421",
                     fiscalCode = "77777777777",
-                    amount = 10000
+                    amount = 10000,
+                    companyName = "companyName",
+                    description = "description"
                 )
             ),
             returnUrls = CartRequestReturnUrlsDto(
@@ -53,7 +59,9 @@ object CartRequests {
                 PaymentNoticeDto(
                     noticeNumber = "1",
                     fiscalCode = "1",
-                    amount = 10000
+                    amount = 10000,
+                    companyName = "companyName",
+                    description = "description"
                 )
             ),
             returnUrls = CartRequestReturnUrlsDto(
