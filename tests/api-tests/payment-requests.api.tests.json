@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "a7808a10-c95a-492f-b6d5-60de7246df58",
+    "_postman_id": "f0ba0b78-0cf1-4142-b2d8-8cf0a5b08032",
     "name": "PagoPA ecommerce payment requests test collection",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "23963988"
@@ -130,7 +130,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"paymentNotices\": [\n        {\n            \"noticeNumber\": \"302000100440009424\",\n            \"fiscalCode\": \"11111111111\",\n            \"amount\": 10000,\n            \"companyName\": null,\n            \"description\": null\n        },\n        {\n            \"noticeNumber\": \"302000100440009424\",\n            \"fiscalCode\": \"11111111111\",\n            \"amount\": 10000,\n            \"companyName\": null,\n            \"description\": null\n        }\n    ],\n    \"returnUrls\": {\n        \"returnOkUrl\": \"https://returnOkUrl\",\n        \"returnCancelUrl\": \"https://returnCancelUrl\",\n        \"returnErrorUrl\": \"https://returnErrorUrl\"\n    },\n    \"emailNotice\": \"test@test.it\"\n}",
+          "raw": "{\n    \"paymentNotices\": [\n        {\n            \"noticeNumber\": \"302000100440009424\",\n            \"fiscalCode\": \"11111111111\",\n            \"amount\": 10000,\n            \"companyName\": \"companyName\",\n            \"description\": \"description\"\n        },\n        {\n            \"noticeNumber\": \"302000100440009424\",\n            \"fiscalCode\": \"11111111111\",\n            \"amount\": 10000,\n            \"companyName\": \"companyName\",\n            \"description\": \"description\"\n        }\n    ],\n    \"returnUrls\": {\n        \"returnOkUrl\": \"https://returnOkUrl\",\n        \"returnCancelUrl\": \"https://returnCancelUrl\",\n        \"returnErrorUrl\": \"https://returnErrorUrl\"\n    },\n    \"emailNotice\": \"test@test.it\"\n}",
           "options": {
             "raw": {
               "language": "json"
