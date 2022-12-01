@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.*
 import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -25,8 +26,13 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
 import java.net.URI
 import java.util.*
+import java.util.function.Function
+import java.util.function.Predicate
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @WebFluxTest(CartsController::class)
@@ -39,6 +45,15 @@ class CartsControllerTests {
 
     @MockBean
     lateinit var cartService: CartService
+
+    @Mock
+    private lateinit var requestBodyUriSpec: WebClient.RequestBodyUriSpec
+
+    @Mock
+    private lateinit var requestHeadersSpec: WebClient.RequestHeadersSpec<*>
+
+    @Mock
+    private lateinit var responseSpec: WebClient.ResponseSpec
 
     @InjectMocks
     val cartsController: CartsController = CartsController()
@@ -176,4 +191,33 @@ class CartsControllerTests {
             .expectBody<ProblemJsonDto>()
             .isEqualTo(expected)
     }
+
+    @Test
+    fun `warm up controller`() {
+        val webClient = mock(WebClient::class.java)
+        given(webClient.post()).willReturn(requestBodyUriSpec)
+        given(
+            requestBodyUriSpec.uri(any(), any<Array<*>>())
+        ).willReturn(requestBodyUriSpec)
+        given(requestBodyUriSpec.header(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
+            .willReturn(requestBodyUriSpec)
+        given(
+            requestBodyUriSpec.body(
+                any(),
+                eq(CartRequestDto::class.java)
+            )
+        ).willReturn(requestHeadersSpec)
+        given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+        given(
+            responseSpec.onStatus(
+                any<Predicate<HttpStatus>>(),
+                any<Function<ClientResponse, Mono<out Throwable>>>()
+            )
+        ).willReturn(responseSpec)
+        given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
+        CartsController(webClient).warmupPostCarts()
+        verify(webClient, times(1)).post()
+    }
+
+
 }

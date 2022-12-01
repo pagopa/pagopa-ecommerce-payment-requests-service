@@ -24,6 +24,7 @@
         <sonar.coverage.exclusions>
             **/it/pagopa/generated/**/*,
             **/it/pagopa/ecommerce/payment/requests/utils/soap/**/*
+            **/it/pagopa/ecommerce/payment/requests/warmup/**/*
         </sonar.coverage.exclusions>
     </properties>
     <dependencies>
@@ -342,6 +343,7 @@
                     <excludes>
                         <exclude>it/pagopa/ecommerce/generated/**</exclude>
                         <exclude>it/pagopa/ecommerce/payment/requests/utils/soap/**</exclude>
+                        <exclude>it/pagopa/ecommerce/payment/requests/warmup/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

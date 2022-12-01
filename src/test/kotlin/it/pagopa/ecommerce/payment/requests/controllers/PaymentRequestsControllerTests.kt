@@ -13,8 +13,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.mockito.BDDMockito.any
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -22,6 +27,12 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
+import java.util.*
+import java.util.function.Function
+import java.util.function.Predicate
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -35,8 +46,17 @@ class PaymentRequestsControllerTests {
     @MockBean
     lateinit var paymentRequestsService: PaymentRequestsService
 
+    @Mock
+    private lateinit var requestBodyUriSpec: WebClient.RequestBodyUriSpec
+
+    @Mock
+    private lateinit var requestHeadersSpec: WebClient.RequestHeadersUriSpec<*>
+
+    @Mock
+    private lateinit var responseSpec: WebClient.ResponseSpec
+
     @InjectMocks
-    val paymentRequestController: PaymentRequestsController = PaymentRequestsController()
+    private val paymentRequestController: PaymentRequestsController = PaymentRequestsController()
 
     companion object {
         fun faultBeanWithCode(faultCode: String): FaultBean {
@@ -181,4 +201,25 @@ class PaymentRequestsControllerTests {
             .exchange()
             .expectStatus().isEqualTo(HttpStatus.BAD_GATEWAY)
     }
+
+    @Test
+    fun `warm up controller`() {
+        val webClient = mock(WebClient::class.java)
+        given(webClient.get()).willReturn(requestHeadersSpec)
+        given(
+            requestHeadersSpec.uri(any(), any<Map<String, String>>())
+        ).willReturn(requestHeadersSpec)
+        given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+        given(
+            responseSpec.onStatus(
+                any<Predicate<HttpStatus>>(),
+                any<Function<ClientResponse, Mono<out Throwable>>>()
+            )
+        ).willReturn(responseSpec)
+        given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
+        PaymentRequestsController(webClient).warmupGetPaymentRequest()
+        verify(webClient, times(1)).get()
+    }
+
+
 }
