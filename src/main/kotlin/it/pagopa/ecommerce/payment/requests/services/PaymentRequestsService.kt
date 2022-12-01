@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentReques
 import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
+import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPspClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
@@ -52,7 +53,7 @@ class PaymentRequestsService(
     }
 
     suspend fun getPaymentRequestInfo(rptId: String): PaymentRequestsGetResponseDto {
-        val rptIdRecord: RptId;
+        val rptIdRecord: RptId
         try {
             rptIdRecord = RptId(rptId)
         } catch (e: IllegalArgumentException) {
@@ -109,7 +110,8 @@ class PaymentRequestsService(
             val isNM3 = isNM3(esitoNodoVerificaRPTRisposta)
             val isNodoError = isNodoError(esitoNodoVerificaRPTRisposta)
             logger.info(
-                "Verifica RPT: fault code: [{}] isNM3: [{}], nodo error: [{}]",
+                "Verifica RPT: outcome: [{}] fault code: [{}] isNM3: [{}], is nodo error: [{}]",
+                esitoNodoVerificaRPTRisposta.esito,
                 esitoNodoVerificaRPTRisposta?.fault?.faultCode,
                 isNM3,
                 isNodoError
@@ -136,23 +138,36 @@ class PaymentRequestsService(
                     objectFactoryNodeForPsp.createVerifyPaymentNoticeReq(
                         verifyPaymentNoticeReq
                     )
-                ).map { verifyPaymentNoticeResponse ->
-                    PaymentRequestInfo(
-                        id = rptId,
-                        paFiscalCode = verifyPaymentNoticeResponse.fiscalCodePA,
-                        paName = verifyPaymentNoticeResponse.paymentDescription,
-                        description = verifyPaymentNoticeResponse.paymentDescription,
-                        amount = nodoOperations.getEuroCentsFromNodoAmount(
-                            verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].amount
-                        ),
-                        dueDate = getDueDateString(
-                            verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].dueDate
-                        ),
-                        isNM3 = true,
-                        paymentToken = null,
-                        idempotencyKey = null,
-                        isCart = false
+                ).flatMap { verifyPaymentNoticeResponse ->
+                    val isNodoError = isNodoError(verifyPaymentNoticeResponse)
+                    logger.info(
+                        "VerifyPaymentNotice: outcome: [{}] fault code: [{}] is nodo error: [{}]",
+                        verifyPaymentNoticeResponse.outcome,
+                        verifyPaymentNoticeResponse?.fault?.faultCode,
+                        isNodoError
                     )
+                    if (isNodoError) {
+                        Mono.error(NodoErrorException(verifyPaymentNoticeResponse.fault))
+                    } else {
+                        Mono.just(
+                            PaymentRequestInfo(
+                                id = rptId,
+                                paFiscalCode = verifyPaymentNoticeResponse.fiscalCodePA,
+                                paName = verifyPaymentNoticeResponse.paymentDescription,
+                                description = verifyPaymentNoticeResponse.paymentDescription,
+                                amount = nodoOperations.getEuroCentsFromNodoAmount(
+                                    verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].amount
+                                ),
+                                dueDate = getDueDateString(
+                                    verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].dueDate
+                                ),
+                                isNM3 = true,
+                                paymentToken = null,
+                                idempotencyKey = null,
+                                isCart = false
+                            )
+                        )
+                    }
                 }
             } else {
                 val enteBeneficiario: CtEnteBeneficiario? =
@@ -186,6 +201,11 @@ class PaymentRequestsService(
         val outcome = esitoNodoVerificaRPTRisposta.esito
         val ko = StOutcome.KO.value().equals(outcome)
         return ko && (RPT_VERIFY_MULTI_BENEFICIARY_RESPONSE_CODE != (esitoNodoVerificaRPTRisposta.fault?.faultCode))
+    }
+
+    fun isNodoError(verifyPaymentResponse: VerifyPaymentNoticeRes): Boolean {
+        val outcome = verifyPaymentResponse.outcome
+        return StOutcome.KO == outcome
     }
 
     fun getDueDateString(date: XMLGregorianCalendar?): String? =

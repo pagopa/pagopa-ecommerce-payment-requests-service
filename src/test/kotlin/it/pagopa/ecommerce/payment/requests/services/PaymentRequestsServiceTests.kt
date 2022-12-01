@@ -435,5 +435,73 @@ class PaymentRequestsServiceTests {
         assertTrue(exception.toRestException().description.contains(rptIdAsString))
     }
 
+    @Test
+    fun `should return nodo error from VerifyPaymentNotice KO response with fault bean`() = runTest {
+        val rptIdAsString = "77777777777302016723749670035"
+        val rptIdAsObject = RptId(rptIdAsString)
+        val verificaRPTRIsposta = NodoVerificaRPTRisposta()
+        val esitoVerificaRPT = EsitoNodoVerificaRPTRisposta()
+        esitoVerificaRPT.esito = StOutcome.KO.value()
+        val fault = FaultBean()
+        fault.faultCode = "PPT_MULTI_BENEFICIARIO"
+        esitoVerificaRPT.fault = fault
+        verificaRPTRIsposta.nodoVerificaRPTRisposta = esitoVerificaRPT
+
+        val verifyPaymentNotice = VerifyPaymentNoticeRes()
+        verifyPaymentNotice.outcome = StOutcome.KO
+        verifyPaymentNotice.fault = CtFaultBean()
+        verifyPaymentNotice.fault.faultCode = "PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE"
+
+        /**
+         * preconditions
+         */
+        given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+        given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRIsposta))
+        given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
+        /**
+         * test
+         */
+        val exception = assertThrows<NodoErrorException> {
+            paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
+        }
+        /**
+         * assertions
+         */
+        assertEquals("PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE", exception.faultCode)
+    }
+
+    @Test
+    fun `should return nodo error from VerifyPaymentNotice KO response no fault bean`() = runTest {
+        val rptIdAsString = "77777777777302016723749670035"
+        val rptIdAsObject = RptId(rptIdAsString)
+        val verificaRPTRIsposta = NodoVerificaRPTRisposta()
+        val esitoVerificaRPT = EsitoNodoVerificaRPTRisposta()
+        esitoVerificaRPT.esito = StOutcome.KO.value()
+        val fault = FaultBean()
+        fault.faultCode = "PPT_MULTI_BENEFICIARIO"
+        esitoVerificaRPT.fault = fault
+        verificaRPTRIsposta.nodoVerificaRPTRisposta = esitoVerificaRPT
+
+        val verifyPaymentNotice = VerifyPaymentNoticeRes()
+        verifyPaymentNotice.outcome = StOutcome.KO
+
+        /**
+         * preconditions
+         */
+        given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+        given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRIsposta))
+        given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
+        /**
+         * test
+         */
+        val exception = assertThrows<NodoErrorException> {
+            paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
+        }
+        /**
+         * assertions
+         */
+        assertEquals("Unreadable fault code", exception.faultCode)
+    }
+
 
 }

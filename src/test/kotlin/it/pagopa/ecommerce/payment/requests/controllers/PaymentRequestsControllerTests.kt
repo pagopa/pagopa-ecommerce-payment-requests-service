@@ -47,9 +47,6 @@ class PaymentRequestsControllerTests {
     lateinit var paymentRequestsService: PaymentRequestsService
 
     @Mock
-    private lateinit var requestBodyUriSpec: WebClient.RequestBodyUriSpec
-
-    @Mock
     private lateinit var requestHeadersSpec: WebClient.RequestHeadersUriSpec<*>
 
     @Mock
