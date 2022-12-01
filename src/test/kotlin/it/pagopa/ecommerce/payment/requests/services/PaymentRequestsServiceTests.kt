@@ -7,6 +7,7 @@ import it.pagopa.ecommerce.generated.transactions.model.*
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPspClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
+import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfoRepository
@@ -14,8 +15,7 @@ import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
 import it.pagopa.ecommerce.payment.requests.utils.NodoUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -24,6 +24,7 @@ import org.mockito.BDDMockito.given
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.springframework.http.HttpStatus
 import reactor.core.publisher.Mono
 import java.math.BigDecimal
 import java.text.DateFormat
@@ -422,6 +423,16 @@ class PaymentRequestsServiceTests {
             paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
         }
         assertEquals("PAA_PAGAMENTO_DUPLICATO", exception.faultCode)
+    }
+
+    @Test
+    fun `should return invalid request for invalid rpt id`() = runTest {
+        val rptIdAsString = "invalid rpt id"
+        val exception = assertThrows<InvalidRptException> {
+            paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
+        }
+        assertEquals(HttpStatus.BAD_REQUEST, exception.toRestException().httpStatus)
+        assertTrue(exception.toRestException().description.contains(rptIdAsString))
     }
 
 

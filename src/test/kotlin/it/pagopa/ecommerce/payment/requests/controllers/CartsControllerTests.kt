@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.controllers
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
@@ -59,6 +60,7 @@ class CartsControllerTests {
     @Test
     fun `post cart KO with multiple payment notices`() = runTest {
         val objectMapper = ObjectMapper()
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
         val request = CartRequests.withMultiplePaymentNotice()
         given(cartService.processCart(request)).willThrow(
             RestApiException(
@@ -85,6 +87,7 @@ class CartsControllerTests {
     @Test
     fun `invalid request ko`() = runTest {
         val objectMapper = ObjectMapper()
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
         val request = CartRequests.invalidRequest()
         val errorResponse = ProblemJsonDto(
             status = 400,
@@ -105,6 +108,7 @@ class CartsControllerTests {
     @Test
     fun `controller throw generic exception`() = runTest {
         val objectMapper = ObjectMapper()
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
         val request = CartRequests.withOnePaymentNotice()
         val errorResponse = ProblemJsonDto(
             title = "Error processing the request",
@@ -123,14 +127,17 @@ class CartsControllerTests {
 
     @Test
     fun `get cart by id`() {
-        val cartId = "1234"
+        val cartId = UUID.randomUUID()
         val objectMapper = ObjectMapper()
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
         val response = CartRequestDto(
             paymentNotices = listOf(
                 PaymentNoticeDto(
                     noticeNumber = "",
                     fiscalCode = "",
-                    amount = 10000
+                    amount = 10000,
+                    companyName = "companyName",
+                    description = "description"
                 )
             ),
             returnUrls = CartRequestReturnUrlsDto(
@@ -151,8 +158,8 @@ class CartsControllerTests {
 
     @Test
     fun `get cart by id with non-existing cart returns 404`() {
-        val cartId = UUID.randomUUID().toString()
-        val exception = CartNotFoundException(cartId)
+        val cartId = UUID.randomUUID()
+        val exception = CartNotFoundException(cartId.toString())
         val expected = ProblemJsonDto(
             title = "Cart not found",
             detail = exception.message ?: "",

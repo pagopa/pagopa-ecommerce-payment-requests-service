@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "88105536-9963-494e-bb79-a83900d58d1c",
+    "_postman_id": "a7808a10-c95a-492f-b6d5-60de7246df58",
     "name": "PagoPA ecommerce payment requests test collection",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "23963988"
@@ -34,7 +34,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"paymentNotices\": [\n        {\n            \"noticeNumber\": \"302000100440009424\",\n            \"fiscalCode\": \"77777777777\",\n            \"amount\": 10000,\n            \"companyName\": null,\n            \"description\": null\n        }\n    ],\n    \"returnUrls\": {\n        \"returnOkUrl\": \"https://returnOkUrl\",\n        \"returnCancelUrl\": \"https://returnCancelUrl\",\n        \"returnErrorUrl\": \"https://returnErrorUrl\"\n    },\n    \"emailNotice\": \"test@test.it\"\n}",
+          "raw": "{\n    \"paymentNotices\": [\n        {\n            \"noticeNumber\": \"302000100440009424\",\n            \"fiscalCode\": \"77777777777\",\n            \"amount\": 10000,\n            \"companyName\": \"companyName\",\n            \"description\": \"description\"\n        }\n    ],\n    \"returnUrls\": {\n        \"returnOkUrl\": \"https://returnOkUrl\",\n        \"returnCancelUrl\": \"https://returnCancelUrl\",\n        \"returnErrorUrl\": \"https://returnErrorUrl\"\n    },\n    \"emailNotice\": \"test@test.it\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -42,14 +42,14 @@
           }
         },
         "url": {
-          "raw": "https://{{host}}/checkout/ecommerce/v1/carts",
+          "raw": "https://{{host}}/checkout/ec/v1/carts",
           "protocol": "https",
           "host": [
             "{{host}}"
           ],
           "path": [
             "checkout",
-            "ecommerce",
+            "ec",
             "v1",
             "carts"
           ]
@@ -138,14 +138,14 @@
           }
         },
         "url": {
-          "raw": "https://{{host}}/checkout/ecommerce/v1/carts",
+          "raw": "https://{{host}}/checkout/ec/v1/carts",
           "protocol": "https",
           "host": [
             "{{host}}"
           ],
           "path": [
             "checkout",
-            "ecommerce",
+            "ec",
             "v1",
             "carts"
           ]
@@ -189,14 +189,14 @@
           }
         },
         "url": {
-          "raw": "https://{{host}}/checkout/ecommerce/v1/carts",
+          "raw": "https://{{host}}/checkout/ec/v1/carts",
           "protocol": "https",
           "host": [
             "{{host}}"
           ],
           "path": [
             "checkout",
-            "ecommerce",
+            "ec",
             "v1",
             "carts"
           ]
@@ -235,14 +235,13 @@
         "method": "GET",
         "header": [
           {
-            "key": "",
+            "key": "deployment",
             "type": "text",
-            "value": "",
-            "disabled": true
+            "value": "blue"
           }
         ],
         "url": {
-          "raw": "https://{{host}}/checkout/ecommerce/v1/payment-requests/{{RPTID_NM3}}",
+          "raw": "https://{{host}}/checkout/ecommerce/v1/payment-requests/{{RPTID_NM3}}?recaptchaResponse=test",
           "protocol": "https",
           "host": [
             "{{host}}"
@@ -253,6 +252,12 @@
             "v1",
             "payment-requests",
             "{{RPTID_NM3}}"
+          ],
+          "query": [
+            {
+              "key": "recaptchaResponse",
+              "value": "test"
+            }
           ]
         },
         "description": "1. recupero info relativi alla request payment con verificaRPT se non presente in cache dato rptId\n2. cache info su redis dato rptId"

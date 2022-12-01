@@ -4,6 +4,7 @@ package it.pagopa.ecommerce.payment.requests.controllers
 import com.fasterxml.jackson.databind.ObjectMapper
 import it.pagopa.ecommerce.generated.nodoperpsp.model.FaultBean
 import it.pagopa.ecommerce.generated.payment.requests.server.model.*
+import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.services.PaymentRequestsService
 import it.pagopa.ecommerce.payment.requests.tests.utils.PaymentRequests
@@ -71,6 +72,20 @@ class PaymentRequestsControllerTests {
             .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
             .expectBody(ProblemJsonDto::class.java).value {
                 assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), it.status)
+            }
+    }
+
+    @Test
+    fun `should return bad request response`() = runTest {
+        val rptId = "invalidRPT"
+        given(paymentRequestsService.getPaymentRequestInfo(rptId)).willThrow(InvalidRptException(rptId))
+        val parameters = mapOf("rpt_id" to rptId)
+        webClient.get()
+            .uri("/payment-requests/{rpt_id}", parameters)
+            .exchange()
+            .expectStatus().isEqualTo(HttpStatus.BAD_REQUEST)
+            .expectBody(ProblemJsonDto::class.java).value {
+                assertEquals(HttpStatus.BAD_REQUEST.value(), it.status)
             }
     }
 
