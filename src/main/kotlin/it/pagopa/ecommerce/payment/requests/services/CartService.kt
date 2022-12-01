@@ -10,6 +10,7 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.Logger
@@ -25,7 +26,8 @@ import java.util.*
 @Service
 class CartService(
     @Value("\${checkout.url}") private val checkoutUrl: String,
-    @Autowired private val cartInfoRepository: CartInfoRepository
+    @Autowired private val cartInfoRepository: CartInfoRepository,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
     /*
@@ -37,15 +39,9 @@ class CartService(
         /*
          * Carts redirect URL format.
          * The carts redirect url is composed as follow
-         * {host}/carts/{cartId}
+         * {host}/c/{cartId}
          */
-        //const val CARTS_REDIRECT_URL_FORMAT: String = "%s/carts/%s"
-        /**
-         * TODO change to the above constant when front-end application
-         * will correctly manage carts.
-         * For now return url is formatted as {host}/{fiscalCode}{noticeNumber} to redirect to checkout
-         */
-        const val CARTS_REDIRECT_URL_FORMAT: String = "%s/%s%s"
+        const val CARTS_REDIRECT_URL_FORMAT: String = "%s/c/%s"
 
         const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 1
     }
@@ -78,21 +74,15 @@ class CartService(
 
             logger.info("Saving cart ${cart.cartId} for payments $paymentInfos")
 
-            withContext(Dispatchers.IO) {
+            withContext(defaultDispatcher) {
                 cartInfoRepository.save(cart)
             }
 
-            /**
-             * TODO change to the above constant when front-end application
-             * will correctly manage carts.
-             * For now return url is formatted as {host}/{fiscalCode}{noticeNumber} to redirect to checkout
-             */
             CARTS_REDIRECT_URL_FORMAT.format(
                 checkoutUrl,
-                //cart.cartId,
-                cart.payments[0].rptId.fiscalCode,
-                cart.payments[0].rptId.noticeId
-            )
+                cart.cartId,
+
+                )
         } else {
             logger.error("Too many payment notices, expected only one")
             throw RestApiException(
@@ -106,8 +96,8 @@ class CartService(
     /*
      * Fetch the cart with the input cart id
      */
-    fun getCart(cartId: String): CartRequestDto {
-        val cart = cartInfoRepository.findByIdOrNull(UUID.fromString(cartId)) ?: throw CartNotFoundException(cartId)
+    fun getCart(cartId: UUID): CartRequestDto {
+        val cart = cartInfoRepository.findByIdOrNull(cartId) ?: throw CartNotFoundException(cartId.toString())
 
         return CartRequestDto(
             paymentNotices = cart.payments.map {

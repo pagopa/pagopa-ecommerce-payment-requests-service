@@ -8,6 +8,7 @@ import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPspClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
+import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfoRepository
@@ -51,7 +52,12 @@ class PaymentRequestsService(
     }
 
     suspend fun getPaymentRequestInfo(rptId: String): PaymentRequestsGetResponseDto {
-        val rptIdRecord = RptId(rptId)
+        val rptIdRecord: RptId;
+        try {
+            rptIdRecord = RptId(rptId)
+        } catch (e: IllegalArgumentException) {
+            throw InvalidRptException(rptId)
+        }
         val paymentContextCode = UUID.randomUUID().toString().replace("-", "")
         val paymentInfo = getPaymentInfoFromCache(rptIdRecord)
             .switchIfEmpty(
