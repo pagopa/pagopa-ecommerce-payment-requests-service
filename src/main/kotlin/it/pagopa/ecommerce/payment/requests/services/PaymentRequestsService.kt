@@ -153,7 +153,7 @@ class PaymentRequestsService(
                             PaymentRequestInfo(
                                 id = rptId,
                                 paFiscalCode = verifyPaymentNoticeResponse.fiscalCodePA,
-                                paName = verifyPaymentNoticeResponse.paymentDescription,
+                                paName = verifyPaymentNoticeResponse.companyName,
                                 description = verifyPaymentNoticeResponse.paymentDescription,
                                 amount = nodoOperations.getEuroCentsFromNodoAmount(
                                     verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].amount
