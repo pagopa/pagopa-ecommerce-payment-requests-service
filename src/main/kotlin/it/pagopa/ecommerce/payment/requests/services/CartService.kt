@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.payment.requests.services
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
+import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
@@ -10,9 +11,12 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import it.pagopa.generated.ecommerce.nodoperpm.v1.dto.CheckPositionDto
+import it.pagopa.generated.ecommerce.nodoperpm.v1.dto.CheckPositionResponseDto.EsitoEnum
+import it.pagopa.generated.ecommerce.nodoperpm.v1.dto.ListelementDto
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,6 +31,7 @@ import java.util.*
 class CartService(
     @Value("\${checkout.url}") private val checkoutUrl: String,
     @Autowired private val cartInfoRepository: CartInfoRepository,
+    @Autowired private val nodoPerPmClient: NodoPerPmClient,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
@@ -43,7 +48,7 @@ class CartService(
          */
         const val CARTS_REDIRECT_URL_FORMAT: String = "%s/c/%s"
 
-        const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 1
+        const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 5
     }
 
     /*
@@ -56,7 +61,7 @@ class CartService(
         val receivedNotices = paymentsNotices.size
         logger.info("Received [$receivedNotices] payment notices")
 
-        return if (receivedNotices == MAX_ALLOWED_PAYMENT_NOTICES) {
+        return if (receivedNotices <= MAX_ALLOWED_PAYMENT_NOTICES) {
             val paymentInfos = paymentsNotices.map {
                 PaymentInfo(RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
             }
@@ -72,17 +77,30 @@ class CartService(
                 cartRequestDto.emailNotice
             )
 
-            logger.info("Saving cart ${cart.cartId} for payments $paymentInfos")
+            val checkPositionDto = CheckPositionDto().positionslist(
+                paymentInfos.stream()
+                    .map { ListelementDto().fiscalCode(it.rptId.fiscalCode).noticeNumber(it.rptId.noticeId) }.toList()
+            )
 
-            withContext(defaultDispatcher) {
-                cartInfoRepository.save(cart)
-            }
+            return nodoPerPmClient.checkPosition(checkPositionDto)
+                .map {
+                    if (it.esito == EsitoEnum.OK) {
+                        logger.info("Saving cart ${cart.cartId} for payments $paymentInfos")
 
-            CARTS_REDIRECT_URL_FORMAT.format(
-                checkoutUrl,
-                cart.cartId,
+                        cartInfoRepository.save(cart)
 
-                )
+                        return@map CARTS_REDIRECT_URL_FORMAT.format(
+                            checkoutUrl,
+                            cart.cartId,
+                        )
+                    } else {
+                        throw RestApiException(
+                            httpStatus = HttpStatus.BAD_REQUEST,
+                            title = "Invalid payment info",
+                            description = "Invalid payment notice data"
+                        )
+                    }
+                }.awaitSingle()
         } else {
             logger.error("Too many payment notices, expected only one")
             throw RestApiException(
