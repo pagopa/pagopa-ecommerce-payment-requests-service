@@ -6,49 +6,88 @@ trigger: none
 
 pool:
   vmImage: ubuntu-latest
-steps:
-  - task: Cache@2
-    inputs:
-      key: 'maven | "$(Agent.OS)" | pom.xml'
-      restoreKeys: |
-        maven | "$(Agent.OS)"
-        maven
-      path: $(MAVEN_CACHE_FOLDER)
-    displayName: Cache Maven local repo
 
-  - task: SonarCloudPrepare@1
-    displayName: 'Prepare SonarCloud analysis configuration'
-    inputs:
-      SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
-      organization: '$(SONARCLOUD_ORG)'
-      scannerMode: Other
-      extraProperties: |
-        sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
-        sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
-        sonar.coverage.exclusions=**/config/*,**/*Mock*,**/model/*,**/it/pagopa/generated/**/*,**/it/pagopa/ecommerce/payment/requests/utils/soap/**/*,**/it/pagopa/ecommerce/payment/requests/warmup/**/*
-        sonar.coverage.jacoco.xmlReportPaths=./target/site/jacoco/jacoco.xml
-        sonar.junit.reportPaths=target/surefire-reports/
+resources:
+  repositories:
+    - repository: pagopaEcommerceLocal
+      type: github
+      name: pagopa/pagopa-ecommerce-local 
+      ref: CHK-870-collection-for-payment-request-integration-test
+      endpoint: 'io-azure-devops-github-ro'
 
-  - task: Maven@3
-    inputs:
-      mavenPomFile: 'pom.xml'
-      mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '17'
-      jdkArchitectureOption: 'x64'
-      publishJUnitResults: false
-      testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      goals: 'clean verify'
-      sonarQubeRunAnalysis: true
+stages:
+  - stage: BuildEndUnitTest
+    jobs:
+      - job: make_buildEndUnitTest
+        steps:
+          - task: Cache@2
+            inputs:
+              key: 'maven | "$(Agent.OS)" | pom.xml'
+              restoreKeys: |
+                maven | "$(Agent.OS)"
+                maven
+              path: $(MAVEN_CACHE_FOLDER)
+            displayName: Cache Maven local repo
 
-  - task: SonarCloudPublish@1
-    displayName: 'Publish SonarCloud results on build summary'
-    inputs:
-      pollingTimeoutSec: '300'
+          - task: SonarCloudPrepare@1
+            displayName: 'Prepare SonarCloud analysis configuration'
+            inputs:
+              SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
+              organization: '$(SONARCLOUD_ORG)'
+              scannerMode: Other
+              extraProperties: |
+                sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
+                sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
+                sonar.coverage.exclusions=**/config/*,**/*Mock*,**/model/*,**/it/pagopa/generated/**/*,**/it/pagopa/ecommerce/payment/requests/utils/soap/**/*,**/it/pagopa/ecommerce/payment/requests/warmup/**/*
+                sonar.coverage.jacoco.xmlReportPaths=./target/site/jacoco/jacoco.xml
+                sonar.junit.reportPaths=target/surefire-reports/
 
-  - task: PublishCodeCoverageResults@1
-    inputs:
-      codeCoverageTool: 'JaCoCo'
-      summaryFileLocation: 'target/site/jacoco/jacoco.xml'
-      reportDirectory: 'target/site/jacoco'
-    displayName: 'Publish Code Coverage on Azure Devops'
+          - task: Maven@3
+            inputs:
+              mavenPomFile: 'pom.xml'
+              mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '17'
+              jdkArchitectureOption: 'x64'
+              publishJUnitResults: false
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+              goals: 'clean verify'
+              sonarQubeRunAnalysis: true
+
+          - task: SonarCloudPublish@1
+            displayName: 'Publish SonarCloud results on build summary'
+            inputs:
+              pollingTimeoutSec: '300'
+
+          - task: PublishCodeCoverageResults@1
+            inputs:
+              codeCoverageTool: 'JaCoCo'
+              summaryFileLocation: 'target/site/jacoco/jacoco.xml'
+              reportDirectory: 'target/site/jacoco'
+            displayName: 'Publish Code Coverage on Azure Devops'
+
+  - stage: IntegrationTest
+    dependsOn: []
+    jobs:
+      - job: make_integration_test
+        steps:
+          - checkout: pagopaEcommerceLocal
+          - script: |
+              echo "##[debug] Change placeholder for ecommerce-payment-request-service ..."
+              sed -i "s/^ECOMMERCE_PAYMENT_REQUESTS_COMMIT_SHA=.*$/ECOMMERCE_PAYMENT_REQUESTS_COMMIT_SHA=$(BRANCH_NAME)/" .env
+            displayName: 'Change payment-request branch name ecommerce-local .env'
+          - script: docker-compose up --scale mongo-express=0 --scale redis-insight=0 --scale pagopa-notifications-service=0 -d
+            displayName: 'Run app with docker-compose'
+          - script: |
+              timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8089/actuator/health/liveness)" != "200" ]]; do sleep 5; done' || exit 1
+            displayName: 'Health check'
+          - script: yarn global add newman
+            displayName: 'newman installation'
+          - script: newman run api-tests/ecommerce-for-checkout/payment-request-service/payment-request-service_ecommerce_local.postman_collection.json --environment=api-tests/ecommerce-for-checkout/payment-request-service/payment-request-service_ecommerce_local.postman_environment.json --reporters cli,junit --reporter-junit-export Results/checkout-api-TEST.xml --ignore-redirects  
+            displayName: 'Run api test'
+            continueOnError: true
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/*-TEST.xml'
+              searchFolder: '$(System.DefaultWorkingDirectory)'
