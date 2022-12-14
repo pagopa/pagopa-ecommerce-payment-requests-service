@@ -49,7 +49,7 @@ class CartService(
          */
         const val CARTS_REDIRECT_URL_FORMAT: String = "%s/c/%s"
 
-        const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 5
+        const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 1
     }
 
     /*

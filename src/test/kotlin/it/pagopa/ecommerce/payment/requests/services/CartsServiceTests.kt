@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.services
 
-import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.kotlin.*
+import reactor.core.publisher.Mono
 import java.util.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -30,13 +31,14 @@ class CartsServiceTests {
     private val cartService: CartService = CartService(TEST_CHECKOUT_URL, cartInfoRepository, nodoPerPmClient)
 
 
-    /*
     @Test
     fun `post cart succeeded with one payment notice`() = runTest {
         val cartId = UUID.randomUUID()
 
         Mockito.mockStatic(UUID::class.java).use { uuidMock ->
             uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
+            given(nodoPerPmClient.checkPosition(any()))
+                .willReturn(Mono.just(CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.OK)))
 
             val request = CartRequests.withOnePaymentNotice()
             val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
@@ -102,5 +104,4 @@ class CartsServiceTests {
             cartService.getCart(cartId)
         }
     }
-     */
 }
