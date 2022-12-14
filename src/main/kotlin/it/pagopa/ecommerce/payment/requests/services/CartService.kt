@@ -1,5 +1,8 @@
 package it.pagopa.ecommerce.payment.requests.services
 
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
@@ -11,9 +14,6 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
-import it.pagopa.generated.ecommerce.nodoperpm.v1.dto.CheckPositionDto
-import it.pagopa.generated.ecommerce.nodoperpm.v1.dto.CheckPositionResponseDto.EsitoEnum
-import it.pagopa.generated.ecommerce.nodoperpm.v1.dto.ListelementDto
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactor.awaitSingle
@@ -84,7 +84,7 @@ class CartService(
 
             return nodoPerPmClient.checkPosition(checkPositionDto)
                 .map {
-                    if (it.esito == EsitoEnum.OK) {
+                    if (it.esito == CheckPositionResponseDto.EsitoEnum.OK) {
                         logger.info("Saving cart ${cart.cartId} for payments $paymentInfos")
 
                         cartInfoRepository.save(cart)

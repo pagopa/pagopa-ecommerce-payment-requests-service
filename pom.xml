@@ -313,8 +313,8 @@
                                 <swaggerAnnotations>false</swaggerAnnotations>
                                 <openApiNullable>false</openApiNullable>
                             </configOptions>
-                            <modelPackage>it.pagopa.generated.ecommerce.nodoperpm.v1.dto</modelPackage>
-                            <apiPackage>it.pagopa.generated.ecommerce.nodoperpm.v1.api</apiPackage>
+                            <modelPackage>it.pagopa.ecommerce.generated.nodoperpm.v1.dto</modelPackage>
+                            <apiPackage>it.pagopa.ecommerce.generated.nodoperpm.v1.api</apiPackage>
                             <modelNameSuffix>dto</modelNameSuffix>
                         </configuration>
                     </execution>

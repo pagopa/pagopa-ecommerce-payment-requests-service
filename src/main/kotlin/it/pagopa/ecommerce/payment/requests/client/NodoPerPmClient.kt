@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.client;
 
-import it.pagopa.generated.ecommerce.nodoperpm.v1.dto.CheckPositionDto
-import it.pagopa.generated.ecommerce.nodoperpm.v1.dto.CheckPositionResponseDto
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
