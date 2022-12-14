@@ -29,7 +29,7 @@ public class NodoPerPmClient(
             .onStatus(HttpStatus::isError) { clientResponse ->
                 clientResponse.bodyToMono(String::class.java).flatMap { errorResponseBody: String ->
                     Mono.error(
-                        ResponseStatusException(clientResponse.statusCode(), errorResponseBody)
+                        ResponseStatusException(HttpStatus.BAD_GATEWAY, errorResponseBody)
                     )
                 }
             }.bodyToMono(CheckPositionResponseDto::class.java)

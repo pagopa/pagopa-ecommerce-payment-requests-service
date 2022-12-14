@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import reactor.kotlin.core.publisher.switchIfEmpty
 import java.net.URI
 import java.util.*
 
@@ -83,23 +84,23 @@ class CartService(
             )
 
             return nodoPerPmClient.checkPosition(checkPositionDto)
+                .filter { response -> response.esito ==  CheckPositionResponseDto.EsitoEnum.OK}
+                .switchIfEmpty {
+                    throw RestApiException(
+                    httpStatus = HttpStatus.BAD_REQUEST,
+                    title = "Invalid payment info",
+                    description = "Invalid payment notice data"
+                )}
                 .map {
-                    if (it.esito == CheckPositionResponseDto.EsitoEnum.OK) {
-                        logger.info("Saving cart ${cart.cartId} for payments $paymentInfos")
+                    logger.info("Saving cart ${cart.cartId} for payments $paymentInfos")
 
-                        cartInfoRepository.save(cart)
-
-                        return@map CARTS_REDIRECT_URL_FORMAT.format(
-                            checkoutUrl,
-                            cart.cartId,
-                        )
-                    } else {
-                        throw RestApiException(
-                            httpStatus = HttpStatus.BAD_REQUEST,
-                            title = "Invalid payment info",
-                            description = "Invalid payment notice data"
-                        )
-                    }
+                    cartInfoRepository.save(cart)
+                    val retUrl = CARTS_REDIRECT_URL_FORMAT.format(
+                        checkoutUrl,
+                        cart.cartId,
+                    )
+                    logger.info("Return URL: $retUrl")
+                    return@map retUrl
                 }.awaitSingle()
         } else {
             logger.error("Too many payment notices, expected only one")

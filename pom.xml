@@ -217,6 +217,8 @@
                             <sourceDirs>
                                 <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin
                                 </sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/java
+                                </sourceDir>
                                 <sourceDir>${project.build.directory}/generated-sources/xjc</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/java</sourceDir>
@@ -312,6 +314,7 @@
                             <configOptions>
                                 <swaggerAnnotations>false</swaggerAnnotations>
                                 <openApiNullable>false</openApiNullable>
+                                <reactive>true</reactive>
                             </configOptions>
                             <modelPackage>it.pagopa.ecommerce.generated.nodoperpm.v1.dto</modelPackage>
                             <apiPackage>it.pagopa.ecommerce.generated.nodoperpm.v1.api</apiPackage>
