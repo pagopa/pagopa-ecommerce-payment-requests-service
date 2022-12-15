@@ -1,0 +1,121 @@
+{
+	"info": {
+		"_postman_id": "1dba9b99-f915-419b-9c92-86b2e656f766",
+		"name": "payment-request-api-tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18021440"
+	},
+	"item": [
+		{
+			"name": "POST carts - OK",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.eql(302);",
+							"});",
+							"",
+							"pm.test(\"Location header is present and contains well formatted UUID\", function () {",
+							"    pm.response.to.have.header(\"Location\");",
+							"    pm.expect(pm.response.headers.get('Location').split(\"/c/\")[1]).to.match(/^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$/)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"paymentNotices\": [\n    {\n      \"noticeNumber\": \"330312387654312381\",\n      \"fiscalCode\": \"77777777777\",\n      \"amount\": 10000,\n      \"companyName\": \"companyName\",\n      \"description\": \"description\"\n    }\n  ],\n  \"returnUrls\": {\n    \"returnOkUrl\": \"http://uHzTuDdzFTzRxHkpkNHWNuomFmQVaCL.ibWeaCyQdi59IoGKkDolMLOuD2QdUM8M,BI7iRU,H7sL1ROnjjWMIHCqH1.9Qaz\",\n    \"returnCancelUrl\": \"https://LcZBhQHhUXwQ.ifdqKL9c6AsCqPNHvaftfRkm\",\n    \"returnErrorUrl\": \"http://OVTKqDFgtGpoGetaGdIfDFmVUHSdch.dmJ8mcYoF,bFwp4EO7bwL22eSbn4WSZ-HzXw8zJuxtCY\"\n  },\n  \"emailNotice\": \"my_email@mail.it\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basePath}}/carts",
+					"host": [
+						"{{basePath}}"
+					],
+					"path": [
+						"carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST carts - KO",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Failed POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.eql(400);",
+							"});",
+							"",
+							"pm.test(\"Check for invalid payment info response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.title).to.contain(\"Invalid payment info\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"paymentNotices\": [\n    {\n      \"noticeNumber\": \"333312387654312381\",\n      \"fiscalCode\": \"77777777777\",\n      \"amount\": 10000,\n      \"companyName\": \"companyName\",\n      \"description\": \"description\"\n    }\n  ],\n  \"returnUrls\": {\n    \"returnOkUrl\": \"http://uHzTuDdzFTzRxHkpkNHWNuomFmQVaCL.ibWeaCyQdi59IoGKkDolMLOuD2QdUM8M,BI7iRU,H7sL1ROnjjWMIHCqH1.9Qaz\",\n    \"returnCancelUrl\": \"https://LcZBhQHhUXwQ.ifdqKL9c6AsCqPNHvaftfRkm\",\n    \"returnErrorUrl\": \"http://OVTKqDFgtGpoGetaGdIfDFmVUHSdch.dmJ8mcYoF,bFwp4EO7bwL22eSbn4WSZ-HzXw8zJuxtCY\"\n  },\n  \"emailNotice\": \"my_email@mail.it\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basePath}}/carts",
+					"host": [
+						"{{basePath}}"
+					],
+					"path": [
+						"carts"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
