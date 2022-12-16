@@ -151,6 +151,11 @@
             <groupId>org.springframework.ws</groupId>
             <artifactId>spring-ws-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -211,6 +216,8 @@
                         <configuration>
                             <sourceDirs>
                                 <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/kotlin
+                                </sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/openapi/src/main/java
                                 </sourceDir>
                                 <sourceDir>${project.build.directory}/generated-sources/xjc</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
@@ -289,7 +296,29 @@
                                 <reactive>true</reactive>
                                 <enumPropertyNaming>UPPERCASE</enumPropertyNaming>
                             </configOptions>
-
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>nodo-per-pm</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>https://raw.githubusercontent.com/pagopa/pagopa-infra/CHK-856-fix-nodoPerPm-api/src/core/api/nodopagamenti_api/nodoPerPM/v1/_swagger.json.tpl</inputSpec>
+                            <generatorName>java</generatorName>
+                            <library>webclient</library>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <configOptions>
+                                <swaggerAnnotations>false</swaggerAnnotations>
+                                <openApiNullable>false</openApiNullable>
+                                <reactive>true</reactive>
+                            </configOptions>
+                            <modelPackage>it.pagopa.ecommerce.generated.nodoperpm.v1.dto</modelPackage>
+                            <apiPackage>it.pagopa.ecommerce.generated.nodoperpm.v1.api</apiPackage>
+                            <modelNameSuffix>dto</modelNameSuffix>
                         </configuration>
                     </execution>
                 </executions>

@@ -1,5 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.services
 
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
+import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.kotlin.*
+import reactor.core.publisher.Mono
 import java.util.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -24,8 +27,8 @@ class CartsServiceTests {
     }
 
     private val cartInfoRepository: CartInfoRepository = mock()
-
-    private val cartService: CartService = CartService(TEST_CHECKOUT_URL, cartInfoRepository)
+    private val nodoPerPmClient: NodoPerPmClient = mock()
+    private val cartService: CartService = CartService(TEST_CHECKOUT_URL, cartInfoRepository, nodoPerPmClient)
 
 
     @Test
@@ -34,6 +37,8 @@ class CartsServiceTests {
 
         Mockito.mockStatic(UUID::class.java).use { uuidMock ->
             uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
+            given(nodoPerPmClient.checkPosition(any()))
+                .willReturn(Mono.just(CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.OK)))
 
             val request = CartRequests.withOnePaymentNotice()
             val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
@@ -43,12 +48,30 @@ class CartsServiceTests {
     }
 
     @Test
+    fun `post cart failed with checkValidity KO`() = runTest {
+        val cartId = UUID.randomUUID()
+
+        Mockito.mockStatic(UUID::class.java).use { uuidMock ->
+            uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
+            given(nodoPerPmClient.checkPosition(any()))
+                .willReturn(Mono.just(CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.KO)))
+
+            val request = CartRequests.withOnePaymentNotice()
+            assertThrows<RestApiException> {
+                cartService.processCart(request)
+            }
+        }
+    }
+
+
+    @Test
     fun `post cart ko with multiple payment notices`() = runTest {
         val request = CartRequests.withMultiplePaymentNotice()
         assertThrows<RestApiException> {
             cartService.processCart(request)
         }
     }
+
 
     @Test
     fun `get cart by id`() {
