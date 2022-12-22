@@ -84,7 +84,7 @@ class CartService(
             )
 
             return nodoPerPmClient.checkPosition(checkPositionDto)
-                .filter { response -> response.esito ==  CheckPositionResponseDto.EsitoEnum.OK}
+                .filter { response -> response.outcome ==  CheckPositionResponseDto.OutcomeEnum.OK}
                 .switchIfEmpty {
                     throw RestApiException(
                     httpStatus = HttpStatus.BAD_REQUEST,
