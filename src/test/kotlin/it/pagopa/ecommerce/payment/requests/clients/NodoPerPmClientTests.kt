@@ -56,7 +56,7 @@ class NodoPerPmClientTests {
             listOf(ListelementDto().fiscalCode("77777777777").noticeNumber("303312387654312381")
         ))
         val objectFactory = ObjectFactory()
-        val response = CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.OK)
+        val response = CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)
         /**
          * precondition
          */
@@ -82,6 +82,6 @@ class NodoPerPmClientTests {
         /**
          * asserts
          */
-        Assertions.assertThat(testResponse!!.esito.value).isEqualTo(EsitoEnum.OK.value)
+        Assertions.assertThat(testResponse!!.outcome!!.value).isEqualTo(EsitoEnum.OK.value)
     }
 }
