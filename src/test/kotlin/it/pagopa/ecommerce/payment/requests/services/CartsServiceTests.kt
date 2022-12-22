@@ -38,7 +38,7 @@ class CartsServiceTests {
         Mockito.mockStatic(UUID::class.java).use { uuidMock ->
             uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
             given(nodoPerPmClient.checkPosition(any()))
-                .willReturn(Mono.just(CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.OK)))
+                .willReturn(Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
 
             val request = CartRequests.withOnePaymentNotice()
             val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
@@ -54,7 +54,7 @@ class CartsServiceTests {
         Mockito.mockStatic(UUID::class.java).use { uuidMock ->
             uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
             given(nodoPerPmClient.checkPosition(any()))
-                .willReturn(Mono.just(CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.KO)))
+                .willReturn(Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.KO)))
 
             val request = CartRequests.withOnePaymentNotice()
             assertThrows<RestApiException> {
