@@ -3,13 +3,9 @@ package it.pagopa.ecommerce.payment.requests.clients
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.AvanzamentoPagamentoDto.EsitoEnum
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
-import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementDto
-import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
 import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
-import it.pagopa.ecommerce.generated.transactions.model.StOutcome
-import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
-import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -53,7 +49,8 @@ class NodoPerPmClientTests {
     @Test
     fun `should return verify payment response given valid payment notice`() = runTest {
         val checkPositionDto = CheckPositionDto().positionslist(
-            listOf(ListelementDto().fiscalCode("77777777777").noticeNumber("303312387654312381")
+            listOf(
+                ListelementRequestDto().fiscalCode("77777777777").noticeNumber("303312387654312381")
         ))
         val objectFactory = ObjectFactory()
         val response = CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)

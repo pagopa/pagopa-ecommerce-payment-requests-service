@@ -2,7 +2,7 @@ package it.pagopa.ecommerce.payment.requests.services
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
-import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementDto
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
@@ -80,10 +80,14 @@ class CartService(
 
             val checkPositionDto = CheckPositionDto().positionslist(
                 paymentInfos.stream()
-                    .map { ListelementDto().fiscalCode(it.rptId.fiscalCode).noticeNumber(it.rptId.noticeId) }.toList()
+                    .map { ListelementRequestDto().fiscalCode(it.rptId.fiscalCode).noticeNumber(it.rptId.noticeId) }.toList()
             )
 
             return nodoPerPmClient.checkPosition(checkPositionDto)
+                .map { response ->
+                    logger.info("Received $response")
+                    response
+                }
                 .filter { response -> response.outcome ==  CheckPositionResponseDto.OutcomeEnum.OK}
                 .switchIfEmpty {
                     throw RestApiException(
