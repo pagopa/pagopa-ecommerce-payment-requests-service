@@ -1,13 +1,16 @@
 package it.pagopa.ecommerce.payment.requests.services
 
-import it.pagopa.ecommerce.generated.nodoperpsp.model.*
+import it.pagopa.ecommerce.generated.nodoperpsp.model.CtEnteBeneficiario
+import it.pagopa.ecommerce.generated.nodoperpsp.model.EsitoNodoVerificaRPTRisposta
+import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoTipoCodiceIdRPT
+import it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
 import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
-import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPspClient
+import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
@@ -37,13 +40,11 @@ class PaymentRequestsService(
 
     @Autowired private val objectFactoryNodeForPsp: it.pagopa.ecommerce.generated.transactions.model.ObjectFactory,
 
-    @Autowired private val baseNodoVerificaRPTRequest: NodoVerificaRPT,
-
-    @Autowired private val baseVerifyPaymentNoticeReq: VerifyPaymentNoticeReq,
-
     @Autowired private val nodoUtils: NodoUtils,
 
     @Autowired private val nodoOperations: NodoOperations,
+
+    @Autowired private val nodoConfig: NodoConfig
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -99,7 +100,7 @@ class PaymentRequestsService(
                 rptId.value,
                 paymentContextCode
             )
-            val nodoVerificaRPTRequest = baseNodoVerificaRPTRequest
+            val nodoVerificaRPTRequest = nodoConfig.baseNodoVerificaRPTRequest()
             val nodoTipoCodiceIdRPT: NodoTipoCodiceIdRPT = nodoUtils.getCodiceIdRpt(request)
             nodoVerificaRPTRequest.codiceIdRPT = nodoTipoCodiceIdRPT
             nodoVerificaRPTRequest.codiceContestoPagamento = paymentContextCode
@@ -129,7 +130,7 @@ class PaymentRequestsService(
             val paymentRequestInfo: Mono<PaymentRequestInfo>
             if (isNM3) {
                 logger.info("Calling Nodo for VerifyPaymentNotice")
-                val verifyPaymentNoticeReq = baseVerifyPaymentNoticeReq
+                val verifyPaymentNoticeReq = nodoConfig.baseVerifyPaymentNoticeReq()
                 val qrCode = CtQrCode()
                 qrCode.fiscalCode = rptId.fiscalCode
                 qrCode.noticeNumber = rptId.noticeId
