@@ -86,6 +86,7 @@ microservice-chart:
     NODO_HOSTNAME: https://api.uat.platform.pagopa.it
     NODO_PER_PSP_URI: /nodo/nodo-per-psp/v1
     NODE_FOR_PSP_URI: /nodo/node-for-psp/v1
+    NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
   envSecret:
