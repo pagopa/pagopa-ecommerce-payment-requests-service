@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.repositories
 
-import org.springframework.data.repository.CrudRepository
 import java.util.*
+import org.springframework.data.repository.CrudRepository
 
 interface CartInfoRepository : CrudRepository<CartInfo, UUID>

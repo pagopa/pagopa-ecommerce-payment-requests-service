@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 @Component
 @WritingConverter
 class RptIdWritingStringConverter : Converter<RptId, String> {
-    override fun convert(source: RptId): String {
-        return source.value
-    }
+  override fun convert(source: RptId): String {
+    return source.value
+  }
 }

@@ -4,12 +4,10 @@ import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.AvanzamentoPagamentoDto.Es
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementDto
-import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
-import it.pagopa.ecommerce.generated.transactions.model.StOutcome
-import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
-import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
+import java.util.function.Function
+import java.util.function.Predicate
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -25,63 +23,51 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import java.util.function.Function
-import java.util.function.Predicate
 
 @ExtendWith(MockitoExtension::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
 class NodoPerPmClientTests {
-    private lateinit var client: NodoPerPmClient
+  private lateinit var client: NodoPerPmClient
 
-    @Mock
-    private lateinit var nodoWebClient: WebClient
+  @Mock private lateinit var nodoWebClient: WebClient
 
-    @Mock
-    private lateinit var requestBodyUriSpec: WebClient.RequestBodyUriSpec
+  @Mock private lateinit var requestBodyUriSpec: WebClient.RequestBodyUriSpec
 
-    @Mock
-    private lateinit var requestHeadersSpec: WebClient.RequestHeadersSpec<*>
+  @Mock private lateinit var requestHeadersSpec: WebClient.RequestHeadersSpec<*>
 
-    @Mock
-    private lateinit var responseSpec: WebClient.ResponseSpec
+  @Mock private lateinit var responseSpec: WebClient.ResponseSpec
 
-    @BeforeEach
-    fun init() {
-        client = NodoPerPmClient("", nodoWebClient)
-    }
+  @BeforeEach
+  fun init() {
+    client = NodoPerPmClient("", nodoWebClient)
+  }
 
-    @Test
-    fun `should return verify payment response given valid payment notice`() = runTest {
-        val checkPositionDto = CheckPositionDto().positionslist(
-            listOf(ListelementDto().fiscalCode("77777777777").noticeNumber("303312387654312381")
-        ))
-        val objectFactory = ObjectFactory()
-        val response = CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.OK)
-        /**
-         * precondition
-         */
-        given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
-        given(requestBodyUriSpec.uri(any(), any<Array<*>>())).willReturn(requestBodyUriSpec)
-        given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
-        given(requestBodyUriSpec.body(any(), eq(CheckPositionDto::class.java))).willReturn(requestHeadersSpec)
-        given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
-        given(
-            responseSpec.onStatus(
-                any<Predicate<HttpStatus>>(),
-                any<Function<ClientResponse, Mono<out Throwable>>>()
-            )
-        ).willReturn(responseSpec)
-        given(responseSpec.bodyToMono(CheckPositionResponseDto::class.java)).willReturn(Mono.just(response))
+  @Test
+  fun `should return verify payment response given valid payment notice`() = runTest {
+    val checkPositionDto =
+      CheckPositionDto()
+        .positionslist(
+          listOf(ListelementDto().fiscalCode("77777777777").noticeNumber("303312387654312381")))
+    val objectFactory = ObjectFactory()
+    val response = CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.OK)
+    /** precondition */
+    given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.uri(any(), any<Array<*>>())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.body(any(), eq(CheckPositionDto::class.java)))
+      .willReturn(requestHeadersSpec)
+    given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+    given(
+        responseSpec.onStatus(
+          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
+      .willReturn(responseSpec)
+    given(responseSpec.bodyToMono(CheckPositionResponseDto::class.java))
+      .willReturn(Mono.just(response))
 
-        /**
-         * test
-         */
+    /** test */
+    val testResponse = client.checkPosition(checkPositionDto).block()
 
-        val testResponse = client.checkPosition(checkPositionDto).block()
-
-        /**
-         * asserts
-         */
-        Assertions.assertThat(testResponse!!.esito.value).isEqualTo(EsitoEnum.OK.value)
-    }
+    /** asserts */
+    Assertions.assertThat(testResponse!!.esito.value).isEqualTo(EsitoEnum.OK.value)
+  }
 }

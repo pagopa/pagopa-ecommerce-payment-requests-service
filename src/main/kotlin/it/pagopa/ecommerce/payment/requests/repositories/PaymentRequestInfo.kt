@@ -7,15 +7,17 @@ import org.springframework.data.annotation.PersistenceCreator
 import org.springframework.data.redis.core.RedisHash
 
 @RedisHash(value = "keys", timeToLive = 10 * 60)
-class PaymentRequestInfo @PersistenceCreator constructor(
-    @Id val id: RptId,
-    val paFiscalCode: String?,
-    val paName: String?,
-    val description: String?,
-    val amount: Int,
-    val dueDate: String?,
-    val isNM3: Boolean,
-    val paymentToken: String?,
-    val idempotencyKey: IdempotencyKey?,
-    val isCart: Boolean
+class PaymentRequestInfo
+@PersistenceCreator
+constructor(
+  @Id val id: RptId,
+  val paFiscalCode: String?,
+  val paName: String?,
+  val description: String?,
+  val amount: Int,
+  val dueDate: String?,
+  val isNM3: Boolean,
+  val paymentToken: String?,
+  val idempotencyKey: IdempotencyKey?,
+  val isCart: Boolean
 )
