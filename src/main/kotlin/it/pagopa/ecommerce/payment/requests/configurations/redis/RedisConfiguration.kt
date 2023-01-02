@@ -11,14 +11,18 @@ import org.springframework.data.redis.core.convert.RedisCustomConversions
 @Configuration
 class RedisConfiguration {
 
-    @Bean
-    fun redisCustomConversions(
-        rptIdReadingByteConverter: RptIdReadingByteConverter, rptIdReadingStringConverter: RptIdReadingStringConverter,
-        rptIdWritingByteConverter: RptIdWritingByteConverter, rptIdWritingStringConverter: RptIdWritingStringConverter,
-    ) = RedisCustomConversions(
-        listOf(
-            rptIdReadingByteConverter, rptIdReadingStringConverter,
-            rptIdWritingByteConverter, rptIdWritingStringConverter,
-        )
-    )
+  @Bean
+  fun redisCustomConversions(
+    rptIdReadingByteConverter: RptIdReadingByteConverter,
+    rptIdReadingStringConverter: RptIdReadingStringConverter,
+    rptIdWritingByteConverter: RptIdWritingByteConverter,
+    rptIdWritingStringConverter: RptIdWritingStringConverter,
+  ) =
+    RedisCustomConversions(
+      listOf(
+        rptIdReadingByteConverter,
+        rptIdReadingStringConverter,
+        rptIdWritingByteConverter,
+        rptIdWritingStringConverter,
+      ))
 }

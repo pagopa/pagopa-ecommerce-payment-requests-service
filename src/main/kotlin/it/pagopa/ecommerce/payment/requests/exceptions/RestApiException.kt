@@ -7,6 +7,4 @@ import org.springframework.http.HttpStatus
  * handler is, are used to construct the correct ProblemJson to output
  */
 class RestApiException(val httpStatus: HttpStatus, val title: String, val description: String) :
-    RuntimeException(title) {
-
-}
+  RuntimeException(title) {}

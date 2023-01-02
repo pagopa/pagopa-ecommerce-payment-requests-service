@@ -26,6 +26,7 @@
             **/it/pagopa/ecommerce/payment/requests/utils/soap/**/*
             **/it/pagopa/ecommerce/payment/requests/warmup/**/*
         </sonar.coverage.exclusions>
+        <spotless.version>2.28.0</spotless.version>
     </properties>
     <dependencies>
         <dependency>
@@ -304,7 +305,9 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>https://raw.githubusercontent.com/pagopa/pagopa-infra/CHK-856-fix-nodoPerPm-api/src/core/api/nodopagamenti_api/nodoPerPM/v1/_swagger.json.tpl</inputSpec>
+                            <inputSpec>
+                                https://raw.githubusercontent.com/pagopa/pagopa-infra/CHK-856-fix-nodoPerPm-api/src/core/api/nodopagamenti_api/nodoPerPM/v1/_swagger.json.tpl
+                            </inputSpec>
                             <generatorName>java</generatorName>
                             <library>webclient</library>
                             <generateApiDocumentation>false</generateApiDocumentation>
@@ -388,6 +391,56 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <formats>
+                        <!-- you can define as many formats as you want, each is independent -->
+                        <format>
+                            <!-- define the files to apply to -->
+                            <includes>
+                                <include>*.md</include>
+                                <include>.gitignore</include>
+                            </includes>
+                            <!-- define the steps to apply to those files -->
+                            <trimTrailingWhitespace/>
+                            <endWithNewline/>
+                            <indent>
+                                <tabs>true</tabs>
+                                <spacesPerTab>4</spacesPerTab>
+                            </indent>
+                        </format>
+                    </formats>
+                    <!-- define a language-specific format -->
+                    <java>
+                        <toggleOffOn/>
+                        <eclipse>
+                            <file>${project.basedir}/eclipse-style.xml</file>
+                        </eclipse>
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
+                    </java>
+                    <kotlin>
+                        <toggleOffOn/>
+                        <ktfmt>
+                            <version>0.39</version> <!-- optional -->
+                            <style>DEFAULT</style> <!-- optional, other options are DROPBOX, GOOGLE and KOTLINLANG -->
+                        </ktfmt>
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
+                    </kotlin>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>compile</phase>
                     </execution>
                 </executions>
             </plugin>
