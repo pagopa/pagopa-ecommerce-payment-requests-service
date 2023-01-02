@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFau
 import it.pagopa.ecommerce.generated.transactions.model.*
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPspClient
+import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
@@ -44,13 +45,11 @@ class PaymentRequestsServiceTests {
 
   @Mock private lateinit var nodeForPspClient: NodeForPspClient
 
-  @Mock private lateinit var baseNodoVerificaRPTRequest: NodoVerificaRPT
-
-  @Mock private lateinit var baseVerifyPaymentNoticeReq: VerifyPaymentNoticeReq
-
   @Mock private lateinit var nodoOperations: NodoOperations
 
   @Mock private lateinit var nodoUtilities: NodoUtils
+
+  @Mock private lateinit var nodoConfig: NodoConfig
 
   @BeforeEach
   fun init() {
@@ -61,10 +60,9 @@ class PaymentRequestsServiceTests {
         nodeForPspClient,
         it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory(),
         it.pagopa.ecommerce.generated.transactions.model.ObjectFactory(),
-        baseNodoVerificaRPTRequest,
-        baseVerifyPaymentNoticeReq,
         nodoUtilities,
-        nodoOperations)
+        nodoOperations,
+        nodoConfig)
   }
 
   @Test
@@ -111,6 +109,7 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
     given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRisposta))
     given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
@@ -151,6 +150,7 @@ class PaymentRequestsServiceTests {
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
     given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRisposta))
+    given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
     given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
     /** test */
@@ -190,6 +190,8 @@ class PaymentRequestsServiceTests {
     verifyPaymentNotice.paymentList = paymentList
 
     /** preconditions */
+    given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
+    given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
     given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRisposta))
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
@@ -219,6 +221,7 @@ class PaymentRequestsServiceTests {
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
     given(nodoUtilities.getCodiceIdRpt(any())).willReturn(NodoTipoCodiceIdRPT())
+    given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
     given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRisposta))
     /** assertions */
     assertThrows<NodoErrorException> { paymentRequestsService.getPaymentRequestInfo(rptIdAsString) }
@@ -239,6 +242,7 @@ class PaymentRequestsServiceTests {
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
     given(nodoUtilities.getCodiceIdRpt(any())).willReturn(NodoTipoCodiceIdRPT())
+    given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
     given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRisposta))
     /** assertions */
     assertThrows<NodoErrorException> { paymentRequestsService.getPaymentRequestInfo(rptIdAsString) }
@@ -277,6 +281,8 @@ class PaymentRequestsServiceTests {
 
       /** preconditions */
       given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+      given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
+      given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
       given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRIsposta))
       given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
       given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
@@ -306,6 +312,7 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
     given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRIsposta))
 
     val exception =
@@ -332,6 +339,7 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
     given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRIsposta))
 
     val exception =
@@ -362,6 +370,7 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
     given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRIsposta))
 
     val exception =
@@ -401,6 +410,8 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
+    given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRIsposta))
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     /** test */
@@ -429,6 +440,8 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(nodoConfig.baseNodoVerificaRPTRequest()).willReturn(NodoVerificaRPT())
+    given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(nodoPerPspClient.verificaRpt(any())).willReturn(Mono.just(verificaRPTRIsposta))
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     /** test */

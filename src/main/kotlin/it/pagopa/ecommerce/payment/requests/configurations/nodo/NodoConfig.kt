@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class NodoConfig {
+class NodoConfig(@Value("\${nodo.connection.string}") private val connectionString: String) {
 
   private val objectMapper = ObjectMapper()
 
@@ -18,18 +18,13 @@ class NodoConfig {
   }
 
   @Bean
-  fun nodoConnectionString(
-    @Value("\${nodo.connection.string}") connectionString: String
-  ): NodoConnectionString =
+  fun nodoConnectionString(): NodoConnectionString =
     objectMapper.readValue(connectionString, NodoConnectionString::class.java)
 
-  @Bean
-  fun baseNodoVerificaRPTRequest(
-    @Value("\${nodo.connection.string}") connectionString: String
-  ): NodoVerificaRPT {
+  fun baseNodoVerificaRPTRequest(): NodoVerificaRPT {
     val objectFactory = it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory()
     val request: NodoVerificaRPT = objectFactory.createNodoVerificaRPT()
-    val nodoConnectionParams = nodoConnectionString(connectionString)
+    val nodoConnectionParams = nodoConnectionString()
     request.identificativoPSP = nodoConnectionParams.idPSP
     request.identificativoCanale = nodoConnectionParams.idChannel
     request.identificativoIntermediarioPSP = nodoConnectionParams.idBrokerPSP
@@ -38,13 +33,10 @@ class NodoConfig {
     return request
   }
 
-  @Bean
-  fun baseVerifyPaymentNoticeReq(
-    @Value("\${nodo.connection.string}") connectionString: String
-  ): VerifyPaymentNoticeReq {
+  fun baseVerifyPaymentNoticeReq(): VerifyPaymentNoticeReq {
     val objectFactory = it.pagopa.ecommerce.generated.transactions.model.ObjectFactory()
     val request: VerifyPaymentNoticeReq = objectFactory.createVerifyPaymentNoticeReq()
-    val nodoConnectionParams = nodoConnectionString(connectionString)
+    val nodoConnectionParams = nodoConnectionString()
     request.idPSP = nodoConnectionParams.idPSP
     request.idChannel = nodoConnectionParams.idChannel
     request.idBrokerPSP = nodoConnectionParams.idBrokerPSP
