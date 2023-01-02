@@ -35,15 +35,23 @@ public class Jaxb2SoapEncoder implements Encoder<Object> {
     private final JaxbContextContainer jaxbContexts = new JaxbContextContainer();
 
     @Override
-    public boolean canEncode(ResolvableType elementType, MimeType mimeType) {
+    public boolean canEncode(
+                             ResolvableType elementType,
+                             MimeType mimeType
+    ) {
         Class<?> outputClass = elementType.toClass();
         return (outputClass.isAnnotationPresent(XmlRootElement.class) ||
                 outputClass.isAnnotationPresent(XmlType.class));
     }
 
     @Override
-    public Flux<DataBuffer> encode(Publisher<?> inputStream, DataBufferFactory bufferFactory,
-                                   ResolvableType elementType, MimeType mimeType, Map<String, Object> hints) {
+    public Flux<DataBuffer> encode(
+                                   Publisher<?> inputStream,
+                                   DataBufferFactory bufferFactory,
+                                   ResolvableType elementType,
+                                   MimeType mimeType,
+                                   Map<String, Object> hints
+    ) {
         return Flux.from(inputStream)
                 .take(1)
                 .concatMap(value -> encode(value, bufferFactory))
@@ -55,8 +63,10 @@ public class Jaxb2SoapEncoder implements Encoder<Object> {
         return Arrays.asList(MimeTypeUtils.TEXT_XML);
     }
 
-    private Flux<DataBuffer> encode(Object value,
-                                    DataBufferFactory bufferFactory) {
+    private Flux<DataBuffer> encode(
+                                    Object value,
+                                    DataBufferFactory bufferFactory
+    ) {
         return Mono.fromCallable(() -> {
 
             boolean release = true;
@@ -95,7 +105,9 @@ public class Jaxb2SoapEncoder implements Encoder<Object> {
                 return buffer;
             } catch (MarshalException ex) {
                 throw new EncodingException(
-                        "Could not marshal " + value.getClass() + " to XML", ex);
+                        "Could not marshal " + value.getClass() + " to XML",
+                        ex
+                );
             } catch (JAXBException ex) {
                 throw new CodecException("Invalid JAXB configuration", ex);
             } finally {

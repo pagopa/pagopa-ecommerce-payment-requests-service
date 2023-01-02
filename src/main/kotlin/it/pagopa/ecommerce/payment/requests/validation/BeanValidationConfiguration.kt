@@ -10,21 +10,22 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean
 
 @Configuration(proxyBeanMethods = false)
 class BeanValidationConfiguration {
-    /**
-     * This bean definition is part of the workaround for a bug in hibernate-validation.
-     *
-     * It replaces the default validator factory bean with ours that uses the customized parameter name discoverer.
-     *
-     * See:
-     *  * Spring issue: https://github.com/spring-projects/spring-framework/issues/23499
-     *  * Hibernate issue: https://hibernate.atlassian.net/browse/HV-1638
-     */
-    @Primary
-    @Bean
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    fun defaultValidator(): LocalValidatorFactoryBean {
-        val factoryBean = CustomLocalValidatorFactoryBean()
-        factoryBean.messageInterpolator = MessageInterpolatorFactory().getObject()
-        return factoryBean
-    }
+  /**
+   * This bean definition is part of the workaround for a bug in hibernate-validation.
+   *
+   * It replaces the default validator factory bean with ours that uses the customized parameter
+   * name discoverer.
+   *
+   * See:
+   * * Spring issue: https://github.com/spring-projects/spring-framework/issues/23499
+   * * Hibernate issue: https://hibernate.atlassian.net/browse/HV-1638
+   */
+  @Primary
+  @Bean
+  @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+  fun defaultValidator(): LocalValidatorFactoryBean {
+    val factoryBean = CustomLocalValidatorFactoryBean()
+    factoryBean.messageInterpolator = MessageInterpolatorFactory().getObject()
+    return factoryBean
+  }
 }

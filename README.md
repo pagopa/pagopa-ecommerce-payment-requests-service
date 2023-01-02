@@ -29,7 +29,7 @@ Create your environment typing :
 
 ```sh
 cp .env.example .env
-``` 
+```
 
 Then from current project directory run :
 
@@ -49,4 +49,16 @@ Then from the root project directory run :
 
 ```sh
 $ mvn spring-boot:run
+```
+
+## Code formatting
+
+Code formatting checks are automatically performed during build phase.
+If the code is not well formatted an error is raised blocking the maven build.
+
+Helpful commands:
+
+```sh
+mvn spotless:check # --> used to perform format checks
+mvn spotless:apply # --> used to format all misformatted files
 ```
