@@ -1,8 +1,8 @@
 package it.pagopa.ecommerce.payment.requests.controllers
 
+import PaymentRequestsService
 import it.pagopa.ecommerce.generated.payment.requests.server.api.PaymentRequestsApi
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
-import it.pagopa.ecommerce.payment.requests.services.PaymentRequestsService
 import it.pagopa.ecommerce.payment.requests.warmup.annotations.WarmupFunction
 import it.pagopa.ecommerce.payment.requests.warmup.exceptions.WarmUpException
 import it.pagopa.ecommerce.payment.requests.warmup.utils.WarmupRequests
