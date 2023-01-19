@@ -1,11 +1,11 @@
 package it.pagopa.ecommerce.payment.requests.controllers
 
-import PaymentRequestsService
 import com.fasterxml.jackson.databind.ObjectMapper
 import it.pagopa.ecommerce.generated.nodoperpsp.model.FaultBean
 import it.pagopa.ecommerce.generated.payment.requests.server.model.*
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
+import it.pagopa.ecommerce.payment.requests.services.PaymentRequestsService
 import it.pagopa.ecommerce.payment.requests.tests.utils.PaymentRequests
 import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
 import java.util.*
