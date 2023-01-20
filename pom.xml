@@ -348,23 +348,6 @@
                             </schemas>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>nodo-per-psp</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <schemaLanguage>WSDL</schemaLanguage>
-                            <generatePackage>it.pagopa.ecommerce.generated.nodoperpsp.model</generatePackage>
-                            <schemas>
-                                <schema>
-                                    <url>
-                                        ${project.basedir}/nodo-wsdl/nodoPerPsp.wsdl
-                                    </url>
-                                </schema>
-                            </schemas>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>

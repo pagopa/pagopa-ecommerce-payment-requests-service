@@ -1,7 +1,5 @@
 package it.pagopa.ecommerce.payment.requests.services
 
-import PaymentRequestsService
-import it.pagopa.ecommerce.generated.nodoperpsp.model.*
 import it.pagopa.ecommerce.generated.transactions.model.*
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
