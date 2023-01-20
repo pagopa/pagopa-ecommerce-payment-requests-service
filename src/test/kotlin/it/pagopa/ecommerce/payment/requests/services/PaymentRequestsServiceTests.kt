@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.payment.requests.services
 
 import it.pagopa.ecommerce.generated.transactions.model.*
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
+import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
@@ -37,9 +38,9 @@ class PaymentRequestsServiceTests {
 
   @Mock private lateinit var nodeForPspClient: NodeForPspClient
 
-  @Mock private lateinit var baseVerifyPaymentNoticeReq: VerifyPaymentNoticeReq
-
   @Mock private lateinit var nodoOperations: NodoOperations
+
+  @Mock private lateinit var nodoConfig: NodoConfig
 
   @BeforeEach
   fun init() {
@@ -48,8 +49,8 @@ class PaymentRequestsServiceTests {
         paymentRequestsInfoRepository,
         nodeForPspClient,
         it.pagopa.ecommerce.generated.transactions.model.ObjectFactory(),
-        baseVerifyPaymentNoticeReq,
-        nodoOperations)
+        nodoOperations,
+        nodoConfig)
   }
 
   @Test

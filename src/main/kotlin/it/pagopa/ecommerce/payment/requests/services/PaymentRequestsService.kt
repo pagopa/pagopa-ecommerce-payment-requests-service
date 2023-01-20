@@ -3,9 +3,9 @@ package it.pagopa.ecommerce.payment.requests.services
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
 import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
-import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
+import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
@@ -28,8 +28,8 @@ class PaymentRequestsService(
   @Autowired
   private val objectFactoryNodeForPsp:
     it.pagopa.ecommerce.generated.transactions.model.ObjectFactory,
-  @Autowired private val baseVerifyPaymentNoticeReq: VerifyPaymentNoticeReq,
   @Autowired private val nodoOperations: NodoOperations,
+  @Autowired private val nodoConfig: NodoConfig
 ) {
 
   private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -85,7 +85,7 @@ class PaymentRequestsService(
         paymentContextCode)
 
       val paymentRequestInfo: Mono<PaymentRequestInfo>
-      val verifyPaymentNoticeReq = baseVerifyPaymentNoticeReq
+      val verifyPaymentNoticeReq = nodoConfig.baseVerifyPaymentNoticeReq()
       val qrCode = CtQrCode()
       qrCode.fiscalCode = rptId.fiscalCode
       qrCode.noticeNumber = rptId.noticeId
