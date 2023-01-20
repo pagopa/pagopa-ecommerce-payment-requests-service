@@ -97,6 +97,7 @@ class PaymentRequestsServiceTests {
     verifyPaymentNotice.paymentList = paymentList
 
     /** preconditions */
+    given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
@@ -134,6 +135,7 @@ class PaymentRequestsServiceTests {
       verifyPaymentNotice.paymentList = paymentList
 
       /** preconditions */
+      given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
       given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
       given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
       given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
@@ -170,6 +172,7 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     /** test */
     val exception =
@@ -190,6 +193,7 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     /** test */
     val exception =
