@@ -47,11 +47,11 @@ class PaymentRequestsService(
         .switchIfEmpty(
           Mono.defer {
             getPaymentInfoFromNodo(rptIdRecord, paymentContextCode)
-              .doOnNext { paymentRequestFromNodo ->
+              .doOnNext {
                 logger.info(
-                  "PaymentRequestInfo from nodo pagoPA for {}, isNM3 {}",
+                  "PaymentRequestInfo from nodo pagoPA for {}",
                   rptId,
-                  paymentRequestFromNodo.isNM3)
+                )
               }
               .doOnSuccess { paymentRequestInfoRepository.save(it) }
           })
@@ -116,7 +116,6 @@ class PaymentRequestsService(
                   dueDate =
                     getDueDateString(
                       verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].dueDate),
-                  isNM3 = true,
                   paymentToken = null,
                   idempotencyKey = null,
                   isCart = false))
