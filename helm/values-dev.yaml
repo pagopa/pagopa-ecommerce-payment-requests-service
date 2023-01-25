@@ -28,6 +28,7 @@ microservice-chart:
     host: "weudev.ecommerce.internal.dev.platform.pagopa.it"
     path: /pagopa-ecommerce-payment-requests-service/(.*)
     pathType: "ImplementationSpecific"
+    servicePort: 8080
   serviceAccount:
     create: false
     annotations: {}
@@ -40,7 +41,8 @@ microservice-chart:
     allowPrivilegeEscalation: false
   service:
     type: ClusterIP
-    port: 8080
+    ports:
+    - 8080
   resources:
     requests:
       memory: "512Mi"
@@ -86,4 +88,12 @@ microservice-chart:
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   nodeSelector: {}
   tolerations: []
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
