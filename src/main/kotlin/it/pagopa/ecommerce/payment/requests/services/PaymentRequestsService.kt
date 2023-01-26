@@ -84,13 +84,12 @@ class PaymentRequestsService(
         rptId.value,
         paymentContextCode)
 
-      val paymentRequestInfo: Mono<PaymentRequestInfo>
       val verifyPaymentNoticeReq = nodoConfig.baseVerifyPaymentNoticeReq()
       val qrCode = CtQrCode()
       qrCode.fiscalCode = rptId.fiscalCode
       qrCode.noticeNumber = rptId.noticeId
       verifyPaymentNoticeReq.qrCode = qrCode
-      paymentRequestInfo =
+      val paymentRequestInfo: Mono<PaymentRequestInfo> =
         nodeForPspClient
           .verifyPaymentNotice(
             objectFactoryNodeForPsp.createVerifyPaymentNoticeReq(verifyPaymentNoticeReq))
