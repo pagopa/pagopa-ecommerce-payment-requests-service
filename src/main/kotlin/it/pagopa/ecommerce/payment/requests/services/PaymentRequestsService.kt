@@ -78,7 +78,7 @@ class PaymentRequestsService(
   }
 
   fun getPaymentInfoFromNodo(rptId: RptId, paymentContextCode: String): Mono<PaymentRequestInfo> =
-    Mono.just(rptId).flatMap { request: RptId ->
+    Mono.just(rptId).flatMap {
       logger.info(
         "Calling Nodo for VerifyPaymentNotice for get payment info for rptId: [{}]. PaymentContextCode: [{}]",
         rptId.value,
