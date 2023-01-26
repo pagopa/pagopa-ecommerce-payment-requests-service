@@ -1,8 +1,8 @@
 package it.pagopa.ecommerce.payment.requests.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import it.pagopa.ecommerce.generated.nodoperpsp.model.FaultBean
 import it.pagopa.ecommerce.generated.payment.requests.server.model.*
+import it.pagopa.ecommerce.generated.transactions.model.CtFaultBean
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.services.PaymentRequestsService
@@ -50,8 +50,8 @@ class PaymentRequestsControllerTests {
   private val paymentRequestController: PaymentRequestsController = PaymentRequestsController()
 
   companion object {
-    fun faultBeanWithCode(faultCode: String): FaultBean {
-      val faultBean = FaultBean()
+    fun faultBeanWithCode(faultCode: String): CtFaultBean {
+      val faultBean = CtFaultBean()
       faultBean.faultCode = faultCode
       return faultBean
     }

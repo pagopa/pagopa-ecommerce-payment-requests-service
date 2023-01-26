@@ -16,7 +16,6 @@ constructor(
   val description: String?,
   val amount: Int,
   val dueDate: String?,
-  val isNM3: Boolean,
   val paymentToken: String?,
   val idempotencyKey: IdempotencyKey?,
   val isCart: Boolean

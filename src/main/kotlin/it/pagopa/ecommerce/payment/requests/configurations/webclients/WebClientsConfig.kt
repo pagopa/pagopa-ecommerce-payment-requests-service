@@ -64,8 +64,4 @@ class WebClientsConfig {
   @Bean
   fun objectFactoryNodeForPsp(): it.pagopa.ecommerce.generated.transactions.model.ObjectFactory =
     it.pagopa.ecommerce.generated.transactions.model.ObjectFactory()
-
-  @Bean
-  fun objectFactoryNodoPerPSP(): it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory =
-    it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory()
 }

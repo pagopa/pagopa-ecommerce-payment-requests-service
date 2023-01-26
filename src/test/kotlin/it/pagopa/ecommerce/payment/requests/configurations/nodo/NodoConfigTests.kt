@@ -16,16 +16,6 @@ class NodoConfigTests {
   private val nodoConfig = NodoConfig(NODO_CONNECTION_STRING)
 
   @Test
-  fun `should return valid VerificaRPTBaseRequest`() = runTest {
-    val nodoVerificaRPT = nodoConfig.baseNodoVerificaRPTRequest()
-    assertEquals(nodoVerificaRPT.identificativoPSP, "idPsp")
-    assertEquals(nodoVerificaRPT.identificativoCanale, "idChannel")
-    assertEquals(nodoVerificaRPT.identificativoIntermediarioPSP, "idBrokerPsp")
-    assertEquals(nodoVerificaRPT.password, "password")
-    assertEquals(nodoVerificaRPT.codificaInfrastrutturaPSP, "QR-CODE")
-  }
-
-  @Test
   fun `should return valid VerifyPaymentNoticeRq`() = runTest {
     val nodoVerificaRPT = nodoConfig.baseVerifyPaymentNoticeReq()
     assertEquals(nodoVerificaRPT.idPSP, "idPsp")
