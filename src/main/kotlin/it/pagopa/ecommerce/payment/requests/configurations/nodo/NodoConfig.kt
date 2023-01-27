@@ -1,7 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.configurations.nodo
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import it.pagopa.ecommerce.generated.nodoperpsp.model.NodoVerificaRPT
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.payment.requests.configurations.nodo.util.NodoConnectionString
 import org.springframework.beans.factory.annotation.Value
@@ -20,18 +19,6 @@ class NodoConfig(@Value("\${nodo.connection.string}") private val connectionStri
   @Bean
   fun nodoConnectionString(): NodoConnectionString =
     objectMapper.readValue(connectionString, NodoConnectionString::class.java)
-
-  fun baseNodoVerificaRPTRequest(): NodoVerificaRPT {
-    val objectFactory = it.pagopa.ecommerce.generated.nodoperpsp.model.ObjectFactory()
-    val request: NodoVerificaRPT = objectFactory.createNodoVerificaRPT()
-    val nodoConnectionParams = nodoConnectionString()
-    request.identificativoPSP = nodoConnectionParams.idPSP
-    request.identificativoCanale = nodoConnectionParams.idChannel
-    request.identificativoIntermediarioPSP = nodoConnectionParams.idBrokerPSP
-    request.password = nodoConnectionParams.password
-    request.codificaInfrastrutturaPSP = PSP_INFRASTRUCTURE_CODIFICATION
-    return request
-  }
 
   fun baseVerifyPaymentNoticeReq(): VerifyPaymentNoticeReq {
     val objectFactory = it.pagopa.ecommerce.generated.transactions.model.ObjectFactory()
