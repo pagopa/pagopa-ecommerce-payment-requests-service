@@ -20,7 +20,7 @@ microservice-chart:
     periodSeconds: 10
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "0.0.13" #improve
+    tag: "0.1.0" #improve
     pullPolicy: Always
     port: 8080
   ingress:
@@ -42,7 +42,7 @@ microservice-chart:
   service:
     type: ClusterIP
     ports:
-    - 8080
+      - 8080
   resources:
     requests:
       memory: "512Mi"
