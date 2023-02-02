@@ -3,7 +3,7 @@ package it.pagopa.ecommerce.payment.requests.clients
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.AvanzamentoPagamentoDto.EsitoEnum
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
-import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementDto
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
 import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import java.util.function.Function
@@ -47,9 +47,10 @@ class NodoPerPmClientTests {
     val checkPositionDto =
       CheckPositionDto()
         .positionslist(
-          listOf(ListelementDto().fiscalCode("77777777777").noticeNumber("303312387654312381")))
+          listOf(
+            ListelementRequestDto().fiscalCode("77777777777").noticeNumber("303312387654312381")))
     val objectFactory = ObjectFactory()
-    val response = CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.OK)
+    val response = CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)
     /** precondition */
     given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
     given(requestBodyUriSpec.uri(any(), any<Array<*>>())).willReturn(requestBodyUriSpec)
@@ -68,6 +69,6 @@ class NodoPerPmClientTests {
     val testResponse = client.checkPosition(checkPositionDto).block()
 
     /** asserts */
-    Assertions.assertThat(testResponse!!.esito.value).isEqualTo(EsitoEnum.OK.value)
+    Assertions.assertThat(testResponse!!.outcome.value).isEqualTo(EsitoEnum.OK.value)
   }
 }

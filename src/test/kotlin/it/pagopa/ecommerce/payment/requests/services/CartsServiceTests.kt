@@ -39,7 +39,7 @@ class CartsServiceTests {
       uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
       given(nodoPerPmClient.checkPosition(any()))
         .willReturn(
-          Mono.just(CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.OK)))
+          Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
 
       val request = CartRequests.withOnePaymentNotice()
       val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
@@ -56,7 +56,7 @@ class CartsServiceTests {
       uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
       given(nodoPerPmClient.checkPosition(any()))
         .willReturn(
-          Mono.just(CheckPositionResponseDto().esito(CheckPositionResponseDto.EsitoEnum.KO)))
+          Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.KO)))
 
       val request = CartRequests.withOnePaymentNotice()
       assertThrows<RestApiException> { cartService.processCart(request) }
