@@ -42,6 +42,8 @@ class CartService(
    */
   var logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
+  companion object CartServiceConstants {
+
     const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 1
   }
 
