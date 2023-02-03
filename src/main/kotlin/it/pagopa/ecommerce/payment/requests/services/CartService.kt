@@ -15,7 +15,6 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import java.net.URI
-import java.text.MessageFormat
 import java.util.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -106,7 +105,7 @@ class CartService(
 
           cartInfoRepository.save(cart)
           val retUrl =
-            MessageFormat.format(
+            CARTS_REDIRECT_URL_FORMAT.format(
               checkoutUrl,
               cart.cartId,
             )
