@@ -86,7 +86,7 @@ stages:
             displayName: 'newman installation'
           - script: newman run api-tests/ecommerce-for-checkout/payment-request-service/payment-request-service_ecommerce_local.postman_collection.json --environment=api-tests/ecommerce-for-checkout/payment-request-service/payment-request-service_ecommerce_local.postman_environment.json --reporters cli,junit --reporter-junit-export Results/checkout-api-TEST.xml --ignore-redirects  
             displayName: 'Run api test'
-            continueOnError: true
+            continueOnError: false
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'JUnit'
