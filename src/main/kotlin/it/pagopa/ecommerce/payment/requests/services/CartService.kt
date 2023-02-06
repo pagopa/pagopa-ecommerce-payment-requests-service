@@ -15,6 +15,7 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import java.net.URI
+import java.text.MessageFormat
 import java.util.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +28,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import reactor.kotlin.core.publisher.switchIfEmpty
-import java.text.MessageFormat
 
 @Service
 class CartService(

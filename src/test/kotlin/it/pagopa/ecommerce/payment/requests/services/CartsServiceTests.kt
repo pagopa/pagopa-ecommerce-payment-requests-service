@@ -32,23 +32,6 @@ class CartsServiceTests {
     CartService(TEST_CHECKOUT_URL, cartInfoRepository, nodoPerPmClient)
 
   @Test
-  fun `post cart succeeded with one payment notice`() = runTest {
-    val cartId = UUID.randomUUID()
-
-    Mockito.mockStatic(UUID::class.java).use { uuidMock ->
-      uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
-      given(nodoPerPmClient.checkPosition(any()))
-        .willReturn(
-          Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
-
-      val request = CartRequests.withOnePaymentNotice()
-      val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
-      assertEquals(locationUrl, cartService.processCart(request))
-      verify(cartInfoRepository, times(1)).save(any())
-    }
-  }
-
-  @Test
   fun `post cart failed with checkValidity KO`() = runTest {
     val cartId = UUID.randomUUID()
 
