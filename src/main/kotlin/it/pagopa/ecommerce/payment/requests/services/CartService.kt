@@ -27,6 +27,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import reactor.kotlin.core.publisher.switchIfEmpty
+import java.text.MessageFormat
 
 @Service
 class CartService(
@@ -105,7 +106,7 @@ class CartService(
 
           cartInfoRepository.save(cart)
           val retUrl =
-            CARTS_REDIRECT_URL_FORMAT.format(
+            MessageFormat.format(
               checkoutUrl,
               cart.cartId,
             )
