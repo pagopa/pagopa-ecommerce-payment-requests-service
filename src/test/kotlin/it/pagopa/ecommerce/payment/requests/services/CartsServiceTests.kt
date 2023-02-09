@@ -29,7 +29,7 @@ class CartsServiceTests {
   private val cartInfoRepository: CartInfoRepository = mock()
   private val nodoPerPmClient: NodoPerPmClient = mock()
   private val cartService: CartService =
-    CartService(TEST_CHECKOUT_URL, cartInfoRepository, nodoPerPmClient)
+    CartService("${TEST_CHECKOUT_URL}/c/{0}", cartInfoRepository, nodoPerPmClient)
 
   @Test
   fun `post cart succeeded with one payment notice`() = runTest {

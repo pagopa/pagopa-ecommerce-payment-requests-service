@@ -15,6 +15,7 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import java.net.URI
+import java.text.MessageFormat
 import java.util.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -42,12 +43,6 @@ class CartService(
   var logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
   companion object CartServiceConstants {
-    /*
-     * Carts redirect URL format.
-     * The carts redirect url is composed as follow
-     * {host}/c/{cartId}
-     */
-    const val CARTS_REDIRECT_URL_FORMAT: String = "%s/c/%s"
 
     const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 1
   }
@@ -105,7 +100,7 @@ class CartService(
 
           cartInfoRepository.save(cart)
           val retUrl =
-            CARTS_REDIRECT_URL_FORMAT.format(
+            MessageFormat.format(
               checkoutUrl,
               cart.cartId,
             )
