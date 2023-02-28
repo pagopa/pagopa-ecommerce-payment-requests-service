@@ -1,16 +1,16 @@
 package it.pagopa.ecommerce.payment.requests.services
 
+import it.pagopa.ecommerce.commons.domain.v1.RptId
+import it.pagopa.ecommerce.commons.repositories.PaymentRequestInfo
+import it.pagopa.ecommerce.commons.repositories.PaymentRequestsInfoRepository
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
 import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
-import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
-import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
-import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfoRepository
 import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
 import java.util.*
 import javax.xml.datatype.XMLGregorianCalendar
@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono
 
 @Service
 class PaymentRequestsService(
-  @Autowired private val paymentRequestInfoRepository: PaymentRequestInfoRepository,
+  @Autowired private val paymentRequestInfoRepository: PaymentRequestsInfoRepository,
   @Autowired private val nodeForPspClient: NodeForPspClient,
   @Autowired
   private val objectFactoryNodeForPsp:
@@ -62,7 +62,7 @@ class PaymentRequestsService(
             paName = paymentInfo.paName,
             dueDate = paymentInfo.dueDate,
             description = paymentInfo.description,
-            amount = paymentInfo.amount,
+            amount = paymentInfo.amount!!,
             paymentContextCode = paymentContextCode)
         }
         .doOnNext { logger.info("PaymentRequestInfo retrieved for {}", rptId) }
@@ -105,19 +105,16 @@ class PaymentRequestsService(
             } else {
               Mono.just(
                 PaymentRequestInfo(
-                  id = rptId,
-                  paFiscalCode = verifyPaymentNoticeResponse.fiscalCodePA,
-                  paName = verifyPaymentNoticeResponse.companyName,
-                  description = verifyPaymentNoticeResponse.paymentDescription,
-                  amount =
-                    nodoOperations.getEuroCentsFromNodoAmount(
-                      verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].amount),
-                  dueDate =
-                    getDueDateString(
-                      verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].dueDate),
-                  paymentToken = null,
-                  idempotencyKey = null,
-                  isCart = false))
+                  rptId,
+                  verifyPaymentNoticeResponse.fiscalCodePA,
+                  verifyPaymentNoticeResponse.companyName,
+                  verifyPaymentNoticeResponse.paymentDescription,
+                  nodoOperations.getEuroCentsFromNodoAmount(
+                    verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].amount),
+                  getDueDateString(
+                    verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].dueDate),
+                  null,
+                  null))
             }
           }
       return@flatMap paymentRequestInfo

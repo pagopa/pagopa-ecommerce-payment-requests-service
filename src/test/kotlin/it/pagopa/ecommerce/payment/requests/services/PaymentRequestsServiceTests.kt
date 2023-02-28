@@ -1,13 +1,13 @@
 package it.pagopa.ecommerce.payment.requests.services
 
+import it.pagopa.ecommerce.commons.domain.v1.RptId
+import it.pagopa.ecommerce.commons.repositories.PaymentRequestInfo
+import it.pagopa.ecommerce.commons.repositories.PaymentRequestsInfoRepository
 import it.pagopa.ecommerce.generated.transactions.model.*
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
-import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
-import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
-import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfoRepository
 import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
 import java.math.BigDecimal
 import java.text.DateFormat
@@ -34,7 +34,7 @@ class PaymentRequestsServiceTests {
 
   private lateinit var paymentRequestsService: PaymentRequestsService
 
-  @Mock private lateinit var paymentRequestsInfoRepository: PaymentRequestInfoRepository
+  @Mock private lateinit var paymentRequestsInfoRepository: PaymentRequestsInfoRepository
 
   @Mock private lateinit var nodeForPspClient: NodeForPspClient
 
@@ -62,8 +62,7 @@ class PaymentRequestsServiceTests {
     val description = "Payment request description"
     val amount = Integer.valueOf(1000)
     val paymentRequestInfo =
-      PaymentRequestInfo(
-        rptIdAsObject, paTaxCode, paName, description, amount, null, null, null, false)
+      PaymentRequestInfo(rptIdAsObject, paTaxCode, paName, description, amount, null, null, null)
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject))
       .willReturn(Optional.of(paymentRequestInfo))

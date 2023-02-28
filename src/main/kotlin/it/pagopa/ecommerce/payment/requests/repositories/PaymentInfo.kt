@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.repositories
 
-import it.pagopa.ecommerce.payment.requests.domain.RptId
+import it.pagopa.ecommerce.commons.domain.v1.RptId
 import org.springframework.data.annotation.PersistenceCreator
 
 data class PaymentInfo
