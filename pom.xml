@@ -101,6 +101,28 @@
             <groupId>it.pagopa</groupId>
             <artifactId>pagopa-ecommerce-commons</artifactId>
             <version>${pagopa-ecommerce-commons.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-redis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.azure.spring</groupId>
+                    <artifactId>spring-cloud-azure-dependencies</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.azure.spring</groupId>
+                    <artifactId>spring-cloud-azure-starter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.azure.spring</groupId>
+                    <artifactId>spring-cloud-azure-starter-data-cosmos</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -162,24 +184,6 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-data-redis</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.azure.spring</groupId>
-                    <artifactId>spring-cloud-azure-starter</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.azure.spring</groupId>
-                    <artifactId>spring-cloud-azure-starter-data-cosmos</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>it.pagopa</groupId>
