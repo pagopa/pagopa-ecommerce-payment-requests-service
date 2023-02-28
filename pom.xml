@@ -27,6 +27,7 @@
             **/it/pagopa/ecommerce/payment/requests/warmup/**/*
         </sonar.coverage.exclusions>
         <spotless.version>2.28.0</spotless.version>
+        <pagopa-ecommerce-commons.version>0.7.3</pagopa-ecommerce-commons.version>
     </properties>
     <dependencies>
         <dependency>
@@ -95,6 +96,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>it.pagopa</groupId>
+            <artifactId>pagopa-ecommerce-commons</artifactId>
+            <version>${pagopa-ecommerce-commons.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -373,6 +379,26 @@
                         <phase>package</phase>
                         <goals>
                             <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>2.0.0-M3</version>
+                <configuration>
+                    <skipCheckoutIfExists>true</skipCheckoutIfExists>
+                    <connectionUrl>scm:git:https://github.com/pagopa/pagopa-ecommerce-commons.git</connectionUrl>
+                    <scmVersionType>tag</scmVersionType>
+                    <scmVersion>${pagopa-ecommerce-commons.version}</scmVersion>
+                    <goals>install</goals>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>bootstrap</goal>
                         </goals>
                     </execution>
                 </executions>
