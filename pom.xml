@@ -163,6 +163,13 @@
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>it.pagopa</groupId>
+            <artifactId>pagopa-ecommerce-commons</artifactId>
+            <version>${pagopa-ecommerce-commons.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
