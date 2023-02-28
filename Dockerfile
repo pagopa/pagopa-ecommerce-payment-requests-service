@@ -4,6 +4,8 @@ WORKDIR /workspace/app
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
+#validate step will execute the scm plugin to perform checkout and installation of the pagopa-commons library
+RUN ./mvnw validate -DskipTests
 RUN ./mvnw dependency:copy-dependencies
 # RUN ./mvnw dependency:go-offline
 
