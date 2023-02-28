@@ -167,6 +167,18 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-redis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.azure.spring</groupId>
+                    <artifactId>spring-cloud-azure-starter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.azure.spring</groupId>
+                    <artifactId>spring-cloud-azure-starter-data-cosmos</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
