@@ -1,6 +1,8 @@
 FROM openjdk:17-jdk as build
 WORKDIR /workspace/app
 
+RUN microdnf install git
+
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
