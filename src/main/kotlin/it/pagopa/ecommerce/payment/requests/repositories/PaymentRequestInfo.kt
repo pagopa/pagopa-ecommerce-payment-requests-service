@@ -14,9 +14,8 @@ constructor(
   val paFiscalCode: String?,
   val paName: String?,
   val description: String?,
-  val amount: Int,
+  val amount: Int?,
   val dueDate: String?,
   val paymentToken: String?,
   val idempotencyKey: IdempotencyKey?,
-  val isCart: Boolean
 )
