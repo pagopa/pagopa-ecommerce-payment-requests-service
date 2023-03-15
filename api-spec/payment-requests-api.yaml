@@ -32,7 +32,7 @@ paths:
           required: true
       responses:
         '200':
-          description: Payment request retrived
+          description: Payment request retrieved
           content:
             application/json:
               schema:
