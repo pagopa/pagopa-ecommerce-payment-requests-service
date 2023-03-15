@@ -41,12 +41,11 @@ class PaymentRequestsService(
     } catch (e: IllegalArgumentException) {
       throw InvalidRptException(rptId)
     }
-    val paymentContextCode = UUID.randomUUID().toString().replace("-", "")
     val paymentInfo =
       getPaymentInfoFromCache(rptIdRecord)
         .switchIfEmpty(
           Mono.defer {
-            getPaymentInfoFromNodo(rptIdRecord, paymentContextCode)
+            getPaymentInfoFromNodo(rptIdRecord)
               .doOnNext {
                 logger.info(
                   "PaymentRequestInfo from nodo pagoPA for {}",
@@ -62,8 +61,7 @@ class PaymentRequestsService(
             paName = paymentInfo.paName,
             dueDate = paymentInfo.dueDate,
             description = paymentInfo.description,
-            amount = paymentInfo.amount!!,
-            paymentContextCode = paymentContextCode)
+            amount = paymentInfo.amount!!)
         }
         .doOnNext { logger.info("PaymentRequestInfo retrieved for {}", rptId) }
     return paymentInfo.awaitSingle()
@@ -80,12 +78,10 @@ class PaymentRequestsService(
       .orElseGet { Mono.empty() }
   }
 
-  fun getPaymentInfoFromNodo(rptId: RptId, paymentContextCode: String): Mono<PaymentRequestInfo> =
+  fun getPaymentInfoFromNodo(rptId: RptId): Mono<PaymentRequestInfo> =
     Mono.just(rptId).flatMap {
       logger.info(
-        "Calling Nodo for VerifyPaymentNotice for get payment info for rptId: [{}]. PaymentContextCode: [{}]",
-        rptId.value,
-        paymentContextCode)
+        "Calling Nodo for VerifyPaymentNotice for get payment info for rptId: [{}].", rptId.value)
 
       val verifyPaymentNoticeReq = nodoConfig.baseVerifyPaymentNoticeReq()
       val qrCode = CtQrCode()
