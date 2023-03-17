@@ -23,7 +23,6 @@ WORKDIR /app/
 ARG EXTRACTED=/workspace/app/target/extracted
 
 ADD --chown=user https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/1.36.0/elastic-apm-agent-1.36.0.jar ./apm-elk-agent.jar
-COPY --chown=user apm-elk-agent.json ./apm-elk-agent.json
 
 COPY --from=build --chown=user ${EXTRACTED}/dependencies/ ./
 RUN true
