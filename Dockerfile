@@ -21,7 +21,10 @@ USER user:user
 WORKDIR /app/
 
 ARG EXTRACTED=/workspace/app/target/extracted
-
+# AI agent
+ADD --chown=user https://github.com/microsoft/ApplicationInsights-Java/releases/download/3.4.1/applicationinsights-agent-3.4.1.jar ./applicationinsights-agent.jar
+COPY --chown=user applicationinsights.json ./applicationinsights.json
+# ELK apm agent
 ADD --chown=user https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/1.36.0/elastic-apm-agent-1.36.0.jar ./apm-elk-agent.jar
 
 COPY --from=build --chown=user ${EXTRACTED}/dependencies/ ./
@@ -34,4 +37,4 @@ COPY --from=build --chown=user ${EXTRACTED}/application/ ./
 RUN true
 
 
-ENTRYPOINT ["java","-javaagent:apm-elk-agent.jar","org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java","-javaagent:apm-elk-agent.jar","-javaagent:applicationinsights-agent.jar","org.springframework.boot.loader.JarLauncher"]
