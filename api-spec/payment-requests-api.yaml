@@ -179,6 +179,12 @@ components:
           type: integer
           minimum: 0
           maximum: 99999999
+        paymentContextCode:
+          description: Payment context code
+          type: string
+          minLength: 32
+          maxLength: 32
+          deprecated: true
         dueDate:
           description: Payment notice due date
           type: string
