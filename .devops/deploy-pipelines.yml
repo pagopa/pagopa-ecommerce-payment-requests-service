@@ -130,7 +130,7 @@ stages:
       succeeded(),
       eq(${{parameters.UAT_PROD_DEPLOY}}, true),
       or(
-      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+      eq(variables['Build.SourceBranch'], 'refs/heads/CHK-1288-tuning-perf-deploy'),
       and(
       startsWith(variables['Build.SourceBranch'], 'refs/tags'),
       endsWith(variables['Build.SourceBranch'], '-RELEASE')
