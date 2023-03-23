@@ -31,14 +31,14 @@ microservice-chart:
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 60
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 60
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
   service:
@@ -71,7 +71,7 @@ microservice-chart:
   autoscaling:
     enable: true
     minReplica: 1
-    maxReplica: 5
+    maxReplica: 10
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
