@@ -69,9 +69,9 @@ microservice-chart:
       memory: "512Mi"
       cpu: "500m"
   autoscaling:
-    enable: false
+    enable: true
     minReplica: 1
-    maxReplica: 1
+    maxReplica: 5
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
@@ -79,7 +79,7 @@ microservice-chart:
         metadata:
           # Required
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
-          value: "70"
+          value: "80"
   envConfig:
     REDIS_HOST: pagopa-u-weu-ecommerce-redis.redis.cache.windows.net
     REDIS_PORT: "6380"
