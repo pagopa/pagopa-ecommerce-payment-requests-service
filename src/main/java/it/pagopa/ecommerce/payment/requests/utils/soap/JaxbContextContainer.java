@@ -9,17 +9,21 @@ final class JaxbContextContainer {
 
     private static final String PACKAGE_NODE = "it.pagopa.ecommerce.generated.transactions.model";
 
-    private static JAXBContext jaxbContext = null;
+    private static final JAXBContext jaxbContext;
+
+    static {
+        try {
+            jaxbContext = JAXBContext.newInstance(PACKAGE_NODE);
+        } catch (JAXBException e) {
+            throw new IllegalStateException("Exception initializing JaxbContext", e);
+        }
+    }
 
     public Marshaller createMarshaller() throws JAXBException {
-        return getJaxbContext().createMarshaller();
+        return jaxbContext.createMarshaller();
     }
 
     public Unmarshaller createUnmarshaller() throws JAXBException {
-        return getJaxbContext().createUnmarshaller();
-    }
-
-    private JAXBContext getJaxbContext() throws JAXBException {
-        return jaxbContext == null ? JAXBContext.newInstance(PACKAGE_NODE) : jaxbContext;
+        return jaxbContext.createUnmarshaller();
     }
 }
