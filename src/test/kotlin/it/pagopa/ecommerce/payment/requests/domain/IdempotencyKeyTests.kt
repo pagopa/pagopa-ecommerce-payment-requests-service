@@ -31,7 +31,7 @@ class IdempotencyKeyTests {
   @Test
   fun `should return key`() {
     val idempotencyKey = IdempotencyKey(VALID_FISCAL_CODE, VALID_KEY_ID)
-    assertTrue(idempotencyKey.key == VALID_FISCAL_CODE + "_" + VALID_KEY_ID)
+    assertTrue(idempotencyKey.rawValue == VALID_FISCAL_CODE + "_" + VALID_KEY_ID)
   }
 
   @Test

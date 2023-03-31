@@ -62,7 +62,7 @@ class PaymentRequestsService(
             paName = paymentInfo.paName,
             dueDate = paymentInfo.dueDate,
             description = paymentInfo.description,
-            amount = paymentInfo.amount,
+            amount = paymentInfo.amount!!,
             paymentContextCode = paymentContextCode)
         }
         .doOnNext { logger.info("PaymentRequestInfo retrieved for {}", rptId) }
@@ -74,7 +74,10 @@ class PaymentRequestsService(
       paymentRequestInfoRepository.findById(rptId)
     logger.info(
       "PaymentRequestInfo cache hit for {}: {}", rptId, paymentRequestInfoOptional.isPresent)
-    return paymentRequestInfoOptional.map { Mono.just(it) }.orElseGet { Mono.empty() }
+    return paymentRequestInfoOptional
+      .filter { it.amount != null }
+      .map { Mono.just(it) }
+      .orElseGet { Mono.empty() }
   }
 
   fun getPaymentInfoFromNodo(rptId: RptId, paymentContextCode: String): Mono<PaymentRequestInfo> =
@@ -116,8 +119,7 @@ class PaymentRequestsService(
                     getDueDateString(
                       verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].dueDate),
                   paymentToken = null,
-                  idempotencyKey = null,
-                  isCart = false))
+                  idempotencyKey = null))
             }
           }
       return@flatMap paymentRequestInfo

@@ -4,21 +4,21 @@ import java.util.regex.Pattern
 import org.springframework.data.annotation.PersistenceCreator
 
 class IdempotencyKey {
-  val key: String
+  val rawValue: String
 
   constructor(pspFiscalCode: String, keyIdentifier: String) {
     validateComponents(pspFiscalCode, keyIdentifier)
-    key = pspFiscalCode + "_" + keyIdentifier
+    rawValue = pspFiscalCode + "_" + keyIdentifier
   }
 
   @PersistenceCreator
-  constructor(key: String) {
-    val matches = key.split("_".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+  constructor(rawValue: String) {
+    val matches = rawValue.split("_".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
     require(matches.size == 2) { "Key doesn't match format `\$pspFiscalCode_\$keyIdentifier`" }
     val pspFiscalCode = matches[0]
     val keyIdentifier = matches[1]
     validateComponents(pspFiscalCode, keyIdentifier)
-    this.key = key
+    this.rawValue = rawValue
   }
 
   companion object {
@@ -42,16 +42,16 @@ class IdempotencyKey {
 
     other as IdempotencyKey
 
-    if (key != other.key) return false
+    if (rawValue != other.rawValue) return false
 
     return true
   }
 
   override fun hashCode(): Int {
-    return key.hashCode()
+    return rawValue.hashCode()
   }
 
   override fun toString(): String {
-    return "IdempotencyKey(key='$key')"
+    return "IdempotencyKey(key='$rawValue')"
   }
 }
