@@ -62,7 +62,8 @@ class PaymentRequestsServiceTests {
     val description = "Payment request description"
     val amount = Integer.valueOf(1000)
     val paymentRequestInfo =
-      PaymentRequestInfo(rptIdAsObject, paTaxCode, paName, description, amount, null, null, null)
+      PaymentRequestInfo(
+        rptIdAsObject, paTaxCode, paName, description, amount, null, null, null, listOf())
     /** preconditions */
     given(paymentRequestsInfoRepository.findById(rptIdAsObject))
       .willReturn(Optional.of(paymentRequestInfo))
