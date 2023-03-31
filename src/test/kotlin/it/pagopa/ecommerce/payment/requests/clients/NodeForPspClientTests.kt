@@ -6,13 +6,13 @@ import it.pagopa.ecommerce.generated.transactions.model.StOutcome
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.utils.client.ResponseSpecCustom
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
-import java.util.function.Function
-import java.util.function.Predicate
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
@@ -26,6 +26,9 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClient.*
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
+import java.util.function.Function
+import java.util.function.Predicate
+
 
 @ExtendWith(MockitoExtension::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
@@ -40,6 +43,8 @@ class NodeForPspClientTests {
   @Mock private lateinit var requestHeadersSpec: RequestHeadersSpec<*>
 
   @Mock private lateinit var responseSpec: ResponseSpec
+
+  @Mock private lateinit var customResponseSpec: ResponseSpecCustom
 
   @BeforeEach
   fun init() {
@@ -149,17 +154,16 @@ class NodeForPspClientTests {
     given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
     given(requestBodyUriSpec.body(any(), eq(SoapEnvelope::class.java)))
       .willReturn(requestHeadersSpec)
-    given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+    given(requestHeadersSpec.retrieve()).willReturn(customResponseSpec)
+    given(customResponseSpec.status).willReturn(HttpStatus.UNPROCESSABLE_ENTITY);
     given(
-        responseSpec.onStatus(
-          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
-      .willReturn(responseSpec)
-    given(responseSpec.bodyToMono(VerifyPaymentNoticeRes::class.java))
-      .willReturn(Mono.error(RestApiException(HttpStatus.UNPROCESSABLE_ENTITY, "", "")))
+      customResponseSpec.onStatus(
+        any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()
+      )
+    )
+      .willCallRealMethod()
 
+    assertThrows<RestApiException> { client.verifyPaymentNotice(objectFactory.createVerifyPaymentNoticeReq(request)) }
     /** test */
-    StepVerifier.create(
-        client.verifyPaymentNotice(objectFactory.createVerifyPaymentNoticeReq(request)))
-      .expectError(RestApiException::class.java)
   }
 }
