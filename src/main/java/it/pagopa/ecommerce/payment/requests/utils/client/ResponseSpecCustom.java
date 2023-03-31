@@ -16,7 +16,7 @@ public abstract class ResponseSpecCustom implements WebClient.ResponseSpec {
                                            Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction
     ) {
         if (statusPredicate.test(this.getStatus()))
-            exceptionFunction.apply(ClientResponse.create(HttpStatus.OK).build()).block();
+            exceptionFunction.apply(ClientResponse.create(this.getStatus()).build()).block();
         return this;
     }
 }
