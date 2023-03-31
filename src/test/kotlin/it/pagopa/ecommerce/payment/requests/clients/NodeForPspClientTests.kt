@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
+import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
 import java.util.function.Function
 import java.util.function.Predicate
@@ -24,6 +25,7 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClient.*
 import reactor.core.publisher.Mono
+import reactor.test.StepVerifier
 
 @ExtendWith(MockitoExtension::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
@@ -123,5 +125,41 @@ class NodeForPspClientTests {
     /** asserts */
     assertThat(testResponse?.fault?.faultCode).isEqualTo(faultError)
     assertThat(testResponse?.fault?.faultString).isEqualTo(faultError)
+  }
+
+  @Test
+  fun `should return verify Rest api exception`() = runTest {
+    val objectFactory = ObjectFactory()
+    val fiscalCode = "77777777777"
+    val paymentNotice = "302000100000009424"
+    val faultError = "PAA_PAGAMENTO_DUPLICATO"
+    val request = objectFactory.createVerifyPaymentNoticeReq()
+    val qrCode = CtQrCode()
+    qrCode.fiscalCode = fiscalCode
+    qrCode.noticeNumber = paymentNotice
+    request.qrCode = qrCode
+    val response = objectFactory.createVerifyPaymentNoticeRes()
+    val ctFaultBean = objectFactory.createCtFaultBean()
+    ctFaultBean.faultCode = faultError
+    ctFaultBean.faultString = faultError
+    response.fault = ctFaultBean
+    /** precondition */
+    given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.uri(any<String>(), any<Array<*>>())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.body(any(), eq(SoapEnvelope::class.java)))
+      .willReturn(requestHeadersSpec)
+    given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+    given(
+        responseSpec.onStatus(
+          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
+      .willReturn(responseSpec)
+    given(responseSpec.bodyToMono(VerifyPaymentNoticeRes::class.java))
+      .willReturn(Mono.error(RestApiException(HttpStatus.UNPROCESSABLE_ENTITY, "", "")))
+
+    /** test */
+    StepVerifier.create(
+        client.verifyPaymentNotice(objectFactory.createVerifyPaymentNoticeReq(request)))
+      .expectError(RestApiException::class.java)
   }
 }

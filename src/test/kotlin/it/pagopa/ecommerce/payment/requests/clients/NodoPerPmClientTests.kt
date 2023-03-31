@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
 import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
+import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import java.util.function.Function
 import java.util.function.Predicate
 import kotlinx.coroutines.test.runTest
@@ -23,6 +24,7 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import reactor.test.StepVerifier
 
 @ExtendWith(MockitoExtension::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
@@ -70,5 +72,31 @@ class NodoPerPmClientTests {
 
     /** asserts */
     Assertions.assertThat(testResponse!!.outcome.value).isEqualTo(EsitoEnum.OK.value)
+  }
+
+  @Test
+  fun `should return checkPosition Rest api exception`() = runTest {
+    val checkPositionDto =
+      CheckPositionDto()
+        .positionslist(
+          listOf(
+            ListelementRequestDto().fiscalCode("77777777777").noticeNumber("303312387654312381")))
+    /** precondition */
+    given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.uri(any(), any<Array<*>>())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.body(any(), eq(CheckPositionDto::class.java)))
+      .willReturn(requestHeadersSpec)
+    given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+    given(
+        responseSpec.onStatus(
+          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
+      .willReturn(responseSpec)
+    given(responseSpec.bodyToMono(CheckPositionResponseDto::class.java))
+      .willReturn(Mono.error(RestApiException(HttpStatus.UNPROCESSABLE_ENTITY, "", "")))
+
+    /** test */
+    StepVerifier.create(client.checkPosition(checkPositionDto))
+      .expectError(RestApiException::class.java)
   }
 }
