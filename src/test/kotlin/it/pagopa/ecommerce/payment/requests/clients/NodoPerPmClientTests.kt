@@ -7,12 +7,14 @@ import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
 import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.utils.client.ResponseSpecCustom
 import java.util.function.Function
 import java.util.function.Predicate
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
@@ -24,7 +26,6 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import reactor.test.StepVerifier
 
 @ExtendWith(MockitoExtension::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
@@ -38,6 +39,8 @@ class NodoPerPmClientTests {
   @Mock private lateinit var requestHeadersSpec: WebClient.RequestHeadersSpec<*>
 
   @Mock private lateinit var responseSpec: WebClient.ResponseSpec
+
+  @Mock private lateinit var customResponseSpec: ResponseSpecCustom
 
   @BeforeEach
   fun init() {
@@ -87,16 +90,15 @@ class NodoPerPmClientTests {
     given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
     given(requestBodyUriSpec.body(any(), eq(CheckPositionDto::class.java)))
       .willReturn(requestHeadersSpec)
-    given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+    given(requestHeadersSpec.retrieve()).willReturn(customResponseSpec)
+    given(customResponseSpec.status).willReturn(HttpStatus.UNPROCESSABLE_ENTITY)
     given(
-        responseSpec.onStatus(
+        customResponseSpec.onStatus(
           any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
-      .willReturn(responseSpec)
-    given(responseSpec.bodyToMono(CheckPositionResponseDto::class.java))
-      .willReturn(Mono.error(RestApiException(HttpStatus.UNPROCESSABLE_ENTITY, "", "")))
+      .willCallRealMethod()
+
+    assertThrows<RestApiException> { client.checkPosition(checkPositionDto) }
 
     /** test */
-    StepVerifier.create(client.checkPosition(checkPositionDto))
-      .expectError(RestApiException::class.java)
   }
 }
