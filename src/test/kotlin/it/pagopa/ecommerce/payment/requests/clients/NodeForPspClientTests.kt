@@ -8,6 +8,8 @@ import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.utils.client.ResponseSpecCustom
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
+import java.util.function.Function
+import java.util.function.Predicate
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -25,10 +27,6 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClient.*
 import reactor.core.publisher.Mono
-import reactor.test.StepVerifier
-import java.util.function.Function
-import java.util.function.Predicate
-
 
 @ExtendWith(MockitoExtension::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
@@ -155,15 +153,15 @@ class NodeForPspClientTests {
     given(requestBodyUriSpec.body(any(), eq(SoapEnvelope::class.java)))
       .willReturn(requestHeadersSpec)
     given(requestHeadersSpec.retrieve()).willReturn(customResponseSpec)
-    given(customResponseSpec.status).willReturn(HttpStatus.UNPROCESSABLE_ENTITY);
+    given(customResponseSpec.status).willReturn(HttpStatus.UNPROCESSABLE_ENTITY)
     given(
-      customResponseSpec.onStatus(
-        any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()
-      )
-    )
+        customResponseSpec.onStatus(
+          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
       .willCallRealMethod()
 
-    assertThrows<RestApiException> { client.verifyPaymentNotice(objectFactory.createVerifyPaymentNoticeReq(request)) }
+    assertThrows<RestApiException> {
+      client.verifyPaymentNotice(objectFactory.createVerifyPaymentNoticeReq(request))
+    }
     /** test */
   }
 }
