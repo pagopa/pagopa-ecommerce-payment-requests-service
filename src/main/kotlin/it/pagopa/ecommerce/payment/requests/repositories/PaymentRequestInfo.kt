@@ -18,4 +18,5 @@ constructor(
   val dueDate: String?,
   val paymentToken: String?,
   val idempotencyKey: IdempotencyKey?,
-)
+  val transferList: List<PaymentTransferInfo>?,
+) {}
