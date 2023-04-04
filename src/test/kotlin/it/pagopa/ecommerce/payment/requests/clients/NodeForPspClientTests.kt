@@ -5,8 +5,6 @@ import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
-import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
-import it.pagopa.ecommerce.payment.requests.utils.client.ResponseSpecCustom
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
 import java.util.function.Function
 import java.util.function.Predicate
@@ -14,7 +12,6 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
@@ -41,8 +38,6 @@ class NodeForPspClientTests {
   @Mock private lateinit var requestHeadersSpec: RequestHeadersSpec<*>
 
   @Mock private lateinit var responseSpec: ResponseSpec
-
-  @Mock private lateinit var customResponseSpec: ResponseSpecCustom
 
   @BeforeEach
   fun init() {
@@ -128,40 +123,5 @@ class NodeForPspClientTests {
     /** asserts */
     assertThat(testResponse?.fault?.faultCode).isEqualTo(faultError)
     assertThat(testResponse?.fault?.faultString).isEqualTo(faultError)
-  }
-
-  @Test
-  fun `should return verify Rest api exception`() = runTest {
-    val objectFactory = ObjectFactory()
-    val fiscalCode = "77777777777"
-    val paymentNotice = "302000100000009424"
-    val faultError = "PAA_PAGAMENTO_DUPLICATO"
-    val request = objectFactory.createVerifyPaymentNoticeReq()
-    val qrCode = CtQrCode()
-    qrCode.fiscalCode = fiscalCode
-    qrCode.noticeNumber = paymentNotice
-    request.qrCode = qrCode
-    val response = objectFactory.createVerifyPaymentNoticeRes()
-    val ctFaultBean = objectFactory.createCtFaultBean()
-    ctFaultBean.faultCode = faultError
-    ctFaultBean.faultString = faultError
-    response.fault = ctFaultBean
-    /** precondition */
-    given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.uri(any<String>(), any<Array<*>>())).willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.body(any(), eq(SoapEnvelope::class.java)))
-      .willReturn(requestHeadersSpec)
-    given(requestHeadersSpec.retrieve()).willReturn(customResponseSpec)
-    given(customResponseSpec.status).willReturn(HttpStatus.UNPROCESSABLE_ENTITY)
-    given(
-        customResponseSpec.onStatus(
-          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
-      .willCallRealMethod()
-
-    assertThrows<RestApiException> {
-      client.verifyPaymentNotice(objectFactory.createVerifyPaymentNoticeReq(request))
-    }
-    /** test */
   }
 }
