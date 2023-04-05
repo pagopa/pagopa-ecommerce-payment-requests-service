@@ -30,15 +30,14 @@ public class NodoPerPmClient(
       .onStatus(HttpStatus::isError) { clientResponse ->
         Mono.error(
           RestApiException(
-            HttpStatus.UNPROCESSABLE_ENTITY,
-            "Error while checking payment notices",
-            "Error performing checkPosition. Received HTTP code ${clientResponse.statusCode()}"))
+            clientResponse.statusCode(),
+            "Error checkPosition",
+            "Error while execute checkPosition api"))
       }
       .bodyToMono(CheckPositionResponseDto::class.java)
       .doOnSuccess {
         logger.debug(
           "Check position called successfully with list [{}]", request.positionslist.toString())
       }
-      .doOnError(Exception::class.java) { logger.error("Generic error", it) }
   }
 }
