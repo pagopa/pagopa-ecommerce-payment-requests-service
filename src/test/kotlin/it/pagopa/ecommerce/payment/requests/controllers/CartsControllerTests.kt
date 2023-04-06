@@ -126,7 +126,7 @@ class CartsControllerTests {
     val request = CartRequests.withMultiplePaymentNotice()
     given(cartService.processCart(request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.NOT_FOUND))
-    val errorResponse = ProblemJsonDto(status = 502, title = "Bad gateway")
+    val errorResponse = ProblemJsonDto(status = 500, title = "Internal server error")
     webClient
       .post()
       .uri("/carts")
@@ -134,7 +134,7 @@ class CartsControllerTests {
       .bodyValue(request)
       .exchange()
       .expectStatus()
-      .isEqualTo(502)
+      .isEqualTo(500)
       .expectBody()
       .json(objectMapper.writeValueAsString(errorResponse))
   }
@@ -145,8 +145,8 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotice()
     given(cartService.processCart(request))
-      .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.BAD_REQUEST))
-    val errorResponse = ProblemJsonDto(status = 400, title = "Bad request")
+      .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.UNPROCESSABLE_ENTITY))
+    val errorResponse = ProblemJsonDto(status = 422, title = "Invalid payment info")
     webClient
       .post()
       .uri("/carts")
@@ -154,7 +154,7 @@ class CartsControllerTests {
       .bodyValue(request)
       .exchange()
       .expectStatus()
-      .isEqualTo(400)
+      .isEqualTo(422)
       .expectBody()
       .json(objectMapper.writeValueAsString(errorResponse))
   }

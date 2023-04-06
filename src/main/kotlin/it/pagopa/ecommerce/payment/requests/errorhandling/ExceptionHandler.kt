@@ -52,14 +52,18 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
           ResponseEntity(
             ProblemJsonDto(status = HttpStatus.BAD_GATEWAY.value(), title = "Bad gateway"),
             HttpStatus.BAD_GATEWAY)
-        HttpStatus.BAD_REQUEST ->
+        HttpStatus.UNPROCESSABLE_ENTITY ->
           ResponseEntity(
-            ProblemJsonDto(status = HttpStatus.BAD_REQUEST.value(), title = "Bad request"),
-            HttpStatus.BAD_REQUEST)
+            ProblemJsonDto(
+              status = HttpStatus.UNPROCESSABLE_ENTITY.value(),
+              title = "Invalid payment info",
+              detail = "Invalid payment notice data"),
+            HttpStatus.UNPROCESSABLE_ENTITY)
         else ->
           ResponseEntity(
-            ProblemJsonDto(status = HttpStatus.BAD_GATEWAY.value(), title = "Bad gateway"),
-            HttpStatus.BAD_GATEWAY)
+            ProblemJsonDto(
+              status = HttpStatus.INTERNAL_SERVER_ERROR.value(), title = "Internal server error"),
+            HttpStatus.INTERNAL_SERVER_ERROR)
       }
     return response
   }

@@ -306,7 +306,7 @@
                         </goals>
                         <configuration>
                             <inputSpec>
-                                https://raw.githubusercontent.com/pagopa/pagopa-infra/fix-check-position-nodo/src/core/api/nodopagamenti_api/nodoPerPM/v1/_swagger.json.tpl
+                                https://raw.githubusercontent.com/pagopa/pagopa-infra/CHK-1046-fix-check-position-nodo/src/core/api/nodopagamenti_api/nodoPerPM/v1/_swagger.json.tpl
                             </inputSpec>
                             <generatorName>java</generatorName>
                             <library>webclient</library>
