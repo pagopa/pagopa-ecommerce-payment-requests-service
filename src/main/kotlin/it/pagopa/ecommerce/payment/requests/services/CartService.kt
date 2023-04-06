@@ -91,7 +91,7 @@ class CartService(
         .filter { response -> response.outcome == CheckPositionResponseDto.OutcomeEnum.OK }
         .switchIfEmpty {
           throw RestApiException(
-            httpStatus = HttpStatus.BAD_REQUEST,
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             title = "Invalid payment info",
             description = "Invalid payment notice data")
         }
