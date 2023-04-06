@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.payment.requests.errorhandling
 
 import io.lettuce.core.RedisConnectionException
 import it.pagopa.ecommerce.generated.payment.requests.server.model.*
+import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.exceptions.ValidationFailedException
@@ -40,6 +41,24 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
     logger.error("Exception processing request", e)
     return ResponseEntity.status(e.httpStatus)
       .body(ProblemJsonDto(title = e.title, detail = e.description, status = e.httpStatus.value()))
+  }
+
+  @ExceptionHandler(CheckPositionErrorException::class)
+  fun handleException(e: CheckPositionErrorException): ResponseEntity<ProblemJsonDto> {
+    logger.error("Nodo error checkPosition request", e)
+    val response: ResponseEntity<ProblemJsonDto> =
+      when (e.httpStatus) {
+        HttpStatus.INTERNAL_SERVER_ERROR ->
+          ResponseEntity(
+            ProblemJsonDto(status = HttpStatus.BAD_GATEWAY.value(), title = "Bad gateway"),
+            HttpStatus.BAD_GATEWAY)
+        HttpStatus.BAD_REQUEST ->
+          ResponseEntity(
+            ProblemJsonDto(status = HttpStatus.BAD_REQUEST.value(), title = "Bad request"),
+            HttpStatus.BAD_REQUEST)
+        else -> ResponseEntity(ProblemJsonDto(title = "Bad gateway"), HttpStatus.BAD_GATEWAY)
+      }
+    return response
   }
 
   @ExceptionHandler(ApiError::class)

@@ -6,7 +6,7 @@ import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
 import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
-import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import it.pagopa.ecommerce.payment.requests.utils.client.ResponseSpecCustom
 import java.util.function.Function
 import java.util.function.Predicate
@@ -91,14 +91,13 @@ class NodoPerPmClientTests {
     given(requestBodyUriSpec.body(any(), eq(CheckPositionDto::class.java)))
       .willReturn(requestHeadersSpec)
     given(requestHeadersSpec.retrieve()).willReturn(customResponseSpec)
-    given(customResponseSpec.status).willReturn(HttpStatus.UNPROCESSABLE_ENTITY)
+    given(customResponseSpec.status).willReturn(HttpStatus.BAD_REQUEST)
     given(
         customResponseSpec.onStatus(
           any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
       .willCallRealMethod()
 
-    assertThrows<RestApiException> { client.checkPosition(checkPositionDto) }
-
+    assertThrows<CheckPositionErrorException> { client.checkPosition(checkPositionDto) }
     /** test */
   }
 }

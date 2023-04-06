@@ -2,7 +2,7 @@ package it.pagopa.ecommerce.payment.requests.client
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
-import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -28,11 +28,7 @@ public class NodoPerPmClient(
       .body(Mono.just(request), CheckPositionDto::class.java)
       .retrieve()
       .onStatus(HttpStatus::isError) { clientResponse ->
-        Mono.error(
-          RestApiException(
-            clientResponse.statusCode(),
-            "Error checkPosition",
-            "Error while execute checkPosition api"))
+        Mono.error(CheckPositionErrorException(clientResponse.statusCode()))
       }
       .bodyToMono(CheckPositionResponseDto::class.java)
       .doOnSuccess {
