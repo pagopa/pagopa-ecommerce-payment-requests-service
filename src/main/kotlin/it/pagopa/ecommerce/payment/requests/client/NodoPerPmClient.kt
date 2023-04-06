@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.payment.requests.client
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
+import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseErrorDto
 import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import java.util.function.Predicate
 import org.slf4j.LoggerFactory
@@ -31,7 +32,7 @@ public class NodoPerPmClient(
       .retrieve()
       .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST)) { clientResponse ->
         clientResponse
-          .bodyToMono(CheckPositionResponseDto::class.java)
+          .bodyToMono(CheckPositionResponseErrorDto::class.java)
           .onErrorMap { CheckPositionErrorException(clientResponse.statusCode()) }
           .flatMap { Mono.error(CheckPositionErrorException(HttpStatus.UNPROCESSABLE_ENTITY)) }
       }
