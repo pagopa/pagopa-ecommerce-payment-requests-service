@@ -528,11 +528,13 @@ components:
         idCart:
           type: string
           example: "id_cart"
+          description: the id of the cart from the ec
         allCCP:
           type: boolean
           example: false
+          description: flag for internal purpose
     PaymentNotice:
-      description: Payment notice informations
+      description: Payment notice information
       type: object
       required:
         - noticeNumber
