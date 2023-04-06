@@ -119,7 +119,8 @@ class PaymentRequestsService(
                     getDueDateString(
                       verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].dueDate),
                   paymentToken = null,
-                  idempotencyKey = null))
+                  idempotencyKey = null,
+                  transferList = null))
             }
           }
       return@flatMap paymentRequestInfo
