@@ -56,7 +56,10 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
           ResponseEntity(
             ProblemJsonDto(status = HttpStatus.BAD_REQUEST.value(), title = "Bad request"),
             HttpStatus.BAD_REQUEST)
-        else -> ResponseEntity(ProblemJsonDto(title = "Bad gateway"), HttpStatus.BAD_GATEWAY)
+        else ->
+          ResponseEntity(
+            ProblemJsonDto(status = HttpStatus.BAD_GATEWAY.value(), title = "Bad gateway"),
+            HttpStatus.BAD_GATEWAY)
       }
     return response
   }
