@@ -122,6 +122,17 @@ stages:
                     VALUE_FILE: "helm/values-dev.yaml"
                     GREEN_VERSION: $(Build.SourceVersion)
 
+  - stage: "API_DEV_test"
+      displayName: 'Running API test on dev app'
+      dependsOn: Deploy_for_DEV
+      jobs:
+        - job: newman_api_test
+          steps:
+            - checkout: pagopaCheckoutTests
+            - template: azure-templates/api-tests.yml
+              parameters:
+                ENV: "DEV"
+
   - stage: "Build_release_candidate"
     displayName: 'Build release candidate'
     dependsOn: [ ]
@@ -200,22 +211,12 @@ stages:
     displayName: 'Running API test on blue app'
     dependsOn: Deploy_UAT_Blue
     jobs:
-      - job: Bluegreen_WaitForApproval
-        displayName: Blue API tests
+      - job: newman_api_test
         steps:
-          - script: |
-              yarn global add newman
-            displayName: 'Newman installation'
-          - script: |
-              newman run tests/api-tests/payment-requests.api.tests.json -e tests/api-tests/uat-environment.json --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
-            displayName: 'Run api test on blue app'
-            continueOnError: true
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/*-TEST.xml'
-              searchFolder: '$(System.DefaultWorkingDirectory)'
-
+          - checkout: pagopaCheckoutTests
+          - template: azure-templates/api-tests.yml
+            parameters:
+              ENV: "UAT"
 
   - stage: "Bluegreen_WaitForApproval"
     displayName: 'UAT approve blue deployment'

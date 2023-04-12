@@ -1,0 +1,22 @@
+parameters:
+  # Required
+  - name: "ENV" # UAT/DEV
+    type: string
+
+steps:
+  - script: |
+      yarn global add newman
+    displayName: 'Newman installation'
+  - script: |
+      if ["$(UAT_CONTAINER_NAMESPACE)" = "DEV"]; then
+        newman run api-tests/checkout-tests/checkout-api-dev.tests.json -e api-tests/dev.envs.json --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
+      else
+        newman run api-tests/checkout-tests/checkout-api-uat.tests.json -e api-tests/uat.envs.json --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
+      fi
+    displayName: 'Run api test on blue app'
+    continueOnError: true
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/*-TEST.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
