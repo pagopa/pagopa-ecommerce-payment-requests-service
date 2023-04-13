@@ -73,10 +73,10 @@ resources:
       ref: refs/tags/v2.10.1
       endpoint: 'io-azure-devops-github-ro'
     - repository: pagopaCheckoutTests
-        type: github
-        name: pagopa/pagopa-checkout-tests
-        ref: CHK-1388-add-header-for-blue-green-deployment
-        endpoint: 'io-azure-devops-github-ro'
+      type: github
+      name: pagopa/pagopa-checkout-tests
+      ref: CHK-1388-add-header-for-blue-green-deployment
+      endpoint: 'io-azure-devops-github-ro'
 
 pool:
   vmImage: ubuntu-latest
