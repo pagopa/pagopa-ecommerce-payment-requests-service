@@ -9,11 +9,35 @@ jobs:
       condition: ${{ containsValue(parameters.ENV_FILE, "dev") }}
       steps:
         - script: echo "Matching branch found"
+        - script: |
+            yarn global add newman
+          displayName: 'Newman installation'
+        - script: |
+            newman run api-tests/cart-tests/cart-api-dev.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
+          displayName: 'Run api test api cart test - DEV'
+          continueOnError: true
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/*-TEST.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
 
   - job: ecommerce-api-cart-tests-uat
       condition: ${{ containsValue(parameters.ENV_FILE, "uat") }}
       steps:
         - script: echo "Matching branch found"
+        - script: |
+            yarn global add newman
+          displayName: 'Newman installation'
+        - script: |
+            newman run api-tests/cart-tests/cart-api-uat.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
+          displayName: 'Run api test api cart test - UAT'
+          continueOnError: true
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/*-TEST.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
 
   - job: ecommerce-api-tests
     steps:
