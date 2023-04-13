@@ -11,6 +11,7 @@ data class CartInfo
 constructor(
   @Id val cartId: UUID,
   val payments: List<PaymentInfo>,
+  val cartIdEc: String?,
   val returnUrls: ReturnUrls,
   val email: String?
 )

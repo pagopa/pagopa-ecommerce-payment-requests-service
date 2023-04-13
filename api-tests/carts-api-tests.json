@@ -34,7 +34,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"paymentNotices\": [\n    {\n      \"noticeNumber\": \"330312387654312381\",\n      \"fiscalCode\": \"77777777777\",\n      \"amount\": 10000,\n      \"companyName\": \"companyName\",\n      \"description\": \"description\"\n    }\n  ],\n  \"returnUrls\": {\n    \"returnOkUrl\": \"http://uHzTuDdzFTzRxHkpkNHWNuomFmQVaCL.ibWeaCyQdi59IoGKkDolMLOuD2QdUM8M,BI7iRU,H7sL1ROnjjWMIHCqH1.9Qaz\",\n    \"returnCancelUrl\": \"https://LcZBhQHhUXwQ.ifdqKL9c6AsCqPNHvaftfRkm\",\n    \"returnErrorUrl\": \"http://OVTKqDFgtGpoGetaGdIfDFmVUHSdch.dmJ8mcYoF,bFwp4EO7bwL22eSbn4WSZ-HzXw8zJuxtCY\"\n  },\n  \"emailNotice\": \"my_email@mail.it\"\n}",
+					"raw": "{\n  \"paymentNotices\": [\n    {\n      \"noticeNumber\": \"330312387654312381\",\n      \"fiscalCode\": \"77777777777\",\n      \"amount\": 10000,\n      \"companyName\": \"companyName\",\n      \"description\": \"description\"\n    }\n  ],\n  \"returnUrls\": {\n    \"returnOkUrl\": \"http://uHzTuDdzFTzRxHkpkNHWNuomFmQVaCL.ibWeaCyQdi59IoGKkDolMLOuD2QdUM8M,BI7iRU,H7sL1ROnjjWMIHCqH1.9Qaz\",\n    \"returnCancelUrl\": \"https://LcZBhQHhUXwQ.ifdqKL9c6AsCqPNHvaftfRkm\",\n    \"returnErrorUrl\": \"http://OVTKqDFgtGpoGetaGdIfDFmVUHSdch.dmJ8mcYoF,bFwp4EO7bwL22eSbn4WSZ-HzXw8zJuxtCY\"\n  },\n  \"emailNotice\": \"my_email@mail.it\",\n  \"idCart\": \"ecCartIdExample\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -78,7 +78,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"paymentNotices\": [\n    {\n      \"noticeNumber\": \"333312387654312381\",\n      \"fiscalCode\": \"77777777777\",\n      \"amount\": 10000,\n      \"companyName\": \"companyName\",\n      \"description\": \"description\"\n    }\n  ],\n  \"returnUrls\": {\n    \"returnOkUrl\": \"http://uHzTuDdzFTzRxHkpkNHWNuomFmQVaCL.ibWeaCyQdi59IoGKkDolMLOuD2QdUM8M,BI7iRU,H7sL1ROnjjWMIHCqH1.9Qaz\",\n    \"returnCancelUrl\": \"https://LcZBhQHhUXwQ.ifdqKL9c6AsCqPNHvaftfRkm\",\n    \"returnErrorUrl\": \"http://OVTKqDFgtGpoGetaGdIfDFmVUHSdch.dmJ8mcYoF,bFwp4EO7bwL22eSbn4WSZ-HzXw8zJuxtCY\"\n  },\n  \"emailNotice\": \"my_email@mail.it\"\n}",
+					"raw": "{\n  \"paymentNotices\": [\n    {\n      \"noticeNumber\": \"333312387654312381\",\n      \"fiscalCode\": \"77777777777\",\n      \"amount\": 10000,\n      \"companyName\": \"companyName\",\n      \"description\": \"description\"\n    }\n  ],\n  \"returnUrls\": {\n    \"returnOkUrl\": \"http://uHzTuDdzFTzRxHkpkNHWNuomFmQVaCL.ibWeaCyQdi59IoGKkDolMLOuD2QdUM8M,BI7iRU,H7sL1ROnjjWMIHCqH1.9Qaz\",\n    \"returnCancelUrl\": \"https://LcZBhQHhUXwQ.ifdqKL9c6AsCqPNHvaftfRkm\",\n    \"returnErrorUrl\": \"http://OVTKqDFgtGpoGetaGdIfDFmVUHSdch.dmJ8mcYoF,bFwp4EO7bwL22eSbn4WSZ-HzXw8zJuxtCY\"\n  },\n  \"emailNotice\": \"my_email@mail.it\",\n  \"idCart\": \"ecCartIdExample\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
