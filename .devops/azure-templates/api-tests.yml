@@ -31,7 +31,7 @@ steps:
 
   - script: |
       newman run api-tests/cart-tests/cart-api-uat.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
-    displayName: 'Run api test api cart test - DEV'
+    displayName: 'Run api test api cart test - UAT'
     continueOnError: true
     condition: eq(contains('${{parameters.ENV_FILE}}', 'uat'), True)
   - task: PublishTestResults@2
