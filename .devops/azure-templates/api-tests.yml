@@ -1,22 +1,31 @@
 parameters:
   # Required
-  - name: "ENV" # UAT/DEV
+  - name: "ENV_FILE"
     type: string
 
-steps:
-  - script: |
-      yarn global add newman
-    displayName: 'Newman installation'
-  - script: |
-      if ["$(UAT_CONTAINER_NAMESPACE)" = "DEV"]; then
-        newman run api-tests/checkout-tests/checkout-api-dev.tests.json -e api-tests/dev.envs.json --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
-      else
-        newman run api-tests/checkout-tests/checkout-api-uat.tests.json -e api-tests/uat.envs.json --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
-      fi
-    displayName: 'Run api test on blue app'
-    continueOnError: true
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: '**/*-TEST.xml'
-      searchFolder: '$(System.DefaultWorkingDirectory)'
+
+jobs:
+  - job: ecommerce-api-cart-tests-dev
+      condition: ${{ containsValue(parameters.ENV_FILE, "dev") }}
+      steps:
+        - script: echo "Matching branch found"
+
+  - job: ecommerce-api-cart-tests-uat
+      condition: ${{ containsValue(parameters.ENV_FILE, "uat") }}
+      steps:
+        - script: echo "Matching branch found"
+
+  - job: ecommerce-api-tests
+    steps:
+      - script: |
+          yarn global add newman
+        displayName: 'Newman installation'
+      - script: |
+          newman run api-tests/checkout-tests/checkout-for-ecommerce-api.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
+        displayName: 'Run api test app - env file: ${{ parameters.ENV_FILE }}'
+        continueOnError: true
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/*-TEST.xml'
+          searchFolder: '$(System.DefaultWorkingDirectory)'

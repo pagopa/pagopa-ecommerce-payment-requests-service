@@ -72,6 +72,11 @@ resources:
       name: pagopa/azure-pipeline-templates
       ref: refs/tags/v2.10.1
       endpoint: 'io-azure-devops-github-ro'
+    - repository: pagopaCheckoutTests
+        type: github
+        name: pagopa/pagopa-checkout-tests
+        ref: CHK-1388-add-header-for-blue-green-deployment
+        endpoint: 'io-azure-devops-github-ro'
 
 pool:
   vmImage: ubuntu-latest
@@ -123,15 +128,15 @@ stages:
                     GREEN_VERSION: $(Build.SourceVersion)
 
   - stage: "API_DEV_test"
-      displayName: 'Running API test on dev app'
-      dependsOn: Deploy_for_DEV
-      jobs:
-        - job: newman_api_test
-          steps:
-            - checkout: pagopaCheckoutTests
-            - template: azure-templates/api-tests.yml
-              parameters:
-                ENV: "DEV"
+    displayName: 'Running API test on dev app'
+    dependsOn: Deploy_for_DEV
+    jobs:
+      - job: newman_api_test
+        steps:
+          - checkout: pagopaCheckoutTests
+          - template: azure-templates/api-tests.yml
+            parameters:
+              ENV_FILE: "api-tests/dev.envs.json"
 
   - stage: "Build_release_candidate"
     displayName: 'Build release candidate'
@@ -207,7 +212,7 @@ stages:
                     timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null --header "deployment:blue" -w ''%{http_code}'' https://weuuat.ecommerce.internal.uat.platform.pagopa.it/beta/pagopa-ecommerce-payment-requests-service/actuator/health)" != "200" ]]; do echo "##[debug]App not alive, sleeping"&&sleep 5; done' || exit 1
                   displayName: 'Waiting App to be running'
 
-  - stage: "Blue_API_UAT_test"
+  - stage: "API_Blue_UAT_test"
     displayName: 'Running API test on blue app'
     dependsOn: Deploy_UAT_Blue
     jobs:
@@ -216,7 +221,7 @@ stages:
           - checkout: pagopaCheckoutTests
           - template: azure-templates/api-tests.yml
             parameters:
-              ENV: "UAT"
+              ENV_FILE: "api-tests/uat.blue.envs.json"
 
   - stage: "Bluegreen_WaitForApproval"
     displayName: 'UAT approve blue deployment'
@@ -322,3 +327,14 @@ stages:
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(green_version)
+
+  - stage: "API_Green_UAT_test"
+    displayName: 'Running API test on green app'
+    dependsOn: Deploy_UAT_Blue
+    jobs:
+      - job: newman_api_test
+        steps:
+          - checkout: pagopaCheckoutTests
+          - template: azure-templates/api-tests.yml
+            parameters:
+              ENV_FILE: "api-tests/uat.envs.json"
