@@ -22,7 +22,7 @@ steps:
       newman run api-tests/cart-tests/cart-api-dev.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
     displayName: 'Run api test api cart test - DEV'
     continueOnError: true
-    condition: eq(contains(parameters.ENV_FILE, 'dev'), True)
+    condition: eq(contains(${{parameters.ENV_FILE}}, 'dev'), True)
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
@@ -33,7 +33,7 @@ steps:
       newman run api-tests/cart-tests/cart-api-uat.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
     displayName: 'Run api test api cart test - DEV'
     continueOnError: true
-    condition: eq(contains(parameters.ENV_FILE, 'uat'), True)
+    condition: eq(contains(${{parameters.ENV_FILE}}, 'uat'), True)
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
