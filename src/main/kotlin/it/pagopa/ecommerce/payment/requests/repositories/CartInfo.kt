@@ -9,8 +9,9 @@ import org.springframework.data.redis.core.RedisHash
 data class CartInfo
 @PersistenceCreator
 constructor(
-  @Id val cartId: UUID,
+  @Id val id: UUID,
   val payments: List<PaymentInfo>,
+  val idCart: String?,
   val returnUrls: ReturnUrls,
   val email: String?
 )

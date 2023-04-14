@@ -68,6 +68,7 @@ class CartService(
         CartInfo(
           UUID.randomUUID(),
           paymentInfos,
+          cartRequestDto.idCart,
           ReturnUrls(
             returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
             returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
@@ -96,13 +97,13 @@ class CartService(
             description = "Invalid payment notice data")
         }
         .map {
-          logger.info("Saving cart ${cart.cartId} for payments $paymentInfos")
+          logger.info("Saving cart ${cart.id} for payments $paymentInfos")
 
           cartInfoRepository.save(cart)
           val retUrl =
             MessageFormat.format(
               checkoutUrl,
-              cart.cartId,
+              cart.id,
             )
           logger.info("Return URL: $retUrl")
           return@map retUrl
@@ -137,6 +138,7 @@ class CartService(
             returnCancelUrl = URI(it.returnCancelUrl),
             returnErrorUrl = URI(it.returnErrorUrl))
         },
-      emailNotice = cart.email)
+      emailNotice = cart.email,
+      idCart = cart.idCart)
   }
 }

@@ -23,6 +23,7 @@ object CartRequests {
           returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
           returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
         ),
+      idCart = "idCartExample",
       emailNotice = "my_email@mail.it")
   }
 
