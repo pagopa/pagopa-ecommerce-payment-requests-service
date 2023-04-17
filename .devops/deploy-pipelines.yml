@@ -75,7 +75,7 @@ resources:
     - repository: pagopaCheckoutTests
       type: github
       name: pagopa/pagopa-checkout-tests
-      ref: CHK-1388-add-header-for-blue-green-deployment
+      ref: main
       endpoint: 'io-azure-devops-github-ro'
 
 pool:
@@ -221,7 +221,7 @@ stages:
           - checkout: pagopaCheckoutTests
           - template: azure-templates/api-tests.yml
             parameters:
-              ENV_FILE: "api-tests/uat.blue.envs.json"
+              ENV_FILE: "api-tests/uat.payment-requests.blue.envs.json"
 
   - stage: "Bluegreen_WaitForApproval"
     displayName: 'UAT approve blue deployment'
