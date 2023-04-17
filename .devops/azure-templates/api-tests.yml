@@ -11,8 +11,8 @@ steps:
   - script: |
       newman run api-tests/checkout-tests/checkout-for-ecommerce-api.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
     displayName: 'Run api test app - env file: ${{ parameters.ENV_FILE }}'
-    continueOnError: true
   - task: PublishTestResults@2
+    condition: succeededOrFailed()
     inputs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/*-TEST.xml'
@@ -21,9 +21,9 @@ steps:
   - script: |
       newman run api-tests/cart-tests/cart-api-dev.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
     displayName: 'Run api test api cart test - DEV'
-    continueOnError: true
     condition: eq(contains('${{parameters.ENV_FILE}}', 'dev'), True)
   - task: PublishTestResults@2
+    condition: succeededOrFailed()
     inputs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/*-TEST.xml'
@@ -32,9 +32,9 @@ steps:
   - script: |
       newman run api-tests/cart-tests/cart-api-uat.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
     displayName: 'Run api test api cart test - UAT'
-    continueOnError: true
     condition: eq(contains('${{parameters.ENV_FILE}}', 'uat'), True)
   - task: PublishTestResults@2
+    condition: succeededOrFailed()
     inputs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/*-TEST.xml'
