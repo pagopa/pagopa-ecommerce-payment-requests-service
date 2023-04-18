@@ -9,7 +9,7 @@ steps:
     displayName: 'Newman installation'
 
   - script: |
-      newman run api-tests/checkout-tests/checkout-for-ecommerce-api.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
+      newman run api-tests/checkout-tests/checkout-for-ecommerce-api.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/checkout-for-ecommerce-api-TEST.xml
     displayName: 'Run api test app - env file: ${{ parameters.ENV_FILE }}'
   - task: PublishTestResults@2
     condition: succeededOrFailed()
@@ -19,7 +19,7 @@ steps:
       searchFolder: '$(System.DefaultWorkingDirectory)'
 
   - script: |
-      newman run api-tests/cart-tests/cart-api-dev.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
+      newman run api-tests/cart-tests/cart-api-dev.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/cart-api-dev.tests-TEST.xml
     displayName: 'Run api test api cart test - DEV'
     condition: eq(contains('${{parameters.ENV_FILE}}', 'dev'), True)
   - task: PublishTestResults@2
@@ -30,7 +30,7 @@ steps:
       searchFolder: '$(System.DefaultWorkingDirectory)'
 
   - script: |
-      newman run api-tests/cart-tests/cart-api-uat.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/api-TEST.xml
+      newman run api-tests/cart-tests/cart-api-uat.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/cart-api-uat.tests-TEST.xml
     displayName: 'Run api test api cart test - UAT'
     condition: eq(contains('${{parameters.ENV_FILE}}', 'uat'), True)
   - task: PublishTestResults@2
