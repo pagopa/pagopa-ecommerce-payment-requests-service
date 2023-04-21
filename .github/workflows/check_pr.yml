@@ -1,0 +1,23 @@
+name: Check PR
+
+# Controls when the workflow will run
+on:
+  pull_request:
+    branches:
+      - main
+    types: [ opened, synchronize, labeled, unlabeled, reopened, edited ]
+
+
+permissions:
+  pull-requests: write
+
+jobs:
+  check_size:
+    runs-on: ubuntu-latest
+    name: Check Size
+    steps:
+
+      - name: Check PR Size
+        uses: pagopa/github-actions-template/check-pr-size@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
