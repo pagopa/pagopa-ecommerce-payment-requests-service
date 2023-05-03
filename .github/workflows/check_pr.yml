@@ -18,6 +18,6 @@ jobs:
     steps:
 
       - name: Check PR Size
-        uses: pagopa/github-actions-template/check-pr-size@main
+        uses: pagopa/github-actions-template/check-pr-size@3fae741d94bcb9873f2447e95cc4ddea6f77be4d
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
