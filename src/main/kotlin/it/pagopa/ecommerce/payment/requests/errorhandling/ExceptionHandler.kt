@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.payment.requests.errorhandling
 
 import io.lettuce.core.RedisConnectionException
 import it.pagopa.ecommerce.generated.payment.requests.server.model.*
+import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.exceptions.ValidationFailedException
@@ -40,6 +41,31 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
     logger.error("Exception processing request", e)
     return ResponseEntity.status(e.httpStatus)
       .body(ProblemJsonDto(title = e.title, detail = e.description, status = e.httpStatus.value()))
+  }
+
+  @ExceptionHandler(CheckPositionErrorException::class)
+  fun handleException(e: CheckPositionErrorException): ResponseEntity<ProblemJsonDto> {
+    logger.error("Nodo error checkPosition request", e)
+    val response: ResponseEntity<ProblemJsonDto> =
+      when (e.httpStatus) {
+        HttpStatus.INTERNAL_SERVER_ERROR ->
+          ResponseEntity(
+            ProblemJsonDto(status = HttpStatus.BAD_GATEWAY.value(), title = "Bad gateway"),
+            HttpStatus.BAD_GATEWAY)
+        HttpStatus.UNPROCESSABLE_ENTITY ->
+          ResponseEntity(
+            ProblemJsonDto(
+              status = HttpStatus.UNPROCESSABLE_ENTITY.value(),
+              title = "Invalid payment info",
+              detail = "Invalid payment notice data"),
+            HttpStatus.UNPROCESSABLE_ENTITY)
+        else ->
+          ResponseEntity(
+            ProblemJsonDto(
+              status = HttpStatus.INTERNAL_SERVER_ERROR.value(), title = "Internal server error"),
+            HttpStatus.INTERNAL_SERVER_ERROR)
+      }
+    return response
   }
 
   @ExceptionHandler(ApiError::class)

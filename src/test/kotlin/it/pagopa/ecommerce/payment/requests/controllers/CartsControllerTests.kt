@@ -7,6 +7,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestRe
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.ProblemJsonDto
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
+import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.services.CartService
 import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
@@ -86,6 +87,66 @@ class CartsControllerTests {
         title = "Multiple payment notices not processable",
         detail = "Too many payment notices, expected max one")
 
+    webClient
+      .post()
+      .uri("/carts")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(422)
+      .expectBody()
+      .json(objectMapper.writeValueAsString(errorResponse))
+  }
+
+  @Test
+  fun `post cart KO with internal server error while invoke checkPosition`() = runTest {
+    val objectMapper = ObjectMapper()
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    val request = CartRequests.withMultiplePaymentNotice()
+    given(cartService.processCart(request))
+      .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR))
+    val errorResponse = ProblemJsonDto(status = 502, title = "Bad gateway")
+    webClient
+      .post()
+      .uri("/carts")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(502)
+      .expectBody()
+      .json(objectMapper.writeValueAsString(errorResponse))
+  }
+
+  @Test
+  fun `post cart KO with 404 while invoke checkPosition`() = runTest {
+    val objectMapper = ObjectMapper()
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    val request = CartRequests.withMultiplePaymentNotice()
+    given(cartService.processCart(request))
+      .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.NOT_FOUND))
+    val errorResponse = ProblemJsonDto(status = 500, title = "Internal server error")
+    webClient
+      .post()
+      .uri("/carts")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(500)
+      .expectBody()
+      .json(objectMapper.writeValueAsString(errorResponse))
+  }
+
+  @Test
+  fun `post cart KO with 400 while invoke checkPosition`() = runTest {
+    val objectMapper = ObjectMapper()
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    val request = CartRequests.withMultiplePaymentNotice()
+    given(cartService.processCart(request))
+      .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.UNPROCESSABLE_ENTITY))
+    val errorResponse = ProblemJsonDto(status = 422, title = "Invalid payment info")
     webClient
       .post()
       .uri("/carts")

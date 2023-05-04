@@ -6,12 +6,15 @@ import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
 import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
+import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
+import it.pagopa.ecommerce.payment.requests.utils.client.ResponseSpecCustom
 import java.util.function.Function
 import java.util.function.Predicate
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
@@ -36,6 +39,8 @@ class NodoPerPmClientTests {
   @Mock private lateinit var requestHeadersSpec: WebClient.RequestHeadersSpec<*>
 
   @Mock private lateinit var responseSpec: WebClient.ResponseSpec
+
+  @Mock private lateinit var customResponseSpec: ResponseSpecCustom
 
   @BeforeEach
   fun init() {
@@ -70,5 +75,29 @@ class NodoPerPmClientTests {
 
     /** asserts */
     Assertions.assertThat(testResponse!!.outcome.value).isEqualTo(EsitoEnum.OK.value)
+  }
+
+  @Test
+  fun `should return checkPosition Rest api exception`() = runTest {
+    val checkPositionDto =
+      CheckPositionDto()
+        .positionslist(
+          listOf(
+            ListelementRequestDto().fiscalCode("77777777777").noticeNumber("303312387654312381")))
+    /** precondition */
+    given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.uri(any(), any<Array<*>>())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.body(any(), eq(CheckPositionDto::class.java)))
+      .willReturn(requestHeadersSpec)
+    given(requestHeadersSpec.retrieve()).willReturn(customResponseSpec)
+    given(customResponseSpec.status).willReturn(HttpStatus.BAD_REQUEST)
+    given(
+        customResponseSpec.onStatus(
+          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
+      .willCallRealMethod()
+
+    assertThrows<CheckPositionErrorException> { client.checkPosition(checkPositionDto) }
+    /** test */
   }
 }
