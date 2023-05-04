@@ -81,6 +81,7 @@ microservice-chart:
     ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
     ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
+    ELASTIC_APM_LOG_SENDING: "true"
   envSecret:
     ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
     REDIS_PASSWORD: redis-ecommerce-password
