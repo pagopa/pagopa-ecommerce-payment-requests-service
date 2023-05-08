@@ -27,7 +27,7 @@ object CartRequests {
       emailNotice = "my_email@mail.it")
   }
 
-  fun withMultiplePaymentNotice(paymentNoticesNumber: Int): CartRequestDto {
+  fun withMultiplePaymentNotices(paymentNoticesNumber: Int): CartRequestDto {
     val paymentNotices = ArrayList<PaymentNoticeDto>()
     repeat(paymentNoticesNumber) {
       paymentNotices.add(

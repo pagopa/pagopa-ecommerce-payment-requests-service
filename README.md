@@ -7,19 +7,20 @@ with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 
 ### Environment variables
 
-| Variable name           | Description                                                                 | type          | default |
-|-------------------------|-----------------------------------------------------------------------------|---------------|---------|
-| CHECKOUT_URL            | Redirection URL for Checkout carts                                          | url (string)  |         |
-| REDIS_HOST              | Host where the redis instance used to persist idempotency keys can be found | string        |         |
-| REDIS_PASSWORD          | Password used for connecting to Redis instance                              | string        |         |
-| REDIS_PORT              | Port used for connecting to Redis instance                                  | number        |         |
-| REDIS_SSL_ENABLED       | Whether SSL is enabled when connecting to Redis                             | boolean       |         |
-| NODO_HOSTNAME           | Nodo connection host name                                                   | string        |         |
-| NODO_PER_PSP_URI        | Nodo per PSP URI                                                            | string        |         |
-| NODE_FOR_PSP_URI        | Nodo for PSP URI                                                            | string        |         |
-| NODO_READ_TIMEOUT       | Http read timeout for all call made to Nodo                                 | number        |         |
-| NODO_CONNECTION_TIMEOUT | Http connection timeout for all call made to Nodo                           | number        |         |
-| NODO_CONNECTION_STRING  | Connection string containing information used to make Nodo calls            | json (string) |         |
+| Variable name                     | Description                                                                  | type          | default |
+|-----------------------------------|------------------------------------------------------------------------------|---------------|---------|
+| CHECKOUT_URL                      | Redirection URL for Checkout carts                                           | url (string)  |         |
+| REDIS_HOST                        | Host where the redis instance used to persist idempotency keys can be found  | string        |         |
+| REDIS_PASSWORD                    | Password used for connecting to Redis instance                               | string        |         |
+| REDIS_PORT                        | Port used for connecting to Redis instance                                   | number        |         |
+| REDIS_SSL_ENABLED                 | Whether SSL is enabled when connecting to Redis                              | boolean       |         |
+| NODO_HOSTNAME                     | Nodo connection host name                                                    | string        |         |
+| NODO_PER_PSP_URI                  | Nodo per PSP URI                                                             | string        |         |
+| NODE_FOR_PSP_URI                  | Nodo for PSP URI                                                             | string        |         |
+| NODO_READ_TIMEOUT                 | Http read timeout for all call made to Nodo                                  | number        |         |
+| NODO_CONNECTION_TIMEOUT           | Http connection timeout for all call made to Nodo                            | number        |         |
+| NODO_CONNECTION_STRING            | Connection string containing information used to make Nodo calls             | json (string) |         |
+| CARTS_MAX_ALLOWED_PAYMENT_NOTICES | Max allowed number of payment notices to be process for a POST carts request | number        |         |
 
 An example configuration of these environment variables is in the `.env.example` file.
 
