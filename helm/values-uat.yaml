@@ -20,6 +20,7 @@ microservice-chart:
       REDIS_HOST: pagopa-u-weu-ecommerce-redis.redis.cache.windows.net
       REDIS_PORT: "6380"
       REDIS_SSL_ENABLED: "true"
+      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
     envSecret:
       REDIS_PASSWORD: redis-ecommerce-password
       APPLICATIONINSIGHTS_CONNECTION_STRING: applicationinsights-connection-string
@@ -53,9 +54,9 @@ microservice-chart:
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: {}
+    annotations: { }
     name: ""
-  podAnnotations: {}
+  podAnnotations: { }
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -90,6 +91,7 @@ microservice-chart:
     NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
+    CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     APPLICATIONINSIGHTS_CONNECTION_STRING: applicationinsights-connection-string
@@ -97,8 +99,8 @@ microservice-chart:
   keyvault:
     name: "pagopa-u-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector: { }
+  tolerations: [ ]
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:

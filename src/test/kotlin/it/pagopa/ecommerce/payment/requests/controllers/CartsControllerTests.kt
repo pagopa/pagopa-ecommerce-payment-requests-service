@@ -74,7 +74,7 @@ class CartsControllerTests {
   fun `post cart KO with multiple payment notices`() = runTest {
     val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    val request = CartRequests.withMultiplePaymentNotice()
+    val request = CartRequests.withMultiplePaymentNotice(5)
     given(cartService.processCart(request))
       .willThrow(
         RestApiException(
@@ -103,7 +103,7 @@ class CartsControllerTests {
   fun `post cart KO with internal server error while invoke checkPosition`() = runTest {
     val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    val request = CartRequests.withMultiplePaymentNotice()
+    val request = CartRequests.withMultiplePaymentNotice(2)
     given(cartService.processCart(request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR))
     val errorResponse = ProblemJsonDto(status = 502, title = "Bad gateway")
@@ -123,7 +123,7 @@ class CartsControllerTests {
   fun `post cart KO with 404 while invoke checkPosition`() = runTest {
     val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    val request = CartRequests.withMultiplePaymentNotice()
+    val request = CartRequests.withMultiplePaymentNotice(2)
     given(cartService.processCart(request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.NOT_FOUND))
     val errorResponse = ProblemJsonDto(status = 500, title = "Internal server error")
@@ -143,7 +143,7 @@ class CartsControllerTests {
   fun `post cart KO with 400 while invoke checkPosition`() = runTest {
     val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    val request = CartRequests.withMultiplePaymentNotice()
+    val request = CartRequests.withMultiplePaymentNotice(2)
     given(cartService.processCart(request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.UNPROCESSABLE_ENTITY))
     val errorResponse = ProblemJsonDto(status = 422, title = "Invalid payment info")

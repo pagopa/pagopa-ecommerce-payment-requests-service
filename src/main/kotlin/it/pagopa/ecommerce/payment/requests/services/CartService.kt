@@ -34,6 +34,7 @@ class CartService(
   @Value("\${checkout.url}") private val checkoutUrl: String,
   @Autowired private val cartInfoRepository: CartInfoRepository,
   @Autowired private val nodoPerPmClient: NodoPerPmClient,
+  @Value("\${carts.max_allowed_payment_notices}") private val maxAllowedPaymentNotices: Int,
   private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
@@ -41,11 +42,6 @@ class CartService(
    * Logger instance
    */
   var logger: Logger = LoggerFactory.getLogger(this.javaClass)
-
-  companion object CartServiceConstants {
-
-    const val MAX_ALLOWED_PAYMENT_NOTICES: Int = 1
-  }
 
   /*
    * Process input cartRequestDto:
@@ -57,7 +53,7 @@ class CartService(
     val receivedNotices = paymentsNotices.size
     logger.info("Received [$receivedNotices] payment notices")
 
-    return if (receivedNotices <= MAX_ALLOWED_PAYMENT_NOTICES) {
+    return if (receivedNotices <= maxAllowedPaymentNotices) {
       val paymentInfos =
         paymentsNotices.map {
           PaymentInfo(
@@ -114,7 +110,7 @@ class CartService(
       throw RestApiException(
         httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
         title = "Multiple payment notices not processable",
-        description = "Too many payment notices, expected max one")
+        description = "Too many payment notices, expected max $maxAllowedPaymentNotices")
     }
   }
 

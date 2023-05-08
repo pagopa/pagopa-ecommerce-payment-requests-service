@@ -29,7 +29,7 @@ class CartsServiceTests {
   private val cartInfoRepository: CartInfoRepository = mock()
   private val nodoPerPmClient: NodoPerPmClient = mock()
   private val cartService: CartService =
-    CartService("${TEST_CHECKOUT_URL}/c/{0}", cartInfoRepository, nodoPerPmClient)
+    CartService("${TEST_CHECKOUT_URL}/c/{0}", cartInfoRepository, nodoPerPmClient, 5)
 
   @Test
   fun `post cart succeeded with one payment notice`() = runTest {
@@ -65,7 +65,7 @@ class CartsServiceTests {
 
   @Test
   fun `post cart ko with multiple payment notices`() = runTest {
-    val request = CartRequests.withMultiplePaymentNotice()
+    val request = CartRequests.withMultiplePaymentNotice(6)
     assertThrows<RestApiException> { cartService.processCart(request) }
   }
 
