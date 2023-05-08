@@ -20,7 +20,7 @@ with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 | NODO_READ_TIMEOUT                 | Http read timeout for all call made to Nodo                                  | number        |         |
 | NODO_CONNECTION_TIMEOUT           | Http connection timeout for all call made to Nodo                            | number        |         |
 | NODO_CONNECTION_STRING            | Connection string containing information used to make Nodo calls             | json (string) |         |
-| CARTS_MAX_ALLOWED_PAYMENT_NOTICES | Max allowed number of payment notices to be process for a POST carts request | number        |         |
+| CARTS_MAX_ALLOWED_PAYMENT_NOTICES | Max allowed number of payment notices to be processed for a POST carts request | number        |         |
 
 An example configuration of these environment variables is in the `.env.example` file.
 
