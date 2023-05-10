@@ -85,7 +85,6 @@ microservice-chart:
     ELASTIC_APM_LOG_SENDING: 'true'
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
-    APPLICATIONINSIGHTS_CONNECTION_STRING: applicationinsights-connection-string
     NODO_CONNECTION_STRING: nodo-connection-string
     ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
   keyvault:
