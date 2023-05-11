@@ -4,7 +4,7 @@ import java.time.Duration
 import org.springframework.data.redis.core.RedisTemplate
 
 abstract class RedisTemplateWrapper<V>(
-  private val redisTemplate: RedisTemplate<String, V>,
+  val redisTemplate: RedisTemplate<String, V>,
   private val keyspace: String,
   private val ttl: Duration
 ) {
