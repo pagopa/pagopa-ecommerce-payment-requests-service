@@ -2,8 +2,8 @@ package it.pagopa.ecommerce.payment.requests.configurations.redis
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import it.pagopa.ecommerce.payment.requests.configurations.redis.customserializer.JacksonRptDeserializer
-import it.pagopa.ecommerce.payment.requests.configurations.redis.customserializer.JacksonRptSerializer
+import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.JacksonRptDeserializer
+import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.JacksonRptSerializer
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo

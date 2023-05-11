@@ -49,7 +49,7 @@ class CartsServiceTests {
       val request = CartRequests.withOnePaymentNotice()
       val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
       assertEquals(locationUrl, cartService.processCart(request))
-      verify(cartRedisTemplateWrapper, times(1)).setValue(any())
+      verify(cartRedisTemplateWrapper, times(1)).save(any())
     }
   }
 
@@ -83,7 +83,7 @@ class CartsServiceTests {
 
       val request = CartRequests.withOnePaymentNotice()
 
-      given(cartRedisTemplateWrapper.getValue(cartId.toString()))
+      given(cartRedisTemplateWrapper.findByKey(cartId.toString()))
         .willReturn(
           request.let { req ->
             CartInfo(
@@ -110,7 +110,7 @@ class CartsServiceTests {
   fun `non-existing id throws CartNotFoundException`() {
     val cartId = UUID.randomUUID()
 
-    given(cartRedisTemplateWrapper.getValue(cartId.toString())).willReturn(null)
+    given(cartRedisTemplateWrapper.findByKey(cartId.toString())).willReturn(null)
 
     assertThrows<CartNotFoundException> { cartService.getCart(cartId) }
   }

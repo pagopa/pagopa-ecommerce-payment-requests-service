@@ -94,7 +94,7 @@ class CartService(
         .map {
           logger.info("Saving cart ${cart.id} for payments $paymentInfos")
 
-          cartsRedisTemplateWrapper.setValue(cart)
+          cartsRedisTemplateWrapper.save(cart)
           val retUrl =
             MessageFormat.format(
               checkoutUrl,
@@ -118,7 +118,7 @@ class CartService(
    */
   fun getCart(cartId: UUID): CartRequestDto {
     val cart =
-      cartsRedisTemplateWrapper.getValue(cartId.toString())
+      cartsRedisTemplateWrapper.findByKey(cartId.toString())
         ?: throw CartNotFoundException(cartId.toString())
 
     return CartRequestDto(

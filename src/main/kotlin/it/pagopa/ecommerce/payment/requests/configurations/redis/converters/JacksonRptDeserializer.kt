@@ -1,4 +1,4 @@
-package it.pagopa.ecommerce.payment.requests.configurations.redis.customserializer
+package it.pagopa.ecommerce.payment.requests.configurations.redis.converters
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext

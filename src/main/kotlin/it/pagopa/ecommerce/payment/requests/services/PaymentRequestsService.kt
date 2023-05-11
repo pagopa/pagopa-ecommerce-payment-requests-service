@@ -53,7 +53,7 @@ class PaymentRequestsService(
                   rptId,
                 )
               }
-              .doOnSuccess { paymentRequestInfoRepository.setValue(it) }
+              .doOnSuccess { paymentRequestInfoRepository.save(it) }
           })
         .map { paymentInfo ->
           PaymentRequestsGetResponseDto(
@@ -71,7 +71,7 @@ class PaymentRequestsService(
 
   suspend fun getPaymentInfoFromCache(rptId: RptId): Mono<PaymentRequestInfo> {
     val paymentRequestInfoOptional: Optional<PaymentRequestInfo> =
-      Optional.ofNullable(paymentRequestInfoRepository.getValue(rptId.value))
+      Optional.ofNullable(paymentRequestInfoRepository.findByKey(rptId.value))
     logger.info(
       "PaymentRequestInfo cache hit for {}: {}", rptId, paymentRequestInfoOptional.isPresent)
     return paymentRequestInfoOptional

@@ -9,11 +9,11 @@ abstract class RedisTemplateWrapper<V>(
   private val ttl: Duration
 ) {
 
-  fun setValue(value: V) {
+  fun save(value: V) {
     redisTemplate.opsForValue().set("$keyspace:${getKeyFromEntity(value)}", value!!, ttl)
   }
 
-  fun getValue(key: String): V? = redisTemplate.opsForValue().get("$keyspace:$key")
+  fun findByKey(key: String): V? = redisTemplate.opsForValue().get("$keyspace:$key")
 
   protected abstract fun getKeyFromEntity(value: V): String
 }

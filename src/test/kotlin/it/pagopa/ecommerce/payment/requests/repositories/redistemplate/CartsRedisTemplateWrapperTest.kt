@@ -57,7 +57,7 @@ class CartsRedisTemplateWrapperTest {
       .set(capture(keyCaptor), eq(cartInfo), eq(Duration.ofMinutes(10)))
 
     // test
-    cartsRedisTemplateWrapper.setValue(cartInfo)
+    cartsRedisTemplateWrapper.save(cartInfo)
     assertEquals("carts:$cartId", keyCaptor.value)
   }
 
@@ -88,7 +88,7 @@ class CartsRedisTemplateWrapperTest {
     given(valueOperations.get("carts:$cartId")).willReturn(cartInfo)
 
     // test
-    val getPaymentRequestInfo = cartsRedisTemplateWrapper.getValue(cartId.toString())
+    val getPaymentRequestInfo = cartsRedisTemplateWrapper.findByKey(cartId.toString())
     assertEquals(cartInfo, getPaymentRequestInfo)
   }
 }

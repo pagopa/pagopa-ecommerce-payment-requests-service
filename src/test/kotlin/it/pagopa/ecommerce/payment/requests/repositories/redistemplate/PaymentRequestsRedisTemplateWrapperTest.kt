@@ -43,7 +43,7 @@ class PaymentRequestsRedisTemplateWrapperTest {
       .set(capture(keyCaptor), eq(paymentRequestInfo), eq(Duration.ofMinutes(10)))
 
     // test
-    paymentRequestsRedisTemplateWrapper.setValue(paymentRequestInfo)
+    paymentRequestsRedisTemplateWrapper.save(paymentRequestInfo)
     assertEquals("keys:$rptIdAsString", keyCaptor.value)
   }
 
@@ -63,7 +63,7 @@ class PaymentRequestsRedisTemplateWrapperTest {
     given(valueOperations.get("keys:$rptIdAsString")).willReturn(paymentRequestInfo)
 
     // test
-    val getPaymentRequestInfo = paymentRequestsRedisTemplateWrapper.getValue(rptIdAsString)
+    val getPaymentRequestInfo = paymentRequestsRedisTemplateWrapper.findByKey(rptIdAsString)
     assertEquals(paymentRequestInfo, getPaymentRequestInfo)
   }
 }
