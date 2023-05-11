@@ -11,9 +11,9 @@ import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
-import it.pagopa.ecommerce.payment.requests.repositories.CartInfoRepository
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import java.net.URI
 import java.text.MessageFormat
 import java.util.*
@@ -24,7 +24,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -32,7 +31,7 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 @Service
 class CartService(
   @Value("\${checkout.url}") private val checkoutUrl: String,
-  @Autowired private val cartInfoRepository: CartInfoRepository,
+  @Autowired private val cartsRedisTemplateWrapper: CartsRedisTemplateWrapper,
   @Autowired private val nodoPerPmClient: NodoPerPmClient,
   @Value("\${carts.max_allowed_payment_notices}") private val maxAllowedPaymentNotices: Int,
   private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -95,7 +94,7 @@ class CartService(
         .map {
           logger.info("Saving cart ${cart.id} for payments $paymentInfos")
 
-          cartInfoRepository.save(cart)
+          cartsRedisTemplateWrapper.setValue(cart)
           val retUrl =
             MessageFormat.format(
               checkoutUrl,
@@ -119,7 +118,8 @@ class CartService(
    */
   fun getCart(cartId: UUID): CartRequestDto {
     val cart =
-      cartInfoRepository.findByIdOrNull(cartId) ?: throw CartNotFoundException(cartId.toString())
+      cartsRedisTemplateWrapper.getValue(cartId.toString())
+        ?: throw CartNotFoundException(cartId.toString())
 
     return CartRequestDto(
       paymentNotices =
