@@ -2,8 +2,11 @@ package it.pagopa.ecommerce.payment.requests.configurations.redis
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.JacksonIdempotencyKeyDeserializer
+import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.JacksonIdempotencyKeySerializer
 import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.JacksonRptDeserializer
 import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.JacksonRptSerializer
+import it.pagopa.ecommerce.payment.requests.domain.IdempotencyKey
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
@@ -52,6 +55,11 @@ class RedisConfiguration {
     val rptSerializationModule = SimpleModule()
     rptSerializationModule.addSerializer(RptId::class.java, JacksonRptSerializer())
     rptSerializationModule.addDeserializer(RptId::class.java, JacksonRptDeserializer())
+    rptSerializationModule.addSerializer(
+      IdempotencyKey::class.java, JacksonIdempotencyKeySerializer())
+    rptSerializationModule.addDeserializer(
+      IdempotencyKey::class.java, JacksonIdempotencyKeyDeserializer())
+
     jacksonObjectMapper.registerModule(rptSerializationModule)
     jackson2JsonRedisSerializer.setObjectMapper(jacksonObjectMapper)
     return jackson2JsonRedisSerializer
