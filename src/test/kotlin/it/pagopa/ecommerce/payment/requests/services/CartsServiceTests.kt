@@ -83,7 +83,7 @@ class CartsServiceTests {
 
       val request = CartRequests.withOnePaymentNotice()
 
-      given(cartRedisTemplateWrapper.findByKey(cartId.toString()))
+      given(cartRedisTemplateWrapper.findById(cartId.toString()))
         .willReturn(
           request.let { req ->
             CartInfo(
@@ -110,7 +110,7 @@ class CartsServiceTests {
   fun `non-existing id throws CartNotFoundException`() {
     val cartId = UUID.randomUUID()
 
-    given(cartRedisTemplateWrapper.findByKey(cartId.toString())).willReturn(null)
+    given(cartRedisTemplateWrapper.findById(cartId.toString())).willReturn(null)
 
     assertThrows<CartNotFoundException> { cartService.getCart(cartId) }
   }

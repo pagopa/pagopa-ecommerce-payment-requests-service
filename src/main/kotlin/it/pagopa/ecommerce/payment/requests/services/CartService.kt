@@ -118,7 +118,7 @@ class CartService(
    */
   fun getCart(cartId: UUID): CartRequestDto {
     val cart =
-      cartsRedisTemplateWrapper.findByKey(cartId.toString())
+      cartsRedisTemplateWrapper.findById(cartId.toString())
         ?: throw CartNotFoundException(cartId.toString())
 
     return CartRequestDto(

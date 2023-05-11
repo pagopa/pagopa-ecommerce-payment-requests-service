@@ -13,7 +13,7 @@ abstract class RedisTemplateWrapper<V>(
     redisTemplate.opsForValue().set("$keyspace:${getKeyFromEntity(value)}", value!!, ttl)
   }
 
-  fun findByKey(key: String): V? = redisTemplate.opsForValue().get("$keyspace:$key")
+  fun findById(key: String): V? = redisTemplate.opsForValue().get("$keyspace:$key")
 
   protected abstract fun getKeyFromEntity(value: V): String
 }

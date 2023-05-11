@@ -63,7 +63,7 @@ class PaymentRequestsRedisTemplateWrapperTest {
     given(valueOperations.get("keys:$rptIdAsString")).willReturn(paymentRequestInfo)
 
     // test
-    val getPaymentRequestInfo = paymentRequestsRedisTemplateWrapper.findByKey(rptIdAsString)
+    val getPaymentRequestInfo = paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)
     assertEquals(paymentRequestInfo, getPaymentRequestInfo)
   }
 }

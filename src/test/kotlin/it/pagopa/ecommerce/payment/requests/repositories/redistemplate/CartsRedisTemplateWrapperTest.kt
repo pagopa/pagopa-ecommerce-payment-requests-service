@@ -88,7 +88,7 @@ class CartsRedisTemplateWrapperTest {
     given(valueOperations.get("carts:$cartId")).willReturn(cartInfo)
 
     // test
-    val getPaymentRequestInfo = cartsRedisTemplateWrapper.findByKey(cartId.toString())
+    val getPaymentRequestInfo = cartsRedisTemplateWrapper.findById(cartId.toString())
     assertEquals(cartInfo, getPaymentRequestInfo)
   }
 }

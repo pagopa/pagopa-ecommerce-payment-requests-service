@@ -66,7 +66,7 @@ class PaymentRequestsServiceTests {
       PaymentRequestInfo(
         rptIdAsObject, paTaxCode, paName, description, amount, null, null, null, null)
     /** preconditions */
-    given(paymentRequestsRedisTemplateWrapper.findByKey(rptIdAsString))
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString))
       .willReturn(paymentRequestInfo)
     /** test */
     val responseDto = paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
@@ -98,7 +98,7 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
-    given(paymentRequestsRedisTemplateWrapper.findByKey(rptIdAsString)).willReturn(null)
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
@@ -135,7 +135,7 @@ class PaymentRequestsServiceTests {
 
       /** preconditions */
       given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
-      given(paymentRequestsRedisTemplateWrapper.findByKey(rptIdAsString)).willReturn(null)
+      given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
       given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
       given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
@@ -169,7 +169,7 @@ class PaymentRequestsServiceTests {
     verifyPaymentNotice.fault.faultCode = "PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE"
 
     /** preconditions */
-    given(paymentRequestsRedisTemplateWrapper.findByKey(rptIdAsString)).willReturn(null)
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
     given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     /** test */
@@ -189,7 +189,7 @@ class PaymentRequestsServiceTests {
     verifyPaymentNotice.outcome = StOutcome.KO
 
     /** preconditions */
-    given(paymentRequestsRedisTemplateWrapper.findByKey(rptIdAsString)).willReturn(null)
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
     given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     /** test */

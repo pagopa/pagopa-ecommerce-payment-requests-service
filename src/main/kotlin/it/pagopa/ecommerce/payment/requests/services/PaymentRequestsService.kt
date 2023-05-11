@@ -71,7 +71,7 @@ class PaymentRequestsService(
 
   suspend fun getPaymentInfoFromCache(rptId: RptId): Mono<PaymentRequestInfo> {
     val paymentRequestInfoOptional: Optional<PaymentRequestInfo> =
-      Optional.ofNullable(paymentRequestInfoRepository.findByKey(rptId.value))
+      Optional.ofNullable(paymentRequestInfoRepository.findById(rptId.value))
     logger.info(
       "PaymentRequestInfo cache hit for {}: {}", rptId, paymentRequestInfoOptional.isPresent)
     return paymentRequestInfoOptional
