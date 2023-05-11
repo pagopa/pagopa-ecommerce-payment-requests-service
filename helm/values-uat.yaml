@@ -20,13 +20,17 @@ microservice-chart:
       REDIS_HOST: pagopa-u-weu-ecommerce-redis.redis.cache.windows.net
       REDIS_PORT: "6380"
       REDIS_SSL_ENABLED: "true"
-      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
+      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
+      ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
+      ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
+      ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
+      ELASTIC_APM_LOG_SENDING: "true"
     envSecret:
       REDIS_PASSWORD: redis-ecommerce-password
-      APPLICATIONINSIGHTS_CONNECTION_STRING: applicationinsights-connection-string
+      ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "0.2.3"
+    tag: "0.3.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -91,11 +95,15 @@ microservice-chart:
     NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
-    CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
+    CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
+    ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
+    ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
+    ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
+    ELASTIC_APM_LOG_SENDING: "true"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
-    APPLICATIONINSIGHTS_CONNECTION_STRING: applicationinsights-connection-string
     NODO_CONNECTION_STRING: nodo-connection-string
+    ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
   keyvault:
     name: "pagopa-u-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
