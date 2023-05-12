@@ -26,8 +26,10 @@ class CartsRedisTemplateWrapperTest {
 
   @Captor private lateinit var keyCaptor: ArgumentCaptor<String>
 
+  private val duration = Duration.ofMinutes(10)
+
   private val cartsRedisTemplateWrapper: CartsRedisTemplateWrapper =
-    CartsRedisTemplateWrapper(redisTemplate, Duration.ofMinutes(10))
+    CartsRedisTemplateWrapper(redisTemplate, duration)
 
   @Test
   fun `Should save entity successfully`() {
@@ -52,12 +54,11 @@ class CartsRedisTemplateWrapperTest {
           req.emailNotice)
       }
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
-    doNothing()
-      .`when`(valueOperations)
-      .set(capture(keyCaptor), eq(cartInfo), eq(Duration.ofMinutes(10)))
+    doNothing().`when`(valueOperations).set(capture(keyCaptor), eq(cartInfo), eq(duration))
 
     // test
     cartsRedisTemplateWrapper.save(cartInfo)
+    verify(valueOperations, times(1)).set("carts:$cartId", cartInfo, duration)
     assertEquals("carts:$cartId", keyCaptor.value)
   }
 
@@ -89,6 +90,7 @@ class CartsRedisTemplateWrapperTest {
 
     // test
     val getPaymentRequestInfo = cartsRedisTemplateWrapper.findById(cartId.toString())
+    verify(valueOperations, times(1)).get("carts:$cartId")
     assertEquals(cartInfo, getPaymentRequestInfo)
   }
 }

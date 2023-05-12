@@ -22,8 +22,10 @@ class PaymentRequestsRedisTemplateWrapperTest {
 
   @Captor private lateinit var keyCaptor: ArgumentCaptor<String>
 
+  private val duration = Duration.ofMinutes(10)
+
   private val paymentRequestsRedisTemplateWrapper: PaymentRequestsRedisTemplateWrapper =
-    PaymentRequestsRedisTemplateWrapper(redisTemplate, Duration.ofMinutes(10))
+    PaymentRequestsRedisTemplateWrapper(redisTemplate, duration)
 
   @Test
   fun `Should save entity successfully`() {
@@ -40,10 +42,11 @@ class PaymentRequestsRedisTemplateWrapperTest {
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
     doNothing()
       .`when`(valueOperations)
-      .set(capture(keyCaptor), eq(paymentRequestInfo), eq(Duration.ofMinutes(10)))
+      .set(capture(keyCaptor), eq(paymentRequestInfo), eq(duration))
 
     // test
     paymentRequestsRedisTemplateWrapper.save(paymentRequestInfo)
+    verify(valueOperations, times(1)).set("keys:$rptIdAsString", paymentRequestInfo, duration)
     assertEquals("keys:$rptIdAsString", keyCaptor.value)
   }
 
@@ -65,5 +68,6 @@ class PaymentRequestsRedisTemplateWrapperTest {
     // test
     val getPaymentRequestInfo = paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)
     assertEquals(paymentRequestInfo, getPaymentRequestInfo)
+    verify(valueOperations, times(1)).get("keys:$rptIdAsString")
   }
 }
