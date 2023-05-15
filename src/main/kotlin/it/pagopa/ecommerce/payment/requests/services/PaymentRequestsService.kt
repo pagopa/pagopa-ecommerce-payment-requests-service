@@ -10,7 +10,7 @@ import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
-import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfoRepository
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.PaymentRequestsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
 import java.util.*
 import javax.xml.datatype.XMLGregorianCalendar
@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono
 
 @Service
 class PaymentRequestsService(
-  @Autowired private val paymentRequestInfoRepository: PaymentRequestInfoRepository,
+  @Autowired private val paymentRequestInfoRepository: PaymentRequestsRedisTemplateWrapper,
   @Autowired private val nodeForPspClient: NodeForPspClient,
   @Autowired
   private val objectFactoryNodeForPsp:
@@ -71,7 +71,7 @@ class PaymentRequestsService(
 
   suspend fun getPaymentInfoFromCache(rptId: RptId): Mono<PaymentRequestInfo> {
     val paymentRequestInfoOptional: Optional<PaymentRequestInfo> =
-      paymentRequestInfoRepository.findById(rptId)
+      Optional.ofNullable(paymentRequestInfoRepository.findById(rptId.value))
     logger.info(
       "PaymentRequestInfo cache hit for {}: {}", rptId, paymentRequestInfoOptional.isPresent)
     return paymentRequestInfoOptional

@@ -7,7 +7,7 @@ import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
-import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfoRepository
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.PaymentRequestsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
 import java.math.BigDecimal
 import java.text.DateFormat
@@ -34,7 +34,8 @@ class PaymentRequestsServiceTests {
 
   private lateinit var paymentRequestsService: PaymentRequestsService
 
-  @Mock private lateinit var paymentRequestsInfoRepository: PaymentRequestInfoRepository
+  @Mock
+  private lateinit var paymentRequestsRedisTemplateWrapper: PaymentRequestsRedisTemplateWrapper
 
   @Mock private lateinit var nodeForPspClient: NodeForPspClient
 
@@ -46,9 +47,9 @@ class PaymentRequestsServiceTests {
   fun init() {
     paymentRequestsService =
       PaymentRequestsService(
-        paymentRequestsInfoRepository,
+        paymentRequestsRedisTemplateWrapper,
         nodeForPspClient,
-        it.pagopa.ecommerce.generated.transactions.model.ObjectFactory(),
+        ObjectFactory(),
         nodoOperations,
         nodoConfig)
   }
@@ -65,8 +66,8 @@ class PaymentRequestsServiceTests {
       PaymentRequestInfo(
         rptIdAsObject, paTaxCode, paName, description, amount, null, null, null, null)
     /** preconditions */
-    given(paymentRequestsInfoRepository.findById(rptIdAsObject))
-      .willReturn(Optional.of(paymentRequestInfo))
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString))
+      .willReturn(paymentRequestInfo)
     /** test */
     val responseDto = paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
 
@@ -82,7 +83,6 @@ class PaymentRequestsServiceTests {
   @Test
   fun `should return payment request info from Nodo VerifyPaymentNotice`() = runTest {
     val rptIdAsString = "77777777777302016723749670035"
-    val rptIdAsObject = RptId(rptIdAsString)
     val description = "Payment request description"
     val amount = Integer.valueOf(1000)
     val amountForNodo = BigDecimal.valueOf(amount.toLong())
@@ -98,7 +98,7 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
-    given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
@@ -115,7 +115,6 @@ class PaymentRequestsServiceTests {
   fun `should return payment info request from nodo with VerifyPaymentNotice with due date`() =
     runTest {
       val rptIdAsString = "77777777777302016723749670035"
-      val rptIdAsObject = RptId(rptIdAsString)
       val description = "Payment request description"
       val amount = 1000
       val amountForNodo = BigDecimal.valueOf(amount.toLong())
@@ -136,7 +135,7 @@ class PaymentRequestsServiceTests {
 
       /** preconditions */
       given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
-      given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+      given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
       given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
       given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
@@ -163,7 +162,6 @@ class PaymentRequestsServiceTests {
   @Test
   fun `should return nodo error from VerifyPaymentNotice KO response with fault bean`() = runTest {
     val rptIdAsString = "77777777777302016723749670035"
-    val rptIdAsObject = RptId(rptIdAsString)
 
     val verifyPaymentNotice = VerifyPaymentNoticeRes()
     verifyPaymentNotice.outcome = StOutcome.KO
@@ -171,7 +169,7 @@ class PaymentRequestsServiceTests {
     verifyPaymentNotice.fault.faultCode = "PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE"
 
     /** preconditions */
-    given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
     given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     /** test */
@@ -186,13 +184,12 @@ class PaymentRequestsServiceTests {
   @Test
   fun `should return nodo error from VerifyPaymentNotice KO response no fault bean`() = runTest {
     val rptIdAsString = "77777777777302016723749670035"
-    val rptIdAsObject = RptId(rptIdAsString)
 
     val verifyPaymentNotice = VerifyPaymentNoticeRes()
     verifyPaymentNotice.outcome = StOutcome.KO
 
     /** preconditions */
-    given(paymentRequestsInfoRepository.findById(rptIdAsObject)).willReturn(Optional.empty())
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
     given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     /** test */
