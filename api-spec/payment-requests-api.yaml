@@ -14,6 +14,8 @@ tags:
 externalDocs:
   url: https://pagopa.atlassian.net/wiki/spaces/I/pages/492339720/pagoPA+eCommerce+Design+Review
   description: Design review
+servers:
+  - url: https://api.platform.pagopa.it/payment-requests
 paths:
   /payment-requests/{rpt_id}:
     get:
