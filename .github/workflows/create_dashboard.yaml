@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'openapi/openapi.json'
+      - 'api-spec/payment-requests-api.yaml'
       - '.github/workflows/create_dashboard.yaml'
       - '.opex/**'
 
