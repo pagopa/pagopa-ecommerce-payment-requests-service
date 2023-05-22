@@ -6,3 +6,4 @@
 
 ${application.name}:${build.version}
 Developed by pagoPA Touchpoints
+
