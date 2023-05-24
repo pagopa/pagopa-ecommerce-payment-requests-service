@@ -22,6 +22,9 @@ WORKDIR /app/
 
 ARG EXTRACTED=/workspace/app/target/extracted
 
+# Add ELK agent
+ADD --chown=user https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/1.38.0/elastic-apm-agent-1.38.0.jar ./apm-elk-agent.jar
+
 COPY --from=build --chown=user ${EXTRACTED}/dependencies/ ./
 RUN true
 COPY --from=build --chown=user ${EXTRACTED}/spring-boot-loader/ ./
@@ -31,5 +34,4 @@ RUN true
 COPY --from=build --chown=user ${EXTRACTED}/application/ ./ 
 RUN true
 
-
-ENTRYPOINT ["java","org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java","-javaagent:apm-elk-agent.jar","--enable-preview","org.springframework.boot.loader.JarLauncher"]
