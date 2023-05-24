@@ -1,0 +1,120 @@
+microservice-chart:
+  namespace: "ecommerce"
+  nameOverride: ""
+  fullnameOverride: ""
+  canaryDelivery:
+    create: false
+    ingress:
+      create: true
+      canary:
+        type: bluegreen
+    service:
+      create: true
+    deployment:
+      create: true
+      image:
+        repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
+        tag: "latest"
+        pullPolicy: Always
+    envConfig:
+      REDIS_HOST: pagopa-p-weu-ecommerce-redis.redis.cache.windows.net
+      REDIS_PORT: "6380"
+      REDIS_SSL_ENABLED: "true"
+      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
+      ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
+      ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
+      ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
+      ELASTIC_APM_LOG_SENDING: "true"
+    envSecret:
+      REDIS_PASSWORD: redis-ecommerce-password
+      ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
+  image:
+    repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
+    tag: "0.4.1"
+    pullPolicy: Always
+  livenessProbe:
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    initialDelaySeconds: 60
+    failureThreshold: 6
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+    initialDelaySeconds: 60
+    failureThreshold: 6
+    periodSeconds: 10
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080
+  ingress:
+    create: true
+    host: "weuprod.ecommerce.internal.platform.pagopa.it"
+    path: /pagopa-ecommerce-payment-requests-service/(.*)
+    servicePort: 8080
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+  podAnnotations: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "300m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  autoscaling:
+    enable: true
+    minReplica: 2
+    maxReplica: 10
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 300 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          # Required
+          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+          value: "80"
+  envConfig:
+    REDIS_HOST: pagopa-p-weu-ecommerce-redis.redis.cache.windows.net
+    REDIS_PORT: "6380"
+    REDIS_SSL_ENABLED: "true"
+    CHECKOUT_URL: https://api.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
+    NODO_HOSTNAME: https://api.platform.pagopa.it
+    NODE_FOR_PSP_URI: /nodo/node-for-psp/v1
+    NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
+    NODO_READ_TIMEOUT: "10000"
+    NODO_CONNECTION_TIMEOUT: "10000"
+    CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
+    ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
+    ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
+    ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
+    ELASTIC_APM_LOG_SENDING: "true"
+  envSecret:
+    REDIS_PASSWORD: redis-ecommerce-password
+    NODO_CONNECTION_STRING: nodo-connection-string
+    ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
+  keyvault:
+    name: "pagopa-p-ecommerce-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
