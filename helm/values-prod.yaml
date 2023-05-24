@@ -13,11 +13,11 @@ microservice-chart:
     deployment:
       create: true
       image:
-        repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
+        repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
         tag: "latest"
         pullPolicy: Always
     envConfig:
-      REDIS_HOST: pagopa-u-weu-ecommerce-redis.redis.cache.windows.net
+      REDIS_HOST: pagopa-p-weu-ecommerce-redis.redis.cache.windows.net
       REDIS_PORT: "6380"
       REDIS_SSL_ENABLED: "true"
       CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
@@ -29,7 +29,7 @@ microservice-chart:
       REDIS_PASSWORD: redis-ecommerce-password
       ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
   image:
-    repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
+    repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
     tag: "0.4.1"
     pullPolicy: Always
   livenessProbe:
@@ -53,7 +53,7 @@ microservice-chart:
       - 8080
   ingress:
     create: true
-    host: "weuuat.ecommerce.internal.uat.platform.pagopa.it"
+    host: "weuprod.ecommerce.internal.platform.pagopa.it"
     path: /pagopa-ecommerce-payment-requests-service/(.*)
     servicePort: 8080
   serviceAccount:
@@ -75,8 +75,8 @@ microservice-chart:
       cpu: "500m"
   autoscaling:
     enable: true
-    minReplica: 1
-    maxReplica: 5
+    minReplica: 2
+    maxReplica: 10
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
@@ -86,11 +86,11 @@ microservice-chart:
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "80"
   envConfig:
-    REDIS_HOST: pagopa-u-weu-ecommerce-redis.redis.cache.windows.net
+    REDIS_HOST: pagopa-p-weu-ecommerce-redis.redis.cache.windows.net
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
-    CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
-    NODO_HOSTNAME: https://api.uat.platform.pagopa.it
+    CHECKOUT_URL: https://api.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
+    NODO_HOSTNAME: https://api.platform.pagopa.it
     NODE_FOR_PSP_URI: /nodo/node-for-psp/v1
     NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
@@ -105,7 +105,7 @@ microservice-chart:
     NODO_CONNECTION_STRING: nodo-connection-string
     ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
   keyvault:
-    name: "pagopa-u-ecommerce-kv"
+    name: "pagopa-p-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   nodeSelector: {}
   tolerations: []
