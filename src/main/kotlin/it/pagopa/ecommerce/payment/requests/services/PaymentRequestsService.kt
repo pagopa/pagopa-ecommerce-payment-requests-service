@@ -120,6 +120,7 @@ class PaymentRequestsService(
                       verifyPaymentNoticeResponse.paymentList.paymentOptionDescription[0].dueDate),
                   paymentToken = null,
                   idempotencyKey = null,
+                  activationDate = null,
                   transferList = null))
             }
           }

@@ -64,7 +64,7 @@ class PaymentRequestsServiceTests {
     val amount = Integer.valueOf(1000)
     val paymentRequestInfo =
       PaymentRequestInfo(
-        rptIdAsObject, paTaxCode, paName, description, amount, null, null, null, null)
+        rptIdAsObject, paTaxCode, paName, description, amount, null, null, null, null, null)
     /** preconditions */
     given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString))
       .willReturn(paymentRequestInfo)
