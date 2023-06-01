@@ -1,3 +1,8 @@
+variable "env" {
+  type        = string
+  description = "Environment"
+}
+
 variable "github" {
   type = object({
     org        = string
@@ -8,9 +13,4 @@ variable "github" {
     org        = "pagopa"
     repository = "pagopa-ecommerce-payment-requests-service"
   }
-}
-
-variable "env" {
-  type        = string
-  description = "Environment"
 }
