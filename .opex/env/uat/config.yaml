@@ -1,4 +1,4 @@
-oa3_spec: ./api-spec/api.yaml # If start with http the file would be downloaded from the internet
+oa3_spec: ./api-spec/payment-requests-api.yaml # If start with http the file would be downloaded from the internet
 name: opex_pagopa-ecommerce-payment-requests-service
 location: West Europe
 timespan: 5m # Default, a number or a timespan https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/scalar-data-types/timespan
