@@ -17,15 +17,13 @@ import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedi
 import java.net.URI
 import java.text.MessageFormat
 import java.util.*
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
@@ -34,7 +32,6 @@ class CartService(
   @Autowired private val cartsRedisTemplateWrapper: CartsRedisTemplateWrapper,
   @Autowired private val nodoPerPmClient: NodoPerPmClient,
   @Value("\${carts.max_allowed_payment_notices}") private val maxAllowedPaymentNotices: Int,
-  private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
   /*
@@ -47,7 +44,7 @@ class CartService(
    * - 1 payment notice is present -> redirect response is given to the checkout location
    * - 2 or more payment notices are present -> error response
    */
-  suspend fun processCart(cartRequestDto: CartRequestDto): String {
+  fun processCart(cartRequestDto: CartRequestDto): Mono<String> {
     val paymentsNotices = cartRequestDto.paymentNotices
     val receivedNotices = paymentsNotices.size
     logger.info("Received [$receivedNotices] payment notices")
@@ -103,13 +100,13 @@ class CartService(
           logger.info("Return URL: $retUrl")
           return@map retUrl
         }
-        .awaitSingle()
     } else {
       logger.error("Too many payment notices, expected only one")
-      throw RestApiException(
-        httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-        title = "Multiple payment notices not processable",
-        description = "Too many payment notices, expected max $maxAllowedPaymentNotices")
+      Mono.error(
+        RestApiException(
+          httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+          title = "Multiple payment notices not processable",
+          description = "Too many payment notices, expected max $maxAllowedPaymentNotices"))
     }
   }
 
@@ -121,20 +118,27 @@ class CartService(
       cartsRedisTemplateWrapper.findById(cartId.toString())
         ?: throw CartNotFoundException(cartId.toString())
 
-    return CartRequestDto(
+    return CartRequestDto().apply {
       paymentNotices =
         cart.payments.map {
-          PaymentNoticeDto(
-            it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
-        },
+          PaymentNoticeDto().apply {
+            noticeNumber = it.rptId.noticeId
+            fiscalCode = it.rptId.fiscalCode
+            amount = it.amount
+            companyName = it.companyName
+            description = it.description
+          }
+        }
       returnUrls =
         cart.returnUrls.let {
-          CartRequestReturnUrlsDto(
-            returnOkUrl = URI(it.returnSuccessUrl),
-            returnCancelUrl = URI(it.returnCancelUrl),
-            returnErrorUrl = URI(it.returnErrorUrl))
-        },
-      emailNotice = cart.email,
-      idCart = cart.idCart)
+          CartRequestReturnUrlsDto().apply {
+            returnOkUrl = URI(it.returnSuccessUrl)
+            returnCancelUrl = URI(it.returnCancelUrl)
+            returnErrorUrl = URI(it.returnErrorUrl)
+          }
+        }
+      emailNotice = cart.email
+      idCart = cart.idCart
+    }
   }
 }

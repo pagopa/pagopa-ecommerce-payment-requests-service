@@ -48,7 +48,7 @@ class CartsServiceTests {
 
       val request = CartRequests.withOnePaymentNotice()
       val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
-      assertEquals(locationUrl, cartService.processCart(request))
+      assertEquals(locationUrl, cartService.processCart(request).block())
       verify(cartRedisTemplateWrapper, times(1)).save(any())
     }
   }
@@ -64,14 +64,14 @@ class CartsServiceTests {
           Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.KO)))
 
       val request = CartRequests.withOnePaymentNotice()
-      assertThrows<RestApiException> { cartService.processCart(request) }
+      assertThrows<RestApiException> { cartService.processCart(request).block() }
     }
   }
 
   @Test
   fun `post cart ko with multiple payment notices`() = runTest {
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices + 1)
-    assertThrows<RestApiException> { cartService.processCart(request) }
+    assertThrows<RestApiException> { cartService.processCart(request).block() }
   }
 
   @Test

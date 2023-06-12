@@ -14,20 +14,29 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController
 class CartsController(private val webClient: WebClient = WebClient.create()) : CartsApi {
   @Autowired private lateinit var cartService: CartService
 
-  override suspend fun postCarts(cartRequestDto: CartRequestDto): ResponseEntity<Unit> {
-    return ResponseEntity.status(HttpStatus.FOUND)
-      .location(URI.create(cartService.processCart(cartRequestDto)))
-      .build()
+  override fun postCarts(
+    cartRequestDto: Mono<CartRequestDto>,
+    exchange: ServerWebExchange
+  ): Mono<ResponseEntity<Void>> {
+    return cartRequestDto
+      .flatMap { cartService.processCart(it) }
+      .map { redirectUrl ->
+        ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build()
+      }
   }
 
-  override suspend fun getCarts(idCart: java.util.UUID): ResponseEntity<CartRequestDto> {
-    return ResponseEntity.ok(cartService.getCart(idCart))
+  override fun getCarts(
+    idCart: java.util.UUID,
+    exchange: ServerWebExchange
+  ): Mono<ResponseEntity<CartRequestDto>> {
+    return Mono.just(ResponseEntity.ok(cartService.getCart(idCart)))
   }
 
   /** Controller warm up function, used to send a POST carts request */

@@ -40,7 +40,12 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
   fun handleException(e: RestApiException): ResponseEntity<ProblemJsonDto> {
     logger.error("Exception processing request", e)
     return ResponseEntity.status(e.httpStatus)
-      .body(ProblemJsonDto(title = e.title, detail = e.description, status = e.httpStatus.value()))
+      .body(
+        ProblemJsonDto().apply {
+          title = e.title
+          detail = e.description
+          status = e.httpStatus.value()
+        })
   }
 
   @ExceptionHandler(CheckPositionErrorException::class)
@@ -50,19 +55,25 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
       when (e.httpStatus) {
         HttpStatus.INTERNAL_SERVER_ERROR ->
           ResponseEntity(
-            ProblemJsonDto(status = HttpStatus.BAD_GATEWAY.value(), title = "Bad gateway"),
+            ProblemJsonDto().apply {
+              status = HttpStatus.BAD_GATEWAY.value()
+              title = "Bad gateway"
+            },
             HttpStatus.BAD_GATEWAY)
         HttpStatus.UNPROCESSABLE_ENTITY ->
           ResponseEntity(
-            ProblemJsonDto(
-              status = HttpStatus.UNPROCESSABLE_ENTITY.value(),
-              title = "Invalid payment info",
-              detail = "Invalid payment notice data"),
+            ProblemJsonDto().apply {
+              status = HttpStatus.UNPROCESSABLE_ENTITY.value()
+              title = "Invalid payment info"
+              detail = "Invalid payment notice data"
+            },
             HttpStatus.UNPROCESSABLE_ENTITY)
         else ->
           ResponseEntity(
-            ProblemJsonDto(
-              status = HttpStatus.INTERNAL_SERVER_ERROR.value(), title = "Internal server error"),
+            ProblemJsonDto().apply {
+              status = HttpStatus.INTERNAL_SERVER_ERROR.value()
+              title = "Internal server error"
+            },
             HttpStatus.INTERNAL_SERVER_ERROR)
       }
     return response
@@ -74,10 +85,11 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
     logger.error("Exception processing request", e)
     return ResponseEntity.status(restApiException.httpStatus)
       .body(
-        ProblemJsonDto(
-          title = restApiException.title,
-          detail = restApiException.description,
-          status = restApiException.httpStatus.value()))
+        ProblemJsonDto().apply {
+          title = restApiException.title
+          detail = restApiException.description
+          status = restApiException.httpStatus.value()
+        })
   }
 
   /*
@@ -106,10 +118,11 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
     logger.error("Input request is not valid", exceptionToLog)
     return ResponseEntity.badRequest()
       .body(
-        ProblemJsonDto(
-          title = "Request validation error",
-          detail = "The input request is invalid",
-          status = 400))
+        ProblemJsonDto().apply {
+          title = "Request validation error"
+          detail = "The input request is invalid"
+          status = 400
+        })
   }
 
   @ExceptionHandler(
@@ -117,7 +130,10 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
   fun genericBadGateweyHandler(e: Exception): ResponseEntity<ProblemJsonDto> {
     logger.error("Error processing request", e)
     return ResponseEntity(
-      ProblemJsonDto(status = HttpStatus.BAD_GATEWAY.value(), title = "Bad gateway"),
+      ProblemJsonDto().apply {
+        status = HttpStatus.BAD_GATEWAY.value()
+        title = "Bad gateway"
+      },
       HttpStatus.BAD_GATEWAY)
   }
 
@@ -132,47 +148,52 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
         z.value == faultCode
       }) {
         ResponseEntity(
-          PartyConfigurationFaultPaymentProblemJsonDto(
-            title = "EC error",
-            faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE,
-            faultCodeDetail = PartyConfigurationFaultDto.valueOf(faultCode)),
+          PartyConfigurationFaultPaymentProblemJsonDto().apply {
+            title = "EC error"
+            faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE
+            faultCodeDetail = PartyConfigurationFaultDto.valueOf(faultCode)
+          },
           HttpStatus.BAD_GATEWAY)
       } else if (Arrays.stream(ValidationFaultDto.values()).anyMatch { z ->
         z.value == faultCode
       }) {
         ResponseEntity(
-          ValidationFaultPaymentProblemJsonDto(
-            title = "Validation Fault",
-            faultCodeCategory = FaultCategoryDto.PAYMENT_UNKNOWN,
-            faultCodeDetail = ValidationFaultDto.valueOf(faultCode)),
+          ValidationFaultPaymentProblemJsonDto().apply {
+            title = "Validation Fault"
+            faultCodeCategory = FaultCategoryDto.PAYMENT_UNKNOWN
+            faultCodeDetail = ValidationFaultDto.valueOf(faultCode)
+          },
           HttpStatus.NOT_FOUND)
       } else if (Arrays.stream(GatewayFaultDto.values()).anyMatch { z -> z.value == faultCode }) {
         ResponseEntity(
-          GatewayFaultPaymentProblemJsonDto(
-            title = "Payment unavailable",
-            faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
-            faultCodeDetail = GatewayFaultDto.valueOf(faultCode)),
+          GatewayFaultPaymentProblemJsonDto().apply {
+            title = "Payment unavailable"
+            faultCodeCategory = FaultCategoryDto.GENERIC_ERROR
+            faultCodeDetail = GatewayFaultDto.valueOf(faultCode)
+          },
           HttpStatus.BAD_GATEWAY)
       } else if (Arrays.stream(PartyTimeoutFaultDto.values()).anyMatch { z ->
         z.value == faultCode
       }) {
         ResponseEntity(
-          PartyTimeoutFaultPaymentProblemJsonDto(
-            title = "Gateway Timeout",
-            faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
-            faultCodeDetail = PartyTimeoutFaultDto.valueOf(faultCode)),
+          PartyTimeoutFaultPaymentProblemJsonDto().apply {
+            title = "Gateway Timeout"
+            faultCodeCategory = FaultCategoryDto.GENERIC_ERROR
+            faultCodeDetail = PartyTimeoutFaultDto.valueOf(faultCode)
+          },
           HttpStatus.GATEWAY_TIMEOUT)
       } else if (Arrays.stream(PaymentStatusFaultDto.values()).anyMatch { z ->
         z.value == faultCode
       }) {
         ResponseEntity(
-          PaymentStatusFaultPaymentProblemJsonDto(
-            title = "Payment Status Fault",
-            faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE,
-            faultCodeDetail = PaymentStatusFaultDto.valueOf(faultCode)),
+          PaymentStatusFaultPaymentProblemJsonDto().apply {
+            title = "Payment Status Fault"
+            faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE
+            faultCodeDetail = PaymentStatusFaultDto.valueOf(faultCode)
+          },
           HttpStatus.CONFLICT)
       } else {
-        ResponseEntity(ProblemJsonDto(title = "Bad gateway"), HttpStatus.BAD_GATEWAY)
+        ResponseEntity(ProblemJsonDto().apply { title = "Bad gateway" }, HttpStatus.BAD_GATEWAY)
       }
     return response
   }
@@ -185,9 +206,10 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
     logger.error("Unhandled exception", e)
     return ResponseEntity.internalServerError()
       .body(
-        ProblemJsonDto(
-          title = "Error processing the request",
-          detail = "An internal error occurred processing the request",
-          status = 500))
+        ProblemJsonDto().apply {
+          title = "Error processing the request"
+          detail = "An internal error occurred processing the request"
+          status = 500
+        })
   }
 }

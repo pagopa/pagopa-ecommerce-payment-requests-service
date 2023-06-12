@@ -69,7 +69,7 @@ class PaymentRequestsServiceTests {
     given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString))
       .willReturn(paymentRequestInfo)
     /** test */
-    val responseDto = paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
+    val responseDto = paymentRequestsService.getPaymentRequestInfo(rptIdAsString).block()!!
 
     /** assertions */
     assertEquals(rptIdAsString, responseDto.rptId)
@@ -103,7 +103,7 @@ class PaymentRequestsServiceTests {
     given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
     /** test */
-    val responseDto = paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
+    val responseDto = paymentRequestsService.getPaymentRequestInfo(rptIdAsString).block()!!
     /** assertions */
     assertEquals(rptIdAsString, responseDto.rptId)
     assertEquals(description, responseDto.description)
@@ -140,7 +140,7 @@ class PaymentRequestsServiceTests {
       given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
       /** test */
-      val responseDto = paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
+      val responseDto = paymentRequestsService.getPaymentRequestInfo(rptIdAsString).block()!!
       /** assertions */
       assertEquals(rptIdAsString, responseDto.rptId)
       assertEquals(description, responseDto.description)
@@ -153,7 +153,7 @@ class PaymentRequestsServiceTests {
     val rptIdAsString = "invalid rpt id"
     val exception =
       assertThrows<InvalidRptException> {
-        paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
+        paymentRequestsService.getPaymentRequestInfo(rptIdAsString).block()!!
       }
     assertEquals(HttpStatus.BAD_REQUEST, exception.toRestException().httpStatus)
     assertTrue(exception.toRestException().description.contains(rptIdAsString))
@@ -175,7 +175,7 @@ class PaymentRequestsServiceTests {
     /** test */
     val exception =
       assertThrows<NodoErrorException> {
-        paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
+        paymentRequestsService.getPaymentRequestInfo(rptIdAsString).block()!!
       }
     /** assertions */
     assertEquals("PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE", exception.faultCode)
@@ -195,7 +195,7 @@ class PaymentRequestsServiceTests {
     /** test */
     val exception =
       assertThrows<NodoErrorException> {
-        paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
+        paymentRequestsService.getPaymentRequestInfo(rptIdAsString).block()!!
       }
     /** assertions */
     assertEquals("Unreadable fault code", exception.faultCode)

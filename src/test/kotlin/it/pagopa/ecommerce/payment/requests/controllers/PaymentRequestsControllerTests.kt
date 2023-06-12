@@ -62,7 +62,7 @@ class PaymentRequestsControllerTests {
     val objectMapper = ObjectMapper()
     val rptId = "77777777777302000100000009424"
     val response = PaymentRequests.validResponse(rptId)
-    given(paymentRequestsService.getPaymentRequestInfo(rptId)).willReturn(response)
+    given(paymentRequestsService.getPaymentRequestInfo(rptId)).willReturn(Mono.just(response))
     val parameters = mapOf("rpt_id" to rptId)
     webClient
       .get()

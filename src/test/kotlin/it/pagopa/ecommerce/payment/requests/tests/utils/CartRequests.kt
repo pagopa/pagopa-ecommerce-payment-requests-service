@@ -8,62 +8,68 @@ import java.net.URI
 object CartRequests {
 
   fun withOnePaymentNotice(): CartRequestDto {
-    return CartRequestDto(
+    return CartRequestDto().apply {
       paymentNotices =
         listOf(
-          PaymentNoticeDto(
-            noticeNumber = "302000100440009424",
-            fiscalCode = "77777777777",
-            amount = 10000,
-            companyName = "companyName",
-            description = "description")),
+          PaymentNoticeDto().apply {
+            noticeNumber = "302000100440009424"
+            fiscalCode = "77777777777"
+            amount = 10000
+            companyName = "companyName"
+            description = "description"
+          })
       returnUrls =
-        CartRequestReturnUrlsDto(
-          returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
-          returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
-          returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
-        ),
-      idCart = "idCartExample",
-      emailNotice = "my_email@mail.it")
+        CartRequestReturnUrlsDto().apply {
+          returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html")
+          returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html")
+          returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html")
+        }
+      idCart = "idCartExample"
+      emailNotice = "my_email@mail.it"
+    }
   }
 
   fun withMultiplePaymentNotices(paymentNoticesNumber: Int): CartRequestDto {
     val paymentNotices = ArrayList<PaymentNoticeDto>()
     repeat(paymentNoticesNumber) {
       paymentNotices.add(
-        PaymentNoticeDto(
-          noticeNumber = "302000100440009420",
-          fiscalCode = "77777777777",
-          amount = 10000,
-          companyName = "companyName",
-          description = "description"))
+        PaymentNoticeDto().apply {
+          noticeNumber = "302000100440009420"
+          fiscalCode = "77777777777"
+          amount = 10000
+          companyName = "companyName"
+          description = "description"
+        })
     }
 
-    return CartRequestDto(
-      paymentNotices = paymentNotices,
+    return CartRequestDto().apply {
+      this.paymentNotices = paymentNotices
       returnUrls =
-        CartRequestReturnUrlsDto(
-          returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
-          returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
-          returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
-        ))
+        CartRequestReturnUrlsDto().apply {
+          returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html")
+          returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html")
+          returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html")
+        }
+    }
   }
 
   fun invalidRequest(): CartRequestDto {
-    return CartRequestDto(
+    return CartRequestDto().apply {
       paymentNotices =
         listOf(
-          PaymentNoticeDto(
-            noticeNumber = "1",
-            fiscalCode = "1",
-            amount = 10000,
-            companyName = "companyName",
-            description = "description")),
+          PaymentNoticeDto().apply {
+            noticeNumber = "1"
+            fiscalCode = "1"
+            amount = 10000
+            companyName = "companyName"
+            description = "description"
+          })
       returnUrls =
-        CartRequestReturnUrlsDto(
-          returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
-          returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
-          returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
-        ))
+        CartRequestReturnUrlsDto().apply {
+          returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html")
+          returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html")
+          returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html")
+        }
+    }
   }
 }

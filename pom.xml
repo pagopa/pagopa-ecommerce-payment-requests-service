@@ -278,7 +278,7 @@
                         </goals>
                         <configuration>
                             <inputSpec>${project.basedir}/api-spec/payment-requests-api.yaml</inputSpec>
-                            <generatorName>kotlin-spring</generatorName>
+                            <generatorName>spring</generatorName>
                             <library>spring-boot</library>
                             <modelNameSuffix>Dto</modelNameSuffix>
                             <generateApiTests>false</generateApiTests>

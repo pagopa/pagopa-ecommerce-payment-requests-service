@@ -59,7 +59,7 @@ class CartsControllerTests {
   fun `post cart succeeded with one payment notice`() = runTest {
     val request = CartRequests.withOnePaymentNotice()
     val locationUrl = "http://checkout-url.it/77777777777302000100440009424"
-    given(cartService.processCart(request)).willReturn(locationUrl)
+    given(cartService.processCart(request)).willReturn(Mono.just(locationUrl))
     webClient
       .post()
       .uri("/carts")
@@ -84,10 +84,11 @@ class CartsControllerTests {
           title = "Multiple payment notices not processable",
           description = "Too many payment notices, expected max one"))
     val errorResponse =
-      ProblemJsonDto(
-        status = 422,
-        title = "Multiple payment notices not processable",
-        detail = "Too many payment notices, expected max one")
+      ProblemJsonDto().apply {
+        status = 422
+        title = "Multiple payment notices not processable"
+        detail = "Too many payment notices, expected max one"
+      }
 
     webClient
       .post()
@@ -108,7 +109,11 @@ class CartsControllerTests {
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     given(cartService.processCart(request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR))
-    val errorResponse = ProblemJsonDto(status = 502, title = "Bad gateway")
+    val errorResponse =
+      ProblemJsonDto().apply {
+        status = 502
+        title = "Bad gateway"
+      }
     webClient
       .post()
       .uri("/carts")
@@ -128,7 +133,11 @@ class CartsControllerTests {
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     given(cartService.processCart(request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.NOT_FOUND))
-    val errorResponse = ProblemJsonDto(status = 500, title = "Internal server error")
+    val errorResponse =
+      ProblemJsonDto().apply {
+        status = 500
+        title = "Internal server error"
+      }
     webClient
       .post()
       .uri("/carts")
@@ -148,7 +157,11 @@ class CartsControllerTests {
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     given(cartService.processCart(request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.UNPROCESSABLE_ENTITY))
-    val errorResponse = ProblemJsonDto(status = 422, title = "Invalid payment info")
+    val errorResponse =
+      ProblemJsonDto().apply {
+        status = 422
+        title = "Invalid payment info"
+      }
     webClient
       .post()
       .uri("/carts")
@@ -167,9 +180,12 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.invalidRequest()
     val errorResponse =
-      ProblemJsonDto(
-        status = 400, title = "Request validation error", detail = "The input request is invalid")
-    given(cartService.processCart(request)).willReturn("")
+      ProblemJsonDto().apply {
+        status = 400
+        title = "Request validation error"
+        detail = "The input request is invalid"
+      }
+    given(cartService.processCart(request)).willReturn(Mono.just(""))
     webClient
       .post()
       .uri("/carts")
@@ -188,10 +204,11 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withOnePaymentNotice()
     val errorResponse =
-      ProblemJsonDto(
-        title = "Error processing the request",
-        detail = "An internal error occurred processing the request",
-        status = 500)
+      ProblemJsonDto().apply {
+        title = "Error processing the request"
+        detail = "An internal error occurred processing the request"
+        status = 500
+      }
     given(cartService.processCart(request)).willThrow(RuntimeException("Test unmanaged exception"))
     webClient
       .post()
@@ -211,21 +228,24 @@ class CartsControllerTests {
     val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val response =
-      CartRequestDto(
+      CartRequestDto().apply {
         paymentNotices =
           listOf(
-            PaymentNoticeDto(
-              noticeNumber = "",
-              fiscalCode = "",
-              amount = 10000,
-              companyName = "companyName",
-              description = "description")),
+            PaymentNoticeDto().apply {
+              noticeNumber = ""
+              fiscalCode = ""
+              amount = 10000
+              companyName = "companyName"
+              description = "description"
+            })
         returnUrls =
-          CartRequestReturnUrlsDto(
-            returnErrorUrl = URI.create("https://returnErrorUrl"),
-            returnOkUrl = URI.create("https://returnOkUrl"),
-            returnCancelUrl = URI.create("https://returnCancelUrl")),
-        emailNotice = "test@test.it")
+          CartRequestReturnUrlsDto().apply {
+            returnErrorUrl = URI.create("https://returnErrorUrl")
+            returnOkUrl = URI.create("https://returnOkUrl")
+            returnCancelUrl = URI.create("https://returnCancelUrl")
+          }
+        emailNotice = "test@test.it"
+      }
     given(cartService.getCart(cartId)).willReturn(response)
     val parameters = mapOf("idCart" to cartId)
     webClient
@@ -243,10 +263,11 @@ class CartsControllerTests {
     val cartId = UUID.randomUUID()
     val exception = CartNotFoundException(cartId.toString())
     val expected =
-      ProblemJsonDto(
-        title = "Cart not found",
-        detail = exception.message ?: "",
-        status = HttpStatus.NOT_FOUND.value())
+      ProblemJsonDto().apply {
+        title = "Cart not found"
+        detail = exception.message ?: ""
+        status = HttpStatus.NOT_FOUND.value()
+      }
 
     given(cartService.getCart(cartId)).willThrow(exception)
 

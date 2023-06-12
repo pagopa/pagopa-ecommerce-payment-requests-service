@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController
@@ -21,10 +22,11 @@ class PaymentRequestsController(private val webClient: WebClient = WebClient.cre
 
   @Autowired private lateinit var paymentRequestsService: PaymentRequestsService
 
-  override suspend fun getPaymentRequestInfo(
-    rptId: String
-  ): ResponseEntity<PaymentRequestsGetResponseDto> {
-    return ResponseEntity.ok(paymentRequestsService.getPaymentRequestInfo(rptId))
+  override fun getPaymentRequestInfo(
+    rptId: String,
+    exchange: ServerWebExchange
+  ): Mono<ResponseEntity<PaymentRequestsGetResponseDto>> {
+    return paymentRequestsService.getPaymentRequestInfo(rptId).map { ResponseEntity.ok(it) }
   }
 
   /** Controller warm up function, used to send a GET payment-request */
