@@ -149,18 +149,18 @@ stages:
   - stage: "Build_release_candidate"
     displayName: 'Build release candidate'
     dependsOn: [ ]
-    condition:
-      and(
-      succeeded(),
-      eq(${{parameters.UAT_PROD_DEPLOY}}, true),
-      or(
-      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
-      and(
-      startsWith(variables['Build.SourceBranch'], 'refs/tags'),
-      endsWith(variables['Build.SourceBranch'], '-RELEASE')
-      )
-      )
-      )
+    # condition:
+    #   and(
+    #   succeeded(),
+    #   eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+    #   or(
+    #   eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+    #   and(
+    #   startsWith(variables['Build.SourceBranch'], 'refs/tags'),
+    #   endsWith(variables['Build.SourceBranch'], '-RELEASE')
+    #   )
+    #   )
+    #   )
     jobs:
       - job: "build"
         displayName: 'Build UAT service beta'
