@@ -514,8 +514,6 @@ stages:
                   displayName: "Checkout"
                 - task: Bash@3
                   name: update_chart_version
-                - task: Bash@3
-                  name: update_chart_version
                   displayName: 'Setup helm microservice chart'
                   inputs:
                     targetType: "inline"
