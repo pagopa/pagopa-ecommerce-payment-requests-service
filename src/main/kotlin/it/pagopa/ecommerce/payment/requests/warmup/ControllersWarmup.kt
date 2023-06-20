@@ -28,10 +28,6 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
     val controllerToWarmUpKClass = ClassUtils.getUserClass(controllerToWarmUpInstance).kotlin
     val elapsedTime = measureTimeMillis {
       runCatching {
-          println(
-            controllerToWarmUpKClass.declaredMemberFunctions.filter {
-              it.hasAnnotation<WarmupFunction>()
-            })
           controllerToWarmUpKClass.declaredMemberFunctions
             .filter { it.hasAnnotation<WarmupFunction>() }
             .forEach {
