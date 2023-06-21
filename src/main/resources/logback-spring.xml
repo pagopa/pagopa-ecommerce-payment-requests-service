@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
-    <include resource="co/elastic/logging/logback/boot/ecs-console-appender.xml"/>
+    <springProperty name="SERVICE_NAME" source="application.name"/>
+    <springProperty name="SERVICE_VERSION" source="build.version"/>
+    <appender name="ECS_JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="co.elastic.logging.logback.EcsEncoder">
+            <serviceName>${SERVICE_NAME}</serviceName>
+            <serviceVersion>${SERVICE_VERSION}</serviceVersion>
+        </encoder>
+    </appender>
     <root level="INFO">
         <appender-ref ref="ECS_JSON_CONSOLE"/>
     </root>
