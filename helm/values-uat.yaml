@@ -104,6 +104,7 @@ microservice-chart:
     ELASTIC_APM_LOG_SENDING: "false"
     ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ECS_SERVICE_ENVIRONMENT: "uat"
+    ELASTIC_APM_TRACE_CONTINUATION_STRATEGY: "restart_external"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     NODO_CONNECTION_STRING: nodo-connection-string
