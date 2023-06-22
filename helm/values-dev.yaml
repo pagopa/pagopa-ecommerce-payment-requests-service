@@ -85,6 +85,8 @@ microservice-chart:
     OTEL_METRICS_EXPORTER: otlp
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
+    ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
+    ECS_SERVICE_ENVIRONMENT: "dev"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     NODO_CONNECTION_STRING: nodo-connection-string
