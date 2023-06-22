@@ -83,7 +83,7 @@ microservice-chart:
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_TRACES_EXPORTER: otlp
     OTEL_METRICS_EXPORTER: otlp
-    OTEL_LOGS_EXPORTER: otlp
+    OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
