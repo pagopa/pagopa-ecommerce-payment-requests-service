@@ -84,7 +84,6 @@ microservice-chart:
     OTEL_TRACES_EXPORTER: otlp
     OTEL_METRICS_EXPORTER: otlp
     OTEL_LOGS_EXPORTER: otlp
-    OTEL_JAVAAGENT_DEBUG: "true"
     OTEL_TRACES_SAMPLER: "always_on"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
