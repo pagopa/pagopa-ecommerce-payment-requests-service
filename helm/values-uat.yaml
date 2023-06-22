@@ -21,15 +21,14 @@ microservice-chart:
       REDIS_PORT: "6380"
       REDIS_SSL_ENABLED: "true"
       CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
-      ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
-      ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
-      ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
-      ELASTIC_APM_LOG_SENDING: "false"
-      ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
-      ECS_SERVICE_ENVIRONMENT: "uat"
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,service.deployment.environment=uat"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_LOGS_EXPORTER: none
+      OTEL_TRACES_SAMPLER: "always_on"
     envSecret:
       REDIS_PASSWORD: redis-ecommerce-password
-      ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
     tag: "0.4.13"
@@ -98,16 +97,16 @@ microservice-chart:
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
     CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
-    OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service,deployment.environment=uat"
+    OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service,service.deployment.environment=uat"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_TRACES_EXPORTER: otlp
     OTEL_METRICS_EXPORTER: otlp
-    OTEL_LOGS_EXPORTER: otlp
-    OTEL_JAVAAGENT_DEBUG: "true"
+    OTEL_LOGS_EXPORTER: none
+    OTEL_TRACES_SAMPLER: "always_on"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     NODO_CONNECTION_STRING: nodo-connection-string
-    ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
+    OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
   keyvault:
     name: "pagopa-u-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
