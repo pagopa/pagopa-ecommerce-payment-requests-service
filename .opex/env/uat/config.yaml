@@ -1,0 +1,10 @@
+oa3_spec: ./api-spec/payment-requests-api.yaml # If start with http the file would be downloaded from the internet
+name: opex_pagopa-ecommerce-payment-requests-service
+location: West Europe
+timespan: 5m # Default, a number or a timespan https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/scalar-data-types/timespan
+data_source: /subscriptions/26abc801-0d8f-4a6e-ac5f-8e81bcc09112/resourceGroups/pagopa-u-vnet-rg/providers/Microsoft.Network/applicationGateways/pagopa-u-app-gw
+resource_type: app-gateway
+action_groups:
+overrides:
+  hosts: # Use these hosts instead of those inside the OpenApi spec
+    - api.uat.platform.pagopa.it

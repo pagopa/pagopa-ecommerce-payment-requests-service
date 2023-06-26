@@ -20,7 +20,7 @@ microservice-chart:
     periodSeconds: 10
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "0.4.6" #improve
+    tag: "0.4.8" #improve
     pullPolicy: Always
     port: 8080
   ingress:
@@ -82,7 +82,9 @@ microservice-chart:
     ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
     ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
-    ELASTIC_APM_LOG_SENDING: 'true'
+    ELASTIC_APM_LOG_SENDING: "false"
+    ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
+    ECS_SERVICE_ENVIRONMENT: "dev"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     NODO_CONNECTION_STRING: nodo-connection-string

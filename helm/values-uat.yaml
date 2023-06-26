@@ -24,13 +24,15 @@ microservice-chart:
       ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
       ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
-      ELASTIC_APM_LOG_SENDING: "true"
+      ELASTIC_APM_LOG_SENDING: "false"
+      ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
+      ECS_SERVICE_ENVIRONMENT: "uat"
     envSecret:
       REDIS_PASSWORD: redis-ecommerce-password
       ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "0.4.6"
+    tag: "0.4.8"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -99,7 +101,9 @@ microservice-chart:
     ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
     ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
-    ELASTIC_APM_LOG_SENDING: "true"
+    ELASTIC_APM_LOG_SENDING: "false"
+    ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
+    ECS_SERVICE_ENVIRONMENT: "uat"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     NODO_CONNECTION_STRING: nodo-connection-string
