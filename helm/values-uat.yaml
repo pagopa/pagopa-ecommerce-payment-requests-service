@@ -86,7 +86,7 @@ microservice-chart:
         metadata:
           # Required
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
-          value: "80"
+          value: "70"
   envConfig:
     REDIS_HOST: pagopa-u-weu-ecommerce-redis.redis.cache.windows.net
     REDIS_PORT: "6380"
