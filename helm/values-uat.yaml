@@ -25,25 +25,27 @@ microservice-chart:
       ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
       ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
       ELASTIC_APM_LOG_SENDING: "false"
+      ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
+      ECS_SERVICE_ENVIRONMENT: "uat"
     envSecret:
       REDIS_PASSWORD: redis-ecommerce-password
       ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "0.4.1"
+    tag: "0.4.9"
     pullPolicy: Always
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 30
+    initialDelaySeconds: 40
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 30
+    initialDelaySeconds: 40
     failureThreshold: 6
     periodSeconds: 10
   service:
@@ -58,9 +60,9 @@ microservice-chart:
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: { }
+    annotations: {}
     name: ""
-  podAnnotations: { }
+  podAnnotations: {}
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -102,6 +104,8 @@ microservice-chart:
     ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
     ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
     ELASTIC_APM_LOG_SENDING: "false"
+    ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
+    ECS_SERVICE_ENVIRONMENT: "uat"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     NODO_CONNECTION_STRING: nodo-connection-string
@@ -109,8 +113,8 @@ microservice-chart:
   keyvault:
     name: "pagopa-u-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: { }
-  tolerations: [ ]
+  nodeSelector: {}
+  tolerations: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:

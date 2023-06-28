@@ -10,7 +10,7 @@
     </parent>
     <groupId>it.pagopa.ecommerce</groupId>
     <artifactId>pagopa-ecommerce-payment-requests-service</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.9</version>
     <name>pagopa-ecommerce-payment-requests-service</name>
     <description>pagoPA ecommerce microservice to retrieve payment request data or to manage carts (consisting of a
         group of payment requests) with redirects to checkout.
@@ -27,6 +27,7 @@
             **/it/pagopa/ecommerce/payment/requests/warmup/**/*
         </sonar.coverage.exclusions>
         <spotless.version>2.28.0</spotless.version>
+        <ecs-logging-version>1.5.0</ecs-logging-version>
     </properties>
     <dependencies>
         <dependency>
@@ -95,6 +96,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>co.elastic.logging</groupId>
+            <artifactId>logback-ecs-encoder</artifactId>
+            <version>${ecs-logging-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

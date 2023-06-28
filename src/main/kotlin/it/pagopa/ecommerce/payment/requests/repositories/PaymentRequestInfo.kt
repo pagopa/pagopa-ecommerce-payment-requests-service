@@ -17,6 +17,7 @@ constructor(
   val amount: Int?,
   val dueDate: String?,
   val paymentToken: String?,
+  val activationDate: String?,
   val idempotencyKey: IdempotencyKey?,
   val transferList: List<PaymentTransferInfo>?,
 ) {}

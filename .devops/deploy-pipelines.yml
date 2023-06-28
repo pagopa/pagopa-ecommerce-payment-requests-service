@@ -189,6 +189,7 @@ stages:
               steps:
                 - checkout: self
                   displayName: "Checkout"
+                - task: KubectlInstaller@0
                 - task: Bash@3
                   name: update_chart_version
                   displayName: 'Setup helm microservice chart'
@@ -311,6 +312,7 @@ stages:
               steps:
                 - checkout: self
                   displayName: "Checkout"
+                - task: KubectlInstaller@0
                 - task: Bash@3
                   name: update_chart_version
                   displayName: 'Setup helm microservice chart'
