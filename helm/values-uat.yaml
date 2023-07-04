@@ -32,7 +32,7 @@ microservice-chart:
       ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "0.4.8"
+    tag: "0.4.10"
     pullPolicy: Always
   livenessProbe:
     httpGet:
