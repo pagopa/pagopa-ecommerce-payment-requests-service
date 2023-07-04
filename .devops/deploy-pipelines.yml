@@ -149,18 +149,18 @@ stages:
   - stage: "Build_release_candidate"
     displayName: 'Build release candidate'
     dependsOn: [ ]
-    # condition:
-    #   and(
-    #   succeeded(),
-    #   eq(${{parameters.UAT_PROD_DEPLOY}}, true),
-    #   or(
-    #   eq(variables['Build.SourceBranch'], 'refs/heads/main'),
-    #   and(
-    #   startsWith(variables['Build.SourceBranch'], 'refs/tags'),
-    #   endsWith(variables['Build.SourceBranch'], '-RELEASE')
-    #   )
-    #   )
-    #   )
+    condition:
+      and(
+        succeeded(),
+        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+        or(
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+          and(
+            startsWith(variables['Build.SourceBranch'], 'refs/tags'),
+            endsWith(variables['Build.SourceBranch'], '-RELEASE')
+          )
+        )
+      )
     jobs:
       - job: "build"
         displayName: 'Build UAT service beta'
@@ -355,8 +355,14 @@ stages:
   - stage: "Prod_WaitForApproval"
     displayName: 'PROD approval deployment'
     dependsOn: [ Deploy_UAT_Green,Release ]
+    condition: |
+      and(
+        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+        in(dependencies.Deploy_UAT_Green.result, 'Succeeded'),
+        in(dependencies.Release.result, 'Succeeded', 'Skipped')
+      )
     variables:
-      prod_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
+      release_url: $[ stageDependencies.Release.make_release.outputs['chart_current_version.releaseUrl'] ]
     jobs:
       - job: Prod_Approval
         displayName: Manual prod deploy approval
@@ -372,12 +378,14 @@ stages:
 
   - stage: "Build_PROD_Blue"
     displayName: 'PROD blue Build'
-    condition:
-      and(
-      succeeded(),
-      eq(${{parameters.PROD_SKIP_BLUE_DEPLOYMENT}}, False)
-      )
     dependsOn: [ Prod_WaitForApproval,Release ]
+    condition: |
+      and(
+        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+        eq(${{parameters.PROD_SKIP_BLUE_DEPLOYMENT}}, False),
+        eq(dependencies.Prod_WaitForApproval.result, 'Succeeded'),
+        in(dependencies.Release.result, 'Succeeded', 'Skipped')
+      )
     variables:
       prod_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
     jobs:
@@ -410,6 +418,13 @@ stages:
   - stage: "Deploy_PROD_Blue"
     displayName: 'PROD blue deployment'
     dependsOn: [ Build_PROD_Blue,Release ]
+    condition: |
+      and(
+        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+        eq(${{parameters.PROD_SKIP_BLUE_DEPLOYMENT}}, False),
+        eq(dependencies.Build_PROD_Blue.result, 'Succeeded'),
+        in(dependencies.Release.result, 'Succeeded', 'Skipped')
+      )
     variables:
       prod_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
     jobs:
@@ -448,8 +463,15 @@ stages:
     displayName: 'PROD green approval deployment'
     ${{ if eq(parameters['PROD_SKIP_BLUE_DEPLOYMENT'], True) }}:
       dependsOn: Prod_WaitForApproval
+      condition: |
+        and(
+          eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+          in(dependencies.Prod_WaitForApproval.result, 'Succeeded')
+        )
     ${{ if eq(parameters['PROD_SKIP_BLUE_DEPLOYMENT'], False) }}:
       dependsOn: Blue_PROD_deployment
+    variables:
+      release_url: $[ stageDependencies.Release.make_release.outputs['chart_current_version.releaseUrl'] ]
     jobs:
       - job: Bluegreen_PROD_WaitForApproval
         displayName: Manual green deploy approval
@@ -460,7 +482,7 @@ stages:
             timeoutInMinutes: 4320 # 3 days
             inputs:
               notifyUsers: $(APPROVE_TOUCHPOINT_MAIL)
-              instructions: "Please approve or reject PROD green promotions v${prod_version}"
+              instructions: "Please approve or reject PROD green promotions for release ${release_url}"
               onTimeout: 'reject'
 
   - stage: "Build_PROD_Green"
@@ -468,6 +490,12 @@ stages:
     dependsOn: [ PROD_Green_WaitForApproval,Release ]
     variables:
       prod_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
+    condition: |
+      and(
+        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+        eq(dependencies.PROD_Green_WaitForApproval.result, 'Succeeded'),
+        in(dependencies.Release.result, 'Succeeded', 'Skipped')
+      )
     jobs:
       - job: "PROD_image"
         displayName: 'Build PROD image'
@@ -498,6 +526,12 @@ stages:
   - stage: "Deploy_PROD_Green"
     displayName: 'PROD green deployment'
     dependsOn: [ Build_PROD_Green,Release ]
+    condition: |
+      and(
+        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+        in(dependencies.Build_PROD_Green.result, 'Succeeded'),
+        in(dependencies.Release.result, 'Succeeded', 'Skipped')
+      )
     variables:
       prod_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
     jobs:
@@ -537,7 +571,7 @@ stages:
     displayName: 'PROD approval ROLLBACK'
     dependsOn: [ Deploy_PROD_Green,Release ]
     variables:
-      prod_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
+      release_url: $[ stageDependencies.Release.make_release.outputs['chart_current_version.releaseUrl'] ]
     jobs:
       - job: Prod_Rollback_Approval
         displayName: Manual prod rollback approval
@@ -548,7 +582,7 @@ stages:
             timeoutInMinutes: 30
             inputs:
               notifyUsers: $(APPROVE_TOUCHPOINT_MAIL)
-              instructions: "Please approve or reject $(prod_version) for PROD promotions"
+              instructions: "Please approve or reject PROD promotions for release $(release_url)"
               onTimeout: 'skip'
   - stage: "Prod_RollbackToLatestRelease"
     displayName: 'PROD rollback to the latest Release'
