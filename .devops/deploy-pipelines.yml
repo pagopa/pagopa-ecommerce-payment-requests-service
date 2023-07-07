@@ -6,19 +6,23 @@
 
 parameters:
   - name: 'DEV_DEPLOY'
-    displayName: 'DEV deployment without release'
+    displayName: 'Deploy on DEV environment'
     type: boolean
     default: True
     values:
       - False
       - True
   - name: 'UAT_PROD_DEPLOY'
-    displayName: 'UAT blue/green deployment with release --> approval for PROD blue/green deployment'
+    displayName: 'Deploy on UAT environment with PROD promotion'
     type: boolean
     default: False
     values:
       - False
       - True
+  - name: 'skipBuild'
+    displayName: 'Check this flag to skip build and proceed to deploy a docker image previously built'
+    type: boolean
+    default: false
   - name: 'RELEASE_SEMVER'
     displayName: 'When packing a release, define the version bump to apply (release is done automatically when deploying on UAT and skipped on DEV) '
     type: string
@@ -27,7 +31,7 @@ parameters:
       - minor
       - patch
       - none
-    default: none
+    default: patch
   - name: 'RELEASE_CHART_SEMVER'
     displayName: 'When upgrading helm chart, define the version bump to apply'
     type: string
@@ -35,8 +39,7 @@ parameters:
       - major
       - minor
       - patch
-      - none
-    default: none
+    default: patch
   - name: "FORCE_REPLACE_DOCKER_IMAGE"
     displayName: "Force the existing docker image to be replaced (latest tag)"
     type: boolean
@@ -64,13 +67,6 @@ parameters:
     default: True
     values:
       - False
-      - True    
-  - name: "UAT_SKIP_MANUAL_APPROVAL"
-    displayName: "Skip the UAT manual approval check"
-    type: boolean
-    default: True
-    values:
-      - False
       - True
 resources:
   repositories:
@@ -88,10 +84,12 @@ resources:
 pool:
   vmImage: ubuntu-latest
 
+# --- START Deploy DEV --- #
 stages:
+
   - stage: 'Build_for_DEV'
-    displayName: 'Build for DEV deployment'
-    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
+    displayName: 'Build for DEV'
+    condition: and(succeeded(), not(${{ parameters.skipBuild }}), eq(${{parameters.DEV_DEPLOY}}, true))
     jobs:
       - job: Build_docker
         displayName: Build docker with Build.SourceVersion as TAG
@@ -103,10 +101,11 @@ stages:
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
               DOCKER_IMAGE_TAG: $(Build.SourceVersion)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+
   - stage: 'Deploy_for_DEV'
     displayName: 'Deploy DEV'
     dependsOn: Build_for_DEV
-    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true) )
+    condition: or(succeeded(), ${{ parameters.skipBuild }}, eq(${{parameters.DEV_DEPLOY}}, true) )
     jobs:
       - deployment: "deploy"
         environment: 'DEV'
@@ -145,25 +144,23 @@ stages:
             parameters:
               ENV_FILE: "api-tests/dev.envs.json"
               TEST_FILE_PREFIX: "dev"
-
+  # --- END Deploy DEV --- #
+  # --- START Deploy UAT --- #
   - stage: "Build_release_candidate"
     displayName: 'Build release candidate'
     dependsOn: [ ]
     condition:
       and(
-        succeeded(),
-        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
-        or(
-          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
-          and(
-            startsWith(variables['Build.SourceBranch'], 'refs/tags'),
-            endsWith(variables['Build.SourceBranch'], '-RELEASE')
-          )
-        )
+      succeeded(),
+      eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+      or(
+      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+      startsWith(variables['Build.SourceBranch'], 'refs/tags')
+      )
       )
     jobs:
       - job: "build"
-        displayName: 'Build UAT service beta'
+        displayName: 'Build release candidate docker image'
         steps:
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
@@ -183,7 +180,7 @@ stages:
       eq(${{parameters.UAT_SKIP_BLUE_DEPLOYMENT}}, False)
       )
     variables:
-      green_version: $[ stageDependencies.Build_release_candidate.build.outputs['chart_current_version.appVersion'] ]
+      green_app_version: $[ stageDependencies.Build_release_candidate.build.outputs['chart_current_version.appVersion'] ]
     jobs:
       - deployment: "Blue_deployment"
         displayName: "Blue deployment"
@@ -214,7 +211,7 @@ stages:
                     NAMESPACE: ecommerce
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-uat.yaml"
-                    GREEN_VERSION: $(green_version)
+                    GREEN_VERSION: $(green_app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
                 - script: |
                     echo "##[group]Waiting max 3 minute for blue deployment to be up and running..."
@@ -234,8 +231,10 @@ stages:
               TEST_FILE_PREFIX: "blue-uat"
 
   - stage: "Bluegreen_WaitForApproval"
-    displayName: 'UAT approve blue deployment'
+    displayName: 'UAT green approval deployment'
     dependsOn: API_Blue_UAT_test
+    variables:
+      commitUrl: $[ stageDependencies.Build_release_candidate.build.outputs['chart_current_version.commitUrl'] ]
     jobs:
       - job: Bluegreen_WaitForApproval
         displayName: Manual blue deploy approval
@@ -245,14 +244,16 @@ stages:
           - task: ManualValidation@0
             timeoutInMinutes: 4320 # 3 days
             inputs:
-              onTimeout: 'skip'
-            condition: and(succeeded(), eq(${{parameters.UAT_SKIP_MANUAL_APPROVAL}}, False))
+              notifyUsers: $(APPROVE_TOUCHPOINT_MAIL)
+              instructions: "Please approve or reject UAT blue green promotions for $(commitUrl)"
+              onTimeout: 'reject'
 
   - stage: Release
     ${{ if eq(parameters['UAT_SKIP_BLUE_DEPLOYMENT'], True) }}:
       dependsOn: Build_release_candidate
     ${{ if eq(parameters['UAT_SKIP_BLUE_DEPLOYMENT'], False) }}:
       dependsOn: Bluegreen_WaitForApproval
+      condition: succeeded()
     jobs:
       - job: make_release
         displayName: Make github release
@@ -271,19 +272,19 @@ stages:
                   semver: '${{ parameters.RELEASE_SEMVER }}'
           - template: azure-templates/chart-current-version.yml
 
-  - stage: "Release_tag_docker"
-    displayName: 'Docker tag release'
+  - stage: "tag_docker_release"
+    displayName: 'Tag Docker image to be release'
     dependsOn: Release
     condition:
       and(
       succeeded(),
-      eq(${{parameters.SKIP_RELEASE}}, False)
+      ne('${{parameters.RELEASE_SEMVER}}', 'none')
       )
     variables:
-      next_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
+      app_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
     jobs:
       - job: "build"
-        displayName: 'Tag Docker Blue version UAT'
+        displayName: 'Build UAT service beta'
         steps:
           - task: Docker@2
             displayName: "docker login"
@@ -296,17 +297,24 @@ stages:
               targetType: "inline"
               script: |
                 docker pull $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
-                docker tag $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(next_version)
-                docker push $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(next_version)
+                docker tag $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(app_version)
+                docker push $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(app_version)
 
   - stage: "Deploy_UAT_Green"
     displayName: 'UAT green deployment'
-    ${{ if eq(parameters['SKIP_RELEASE'], True) }}:
-      dependsOn: Release
-    ${{ if eq(parameters['SKIP_RELEASE'], False) }}:
-      dependsOn: [ Release_tag_docker,Release ]
+    dependsOn: [ tag_docker_release,Release ]
+    condition: |
+      and(
+        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+        in(dependencies.tag_docker_release.result, 'Succeeded', 'Skipped'),
+        in(dependencies.Release.result, 'Succeeded', 'Skipped'),
+        or(
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+          startsWith(variables['Build.SourceBranch'], 'refs/tags')
+        )
+      )
     variables:
-      green_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
+      app_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
     jobs:
       - deployment: "Green_deployment"
         displayName: "Green deployment"
@@ -337,7 +345,8 @@ stages:
                     NAMESPACE: ecommerce
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-uat.yaml"
-                    GREEN_VERSION: $(green_version)
+                    GREEN_VERSION: $(app_version)
+
 
   - stage: "API_Green_UAT_test"
     displayName: 'Running API test on green app'
@@ -350,6 +359,7 @@ stages:
             parameters:
               ENV_FILE: "api-tests/uat.envs.json"
               TEST_FILE_PREFIX: "green-uat"
+  # --- END Deploy UAT --- #
 
   # --- START Deploy PROD --- #
   - stage: "Prod_WaitForApproval"
@@ -358,7 +368,7 @@ stages:
     condition: |
       and(
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
-        in(dependencies.Deploy_UAT_Green.result, 'Succeeded'),
+        eq(dependencies.Deploy_UAT_Green.result, 'Succeeded'),
         in(dependencies.Release.result, 'Succeeded', 'Skipped')
       )
     variables:
@@ -373,9 +383,11 @@ stages:
             timeoutInMinutes: 4320 # 3 days
             inputs:
               notifyUsers: $(APPROVE_TOUCHPOINT_MAIL)
-              instructions: "Please approve or reject $(prod_version) for PROD promotions"
+              instructions: "Please approve or reject PROD promotions for release $(release_url)"
               onTimeout: 'reject'
 
+
+  # --- START Deploy PROD --- #
   - stage: "Build_PROD_Blue"
     displayName: 'PROD blue Build'
     dependsOn: [ Prod_WaitForApproval,Release ]
@@ -387,7 +399,7 @@ stages:
         in(dependencies.Release.result, 'Succeeded', 'Skipped')
       )
     variables:
-      prod_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
+      app_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
     jobs:
       - job: "PROD_image"
         displayName: 'Build PROD image'
@@ -402,8 +414,8 @@ stages:
             inputs:
               targetType: "inline"
               script: |
-                docker pull $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(prod_version)
-                docker tag $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(prod_version) $(PROD_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
+                docker pull $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(app_version)
+                docker tag $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(app_version) $(PROD_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
           - task: Docker@2
             displayName: "docker login for PROD"
             inputs:
@@ -426,7 +438,7 @@ stages:
         in(dependencies.Release.result, 'Succeeded', 'Skipped')
       )
     variables:
-      prod_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
+      app_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
     jobs:
       - deployment: "Blue_PROD_deployment"
         displayName: "Blue PROD deployment"
@@ -456,7 +468,7 @@ stages:
                     NAMESPACE: ecommerce
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-prod.yaml"
-                    GREEN_VERSION: $(prod_version)
+                    GREEN_VERSION: $(app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
 
   - stage: "PROD_Green_WaitForApproval"
@@ -482,7 +494,7 @@ stages:
             timeoutInMinutes: 4320 # 3 days
             inputs:
               notifyUsers: $(APPROVE_TOUCHPOINT_MAIL)
-              instructions: "Please approve or reject PROD green promotions for release ${release_url}"
+              instructions: "Please approve or reject PROD green promotions for release $(release_url)"
               onTimeout: 'reject'
 
   - stage: "Build_PROD_Green"
@@ -529,7 +541,7 @@ stages:
     condition: |
       and(
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
-        in(dependencies.Build_PROD_Green.result, 'Succeeded'),
+        eq(dependencies.Build_PROD_Green.result, 'Succeeded'),
         in(dependencies.Release.result, 'Succeeded', 'Skipped')
       )
     variables:
@@ -568,15 +580,20 @@ stages:
 
   # --- START ROLLBACK PROD --- #
   - stage: "Prod_RollbackForApproval"
-    displayName: 'PROD approval ROLLBACK'
+    displayName: 'PROD ROLLBACK'
     dependsOn: [ Deploy_PROD_Green,Release ]
+    condition: |
+      and(
+        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+        eq(dependencies.Deploy_PROD_Green.result, 'Succeeded'),
+        in(dependencies.Release.result, 'Succeeded', 'Skipped')
+      )
     variables:
       release_url: $[ stageDependencies.Release.make_release.outputs['chart_current_version.releaseUrl'] ]
     jobs:
       - job: Prod_Rollback_Approval
         displayName: Manual prod rollback approval
         pool: server
-        timeoutInMinutes: 30
         steps:
           - task: ManualValidation@0
             timeoutInMinutes: 30
@@ -587,6 +604,7 @@ stages:
   - stage: "Prod_RollbackToLatestRelease"
     displayName: 'PROD rollback to the latest Release'
     dependsOn: [ Prod_RollbackForApproval ]
+    condition: succeeded()
     jobs:
       - job: Prod_Rollback
         pool:
@@ -603,4 +621,4 @@ stages:
               install: true
               waitForExecution: true
               arguments: $(K8S_IMAGE_REPOSITORY_NAME)
-  # --- START ROLLBACK PROD --- #
+# --- END ROLLBACK PROD --- #
