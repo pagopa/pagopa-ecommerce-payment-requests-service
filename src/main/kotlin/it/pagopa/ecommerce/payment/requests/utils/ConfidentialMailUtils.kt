@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono
 
 @Component
 @Slf4j
-class ConfidentialMailUtils
+class TokenizerEmailUtils
 @Autowired
 constructor(emailConfidentialDataManager: ConfidentialDataManager) {
   private val emailConfidentialDataManager: ConfidentialDataManager
@@ -22,15 +22,15 @@ constructor(emailConfidentialDataManager: ConfidentialDataManager) {
     this.emailConfidentialDataManager = emailConfidentialDataManager
   }
 
-  fun toEmail(encrypted: Confidential<Email>): Mono<Email> {
+  fun toEmail(tokenizedEmail: Confidential<Email>): Mono<Email> {
     return emailConfidentialDataManager
-      .decrypt(encrypted) { Email(it) }
-      .doOnError { e -> logger.error("Exception decrypting confidential data", e) }
+      .decrypt(tokenizedEmail) { Email(it) }
+      .doOnError { e -> logger.error("Exception get mail from tokenized email", e) }
   }
 
   fun toConfidential(clearText: Email): Mono<Confidential<Email>> {
     return emailConfidentialDataManager.encrypt(clearText).doOnError { e ->
-      logger.error("Exception encrypting confidential data", e)
+      logger.error("Exception tokenizing confidential data", e)
     }
   }
 

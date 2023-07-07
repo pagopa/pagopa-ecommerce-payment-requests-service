@@ -15,6 +15,7 @@ import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.ConfidentialMailUtils
+import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import java.net.URI
 import java.text.MessageFormat
 import java.util.*
@@ -34,7 +35,7 @@ class CartService(
   @Value("\${checkout.url}") private val checkoutUrl: String,
   @Autowired private val cartsRedisTemplateWrapper: CartsRedisTemplateWrapper,
   @Autowired private val nodoPerPmClient: NodoPerPmClient,
-  @Autowired private val confidentialMailUtils: ConfidentialMailUtils,
+  @Autowired private val tokenizerMailUtils: TokenizerEmailUtils,
   @Value("\${carts.max_allowed_payment_notices}") private val maxAllowedPaymentNotices: Int,
   private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
@@ -62,7 +63,7 @@ class CartService(
         }
 
       val cart =
-        confidentialMailUtils.toConfidential(cartRequestDto.emailNotice).map { tokenizedEmail ->
+        tokenizerMailUtils.toConfidential(cartRequestDto.emailNotice).map { tokenizedEmail ->
           CartInfo(
             UUID.randomUUID(),
             paymentInfos,
@@ -127,9 +128,9 @@ class CartService(
         ?: throw CartNotFoundException(cartId.toString())
 
     val cartWithClearEmail =
-      confidentialMailUtils
+      tokenizerMailUtils
         .toConfidential(cartWithTokenizedEmail.email)
-        .flatMap { confidentialEmail -> confidentialMailUtils.toEmail(confidentialEmail) }
+        .flatMap { confidentialEmail -> tokenizerMailUtils.toEmail(confidentialEmail) }
         .map { email ->
           CartRequestDto(
             paymentNotices =
