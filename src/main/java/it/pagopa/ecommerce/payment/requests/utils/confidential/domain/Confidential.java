@@ -1,8 +1,8 @@
-package it.pagopa.ecommerce.payment.requests.utils.soap.confidential.domain;
+package it.pagopa.ecommerce.payment.requests.utils.confidential.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.pagopa.ecommerce.payment.requests.utils.soap.confidential.ConfidentialDataManager;
+import it.pagopa.ecommerce.payment.requests.utils.confidential.ConfidentialDataManager;
 
 /**
  * <p>

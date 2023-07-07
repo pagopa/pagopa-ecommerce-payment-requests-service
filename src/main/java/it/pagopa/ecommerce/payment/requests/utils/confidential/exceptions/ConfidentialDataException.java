@@ -1,6 +1,6 @@
-package it.pagopa.ecommerce.payment.requests.utils.soap.confidential.exceptions;
+package it.pagopa.ecommerce.payment.requests.utils.confidential.exceptions;
 
-import it.pagopa.ecommerce.payment.requests.utils.soap.confidential.ConfidentialDataManager;
+import it.pagopa.ecommerce.payment.requests.utils.confidential.ConfidentialDataManager;
 
 /**
  * Exception class wrapping checked exceptions that can occur during encryption
