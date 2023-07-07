@@ -1,7 +1,7 @@
-package it.pagopa.ecommerce.payment.requests.utils.soap.confidential;
+package it.pagopa.ecommerce.payment.requests.utils.confidential;
 
-import it.pagopa.ecommerce.payment.requests.utils.soap.confidential.domain.Confidential;
-import it.pagopa.ecommerce.payment.requests.utils.soap.confidential.exceptions.ConfidentialDataException;
+import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential;
+import it.pagopa.ecommerce.payment.requests.utils.confidential.exceptions.ConfidentialDataException;
 import it.pagopa.generated.pdv.v1.api.TokenApi;
 import it.pagopa.generated.pdv.v1.dto.PiiResourceDto;
 import it.pagopa.generated.pdv.v1.dto.TokenResourceDto;
