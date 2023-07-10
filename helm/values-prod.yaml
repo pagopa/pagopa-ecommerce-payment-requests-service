@@ -20,7 +20,7 @@ microservice-chart:
       REDIS_HOST: pagopa-p-weu-ecommerce-redis.redis.cache.windows.net
       REDIS_PORT: "6380"
       REDIS_SSL_ENABLED: "true"
-      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
+      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
       ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
       ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
@@ -97,7 +97,7 @@ microservice-chart:
     NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
-    CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
+    CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
     ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
     ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
