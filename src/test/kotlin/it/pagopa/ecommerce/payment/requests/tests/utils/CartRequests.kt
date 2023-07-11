@@ -25,7 +25,7 @@ object CartRequests {
           returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
         ),
       idCart = "idCartExample",
-      emailNotice = UUID.randomUUID().toString())
+      emailNotice = "my_email@mail.it")
   }
 
   fun withMultiplePaymentNotices(paymentNoticesNumber: Int): CartRequestDto {
