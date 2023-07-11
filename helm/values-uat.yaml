@@ -27,9 +27,11 @@ microservice-chart:
       ELASTIC_APM_LOG_SENDING: "false"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ECS_SERVICE_ENVIRONMENT: "uat"
+      PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.tokenizer.pdv.pagopa.it/tokenizer/v1"
     envSecret:
       REDIS_PASSWORD: redis-ecommerce-password
       ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
+      PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
     tag: "0.4.11"
@@ -104,10 +106,12 @@ microservice-chart:
     ELASTIC_APM_LOG_SENDING: "false"
     ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ECS_SERVICE_ENVIRONMENT: "uat"
+    PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.tokenizer.pdv.pagopa.it/tokenizer/v1"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     NODO_CONNECTION_STRING: nodo-connection-string
     ELASTIC_APM_SECRET_TOKEN: elastic-apm-secret-token
+    PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   keyvault:
     name: "pagopa-u-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
