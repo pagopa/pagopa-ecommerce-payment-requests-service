@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.services
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
+import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
@@ -85,39 +86,41 @@ class CartsServiceTests {
   }
 
   @Test
-  suspend fun `get cart by id`() = runTest {
+  fun `get cart by id`() = runTest {
     val cartId = UUID.randomUUID()
-    val tokenizedEmail = UUID.randomUUID().toString()
+    val clearEmail = "test@test.it"
 
-    Mockito.mockStatic(UUID::class.java).use { uuidMock ->
-      uuidMock.`when`<UUID> { UUID.fromString(cartId.toString()) }.thenReturn(cartId)
+    val cart = CartRequests.withOnePaymentNotice()
+    val expectedCart =
+      CartRequestDto(
+        paymentNotices = cart.paymentNotices,
+        returnUrls = cart.returnUrls,
+        emailNotice = clearEmail,
+        idCart = cart.idCart)
 
-      val request = CartRequests.withOnePaymentNotice()
+    given(tokenizerMailUtils.toEmail(Confidential(cart.emailNotice)))
+      .willReturn(Mono.just(Email(clearEmail)))
 
-      given(tokenizerMailUtils.toEmail(Confidential(tokenizedEmail)))
-        .willReturn(Mono.just(Email(request.emailNotice)))
+    given(cartRedisTemplateWrapper.findById(cartId.toString()))
+      .willReturn(
+        cart.let { req ->
+          CartInfo(
+            cartId,
+            req.paymentNotices.map {
+              PaymentInfo(
+                RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
+            },
+            req.idCart,
+            req.returnUrls.let {
+              ReturnUrls(
+                returnSuccessUrl = it.returnOkUrl.toString(),
+                returnErrorUrl = it.returnErrorUrl.toString(),
+                returnCancelUrl = it.returnCancelUrl.toString())
+            },
+            req.emailNotice)
+        })
 
-      given(cartRedisTemplateWrapper.findById(cartId.toString()))
-        .willReturn(
-          request.let { req ->
-            CartInfo(
-              cartId,
-              req.paymentNotices.map {
-                PaymentInfo(
-                  RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
-              },
-              req.idCart,
-              req.returnUrls.let {
-                ReturnUrls(
-                  returnSuccessUrl = it.returnOkUrl.toString(),
-                  returnErrorUrl = it.returnErrorUrl.toString(),
-                  returnCancelUrl = it.returnCancelUrl.toString())
-              },
-              req.emailNotice)
-          })
-
-      assertEquals(request, cartService.getCart(cartId))
-    }
+    assertEquals(expectedCart, cartService.getCart(cartId))
   }
 
   @Test

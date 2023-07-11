@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDt
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import java.net.URI
+import java.util.UUID
 
 object CartRequests {
 
@@ -24,7 +25,7 @@ object CartRequests {
           returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
         ),
       idCart = "idCartExample",
-      emailNotice = "my_email@mail.it")
+      emailNotice = UUID.randomUUID().toString())
   }
 
   fun withMultiplePaymentNotices(paymentNoticesNumber: Int): CartRequestDto {
