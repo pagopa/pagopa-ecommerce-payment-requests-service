@@ -11,6 +11,8 @@ import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
+import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
+import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
 import java.util.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -42,15 +44,17 @@ class CartsServiceTests {
   @Test
   fun `post cart succeeded with one payment notice`() = runTest {
     val cartId = UUID.randomUUID()
+    val tokenizedEmail = UUID.randomUUID()
 
     Mockito.mockStatic(UUID::class.java).use { uuidMock ->
       uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
       given(nodoPerPmClient.checkPosition(any()))
         .willReturn(
           Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
-
       val request = CartRequests.withOnePaymentNotice()
       val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
+      given(tokenizerMailUtils.toConfidential(request.emailNotice))
+        .willReturn(Mono.just(Confidential<Email>(tokenizedEmail.toString())))
       assertEquals(locationUrl, cartService.processCart(request))
       verify(cartRedisTemplateWrapper, times(1)).save(any())
     }
@@ -59,14 +63,17 @@ class CartsServiceTests {
   @Test
   fun `post cart failed with checkValidity KO`() = runTest {
     val cartId = UUID.randomUUID()
+    val tokenizedEmail = UUID.randomUUID()
 
     Mockito.mockStatic(UUID::class.java).use { uuidMock ->
       uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
       given(nodoPerPmClient.checkPosition(any()))
         .willReturn(
           Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.KO)))
-
       val request = CartRequests.withOnePaymentNotice()
+      given(tokenizerMailUtils.toConfidential(request.emailNotice))
+        .willReturn(Mono.just(Confidential<Email>(tokenizedEmail.toString())))
+
       assertThrows<RestApiException> { cartService.processCart(request) }
     }
   }
