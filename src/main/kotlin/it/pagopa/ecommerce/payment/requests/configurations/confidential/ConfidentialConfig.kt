@@ -7,23 +7,22 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-
 @Configuration
 class ConfidentialConfig {
 
-    @Bean
-    fun personalDataVaultApiClient(
-        @Value("\${confidentialDataManager.personalDataVault.apiKey}") personalDataVaultApiKey: String?,
-        @Value("\${confidentialDataManager.personalDataVault.apiBasePath}") apiBasePath: String?
-    ): TokenApi {
-        val pdvApiClient = ApiClient()
-        pdvApiClient.setApiKey(personalDataVaultApiKey)
-        pdvApiClient.basePath = apiBasePath
-        return TokenApi(pdvApiClient)
-    }
+  @Bean
+  fun personalDataVaultApiClient(
+    @Value("\${confidentialDataManager.personalDataVault.apiKey}") personalDataVaultApiKey: String?,
+    @Value("\${confidentialDataManager.personalDataVault.apiBasePath}") apiBasePath: String?
+  ): TokenApi {
+    val pdvApiClient = ApiClient()
+    pdvApiClient.setApiKey(personalDataVaultApiKey)
+    pdvApiClient.basePath = apiBasePath
+    return TokenApi(pdvApiClient)
+  }
 
-    @Bean
-    fun emailConfidentialDataManager(personalDataVaultApi: TokenApi?): ConfidentialDataManager {
-        return ConfidentialDataManager(personalDataVaultApi)
-    }
+  @Bean
+  fun emailConfidentialDataManager(personalDataVaultApi: TokenApi?): ConfidentialDataManager {
+    return ConfidentialDataManager(personalDataVaultApi)
+  }
 }
