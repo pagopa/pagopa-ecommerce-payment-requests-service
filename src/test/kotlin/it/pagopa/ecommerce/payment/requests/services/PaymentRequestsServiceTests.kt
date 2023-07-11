@@ -62,9 +62,20 @@ class PaymentRequestsServiceTests {
     val paName = "Pa Name"
     val description = "Payment request description"
     val amount = Integer.valueOf(1000)
+    val isAllCCP = Random().nextBoolean()
     val paymentRequestInfo =
       PaymentRequestInfo(
-        rptIdAsObject, paTaxCode, paName, description, amount, null, null, null, null, null)
+        rptIdAsObject,
+        paTaxCode,
+        paName,
+        description,
+        amount,
+        null,
+        null,
+        null,
+        null,
+        null,
+        isAllCCP)
     /** preconditions */
     given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString))
       .willReturn(paymentRequestInfo)
