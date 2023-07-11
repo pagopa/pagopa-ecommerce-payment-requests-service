@@ -4,7 +4,6 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDt
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import java.net.URI
-import java.util.UUID
 
 object CartRequests {
 
