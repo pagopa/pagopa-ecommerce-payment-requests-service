@@ -14,7 +14,6 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
-import it.pagopa.ecommerce.payment.requests.utils.ConfidentialMailUtils
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import java.net.URI
 import java.text.MessageFormat

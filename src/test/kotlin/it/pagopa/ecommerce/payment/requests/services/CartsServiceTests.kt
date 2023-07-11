@@ -10,6 +10,7 @@ import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
+import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import java.util.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -28,12 +29,14 @@ class CartsServiceTests {
 
   private val cartRedisTemplateWrapper: CartsRedisTemplateWrapper = mock()
   private val nodoPerPmClient: NodoPerPmClient = mock()
+  private val tokenizerMailUtils: TokenizerEmailUtils = mock()
   private val cartsMaxAllowedPaymentNotices = 5
   private val cartService: CartService =
     CartService(
       "${TEST_CHECKOUT_URL}/c/{0}",
       cartRedisTemplateWrapper,
       nodoPerPmClient,
+      tokenizerMailUtils,
       cartsMaxAllowedPaymentNotices)
 
   @Test
@@ -75,7 +78,7 @@ class CartsServiceTests {
   }
 
   @Test
-  fun `get cart by id`() {
+  suspend fun `get cart by id`() {
     val cartId = UUID.randomUUID()
 
     Mockito.mockStatic(UUID::class.java).use { uuidMock ->
@@ -107,7 +110,7 @@ class CartsServiceTests {
   }
 
   @Test
-  fun `non-existing id throws CartNotFoundException`() {
+  suspend fun `non-existing id throws CartNotFoundException`() {
     val cartId = UUID.randomUUID()
 
     given(cartRedisTemplateWrapper.findById(cartId.toString())).willReturn(null)
