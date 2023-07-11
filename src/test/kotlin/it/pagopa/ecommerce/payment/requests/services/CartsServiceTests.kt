@@ -85,13 +85,17 @@ class CartsServiceTests {
   }
 
   @Test
-  suspend fun `get cart by id`() {
+  suspend fun `get cart by id`() = runTest {
     val cartId = UUID.randomUUID()
+    val tokenizedEmail = UUID.randomUUID().toString()
 
     Mockito.mockStatic(UUID::class.java).use { uuidMock ->
       uuidMock.`when`<UUID> { UUID.fromString(cartId.toString()) }.thenReturn(cartId)
 
       val request = CartRequests.withOnePaymentNotice()
+
+      given(tokenizerMailUtils.toEmail(Confidential(tokenizedEmail)))
+        .willReturn(Mono.just(Email(request.emailNotice)))
 
       given(cartRedisTemplateWrapper.findById(cartId.toString()))
         .willReturn(
@@ -117,11 +121,11 @@ class CartsServiceTests {
   }
 
   @Test
-  suspend fun `non-existing id throws CartNotFoundException`() {
+  fun `non-existing id throws CartNotFoundException`() = runTest {
     val cartId = UUID.randomUUID()
-
-    given(cartRedisTemplateWrapper.findById(cartId.toString())).willReturn(null)
-
-    assertThrows<CartNotFoundException> { cartService.getCart(cartId) }
+    Mockito.mockStatic(UUID::class.java).use {
+      given(cartRedisTemplateWrapper.findById(cartId.toString())).willReturn(null)
+      assertThrows<CartNotFoundException> { cartService.getCart(cartId) }
+    }
   }
 }

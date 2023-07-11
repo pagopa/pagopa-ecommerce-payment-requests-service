@@ -15,6 +15,7 @@ import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
+import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import java.net.URI
 import java.text.MessageFormat
 import java.util.*
@@ -126,29 +127,25 @@ class CartService(
       cartsRedisTemplateWrapper.findById(cartId.toString())
         ?: throw CartNotFoundException(cartId.toString())
 
-    val cartWithClearEmail =
-      tokenizerMailUtils
-        .toConfidential(cartWithTokenizedEmail.email)
-        .flatMap { confidentialEmail -> tokenizerMailUtils.toEmail(confidentialEmail) }
-        .map { email ->
-          CartRequestDto(
-            paymentNotices =
-              cartWithTokenizedEmail.payments.map {
-                PaymentNoticeDto(
-                  it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
-              },
-            returnUrls =
-              cartWithTokenizedEmail.returnUrls.let {
-                CartRequestReturnUrlsDto(
-                  returnOkUrl = URI(it.returnSuccessUrl),
-                  returnCancelUrl = URI(it.returnCancelUrl),
-                  returnErrorUrl = URI(it.returnErrorUrl))
-              },
-            emailNotice = email.value,
-            idCart = cartWithTokenizedEmail.idCart)
-        }
-        .awaitSingle()
-
-    return cartWithClearEmail
+    return tokenizerMailUtils
+      .toEmail(Confidential(cartWithTokenizedEmail.email))
+      .map { email ->
+        CartRequestDto(
+          paymentNotices =
+            cartWithTokenizedEmail.payments.map {
+              PaymentNoticeDto(
+                it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
+            },
+          returnUrls =
+            cartWithTokenizedEmail.returnUrls.let {
+              CartRequestReturnUrlsDto(
+                returnOkUrl = URI(it.returnSuccessUrl),
+                returnCancelUrl = URI(it.returnCancelUrl),
+                returnErrorUrl = URI(it.returnErrorUrl))
+            },
+          emailNotice = email.value,
+          idCart = cartWithTokenizedEmail.idCart)
+      }
+      .awaitSingle()
   }
 }
