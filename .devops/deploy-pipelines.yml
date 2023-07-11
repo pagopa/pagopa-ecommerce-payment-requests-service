@@ -78,7 +78,7 @@ resources:
     - repository: pagopaCheckoutTests
       type: github
       name: pagopa/pagopa-checkout-tests
-      ref: a97e9cc795ddf16bbf449e6d689ac55059ae5996
+      ref: main
       endpoint: 'io-azure-devops-github-ro'
 
 pool:
