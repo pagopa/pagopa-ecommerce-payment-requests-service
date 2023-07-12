@@ -481,7 +481,7 @@ stages:
           in(dependencies.Prod_WaitForApproval.result, 'Succeeded')
         )
     ${{ if eq(parameters['PROD_SKIP_BLUE_DEPLOYMENT'], False) }}:
-      dependsOn: Blue_PROD_deployment
+      dependsOn: Deploy_PROD_Blue
     variables:
       release_url: $[ stageDependencies.Release.make_release.outputs['chart_current_version.releaseUrl'] ]
     jobs:
