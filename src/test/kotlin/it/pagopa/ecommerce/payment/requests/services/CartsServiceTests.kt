@@ -54,7 +54,7 @@ class CartsServiceTests {
           Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
       val request = CartRequests.withOnePaymentNotice()
       val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
-      given(tokenizerMailUtils.toConfidential(request.emailNotice))
+      given(tokenizerMailUtils.toConfidential(Email(request.emailNotice)))
         .willReturn(Mono.just(Confidential<Email>(tokenizedEmail.toString())))
       assertEquals(locationUrl, cartService.processCart(request))
       verify(cartRedisTemplateWrapper, times(1)).save(any())
