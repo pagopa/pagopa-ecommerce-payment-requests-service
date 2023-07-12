@@ -1,6 +1,5 @@
 package it.pagopa.ecommerce.payment.requests.utils
 
-import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.utils.confidential.ConfidentialDataManager
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
@@ -44,7 +43,9 @@ class TokenizerEmailUtilsTests {
   fun shouldHandleInvalidEmail() {
 
     val invalidEmail = "invalidEmail.com"
-    assertThrows<IllegalArgumentException> { tokenizerEmailUtils.toConfidential(invalidEmail).block()!! }
+    assertThrows<IllegalArgumentException> {
+      tokenizerEmailUtils.toConfidential(invalidEmail).block()!!
+    }
     assertThrows<IllegalArgumentException> { Email("validEmail") }
   }
 }
