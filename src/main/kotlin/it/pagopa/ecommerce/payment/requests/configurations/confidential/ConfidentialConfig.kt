@@ -22,7 +22,7 @@ class ConfidentialConfig {
   }
 
   @Bean
-  fun emailConfidentialDataManager(personalDataVaultApi: TokenApi?): ConfidentialDataManager {
+  fun emailConfidentialDataManager(personalDataVaultApi: TokenApi): ConfidentialDataManager {
     return ConfidentialDataManager(personalDataVaultApi)
   }
 }
