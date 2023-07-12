@@ -16,6 +16,7 @@ import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
+import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
 import java.net.URI
 import java.text.MessageFormat
 import java.util.*
@@ -62,19 +63,6 @@ class CartService(
             RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
         }
 
-      val cart =
-        tokenizerMailUtils.toConfidential(cartRequestDto.emailNotice).map { tokenizedEmail ->
-          CartInfo(
-            UUID.randomUUID(),
-            paymentInfos,
-            cartRequestDto.idCart,
-            ReturnUrls(
-              returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
-              returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
-              returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
-            tokenizedEmail.opaqueData)
-        }
-
       val checkPositionDto =
         CheckPositionDto()
           .positionslist(
@@ -96,7 +84,20 @@ class CartService(
             title = "Invalid payment info",
             description = "Invalid payment notice data")
         }
-        .flatMap { cart }
+        .flatMap {
+          tokenizerMailUtils.toConfidential(Email(cartRequestDto.emailNotice)).map { tokenizedEmail
+            ->
+            CartInfo(
+              UUID.randomUUID(),
+              paymentInfos,
+              cartRequestDto.idCart,
+              ReturnUrls(
+                returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
+                returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
+                returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
+              tokenizedEmail.opaqueData)
+          }
+        }
         .map { validCart ->
           logger.info("Saving cart ${validCart.id} for payments $paymentInfos")
 
