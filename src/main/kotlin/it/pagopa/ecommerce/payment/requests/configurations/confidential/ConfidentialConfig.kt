@@ -13,7 +13,7 @@ class ConfidentialConfig {
   @Bean
   fun personalDataVaultApiClient(
     @Value("\${confidentialDataManager.personalDataVault.apiKey}") personalDataVaultApiKey: String,
-    @Value("\${confidentialDataManager.personalDataVault.apiBasePath}") apiBasePath: String?
+    @Value("\${confidentialDataManager.personalDataVault.apiBasePath}") apiBasePath: String
   ): TokenApi {
     val pdvApiClient = ApiClient()
     pdvApiClient.setApiKey(personalDataVaultApiKey)
