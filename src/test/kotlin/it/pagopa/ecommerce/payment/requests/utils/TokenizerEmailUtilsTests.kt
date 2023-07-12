@@ -1,11 +1,13 @@
 package it.pagopa.ecommerce.payment.requests.utils
 
+import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.utils.confidential.ConfidentialDataManager
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
 import java.util.*
 import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import reactor.core.publisher.Mono
@@ -36,5 +38,13 @@ class TokenizerEmailUtilsTests {
     val decrypted: Email = tokenizerEmailUtils.toEmail(encrypted).block()!!
 
     /* assert */ assertEquals(email, decrypted)
+  }
+
+  @Test
+  fun shouldHandleInvalidEmail() {
+
+    val invalidEmail = "invalidEmail.com"
+    assertThrows<IllegalArgumentException> { tokenizerEmailUtils.toConfidential(invalidEmail).block()!! }
+    assertThrows<IllegalArgumentException> { Email("validEmail") }
   }
 }
