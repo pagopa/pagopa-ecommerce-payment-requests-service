@@ -1,0 +1,85 @@
+name: Trigger pipeline deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+
+jobs:
+  semver_labels:
+    name: Read semver labels from merged PR
+    runs-on: ubuntu-latest
+    outputs:
+      semver_app: ${{ steps.semver_labels.outputs.semver_app }}
+      semver_chart: ${{ steps.semver_labels.outputs.semver_chart }}
+      skip_release: ${{ steps.semver_labels.outputs.skip_release }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.github_token }}
+      - uses: ./.github/actions/check-pr-semver-labels
+        id: semver_labels
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+  azure-devops-deploy-pipeline:
+    name: Trigger azure devops deploy pipeline
+    runs-on: ubuntu-latest
+    needs: semver_labels
+    environment: prod
+    steps:
+      - name: Configure pipeline parameters
+        id: configure_pipeline_parameters
+        run: |
+          echo "📝 Inputs"
+          echo "pull request merged: ${{ github.event.pull_request.merged}}"
+          echo "Semver app: ${{ needs.semver_labels.outputs.semver_app}}"
+          echo "Semver chart: ${{ needs.semver_labels.outputs.semver_chart}}"
+          echo "Skip release: ${{ needs.semver_labels.outputs.skip_release}}"
+          semverApp=$(echo ${{ needs.semver_labels.outputs.semver_app}} | sed "s/ignore-for-release/none/")
+          semverChart=$(echo ${{ needs.semver_labels.outputs.semver_chart }} |  cut -d'-' -f2 )
+          skipRelease=$(echo ${{ needs.semver_labels.outputs.skip_release }})
+          echo "DEV_DEPLOY=True" >> $GITHUB_OUTPUT
+          echo "UAT_PROD_DEPLOY=True" >> $GITHUB_OUTPUT
+          echo "RELEASE_SEMVER=$semverApp" >> $GITHUB_OUTPUT
+          echo "RELEASE_CHART_SEMVER=$semverChart" >> $GITHUB_OUTPUT
+          echo "FORCE_REPLACE_DOCKER_IMAGE=False" >> $GITHUB_OUTPUT
+          echo "SKIP_RELEASE=$skipRelease" >> $GITHUB_OUTPUT
+          echo "UAT_SKIP_BLUE_DEPLOYMENT=True" >> $GITHUB_OUTPUT
+          echo "PROD_SKIP_BLUE_DEPLOYMENT=True" >> $GITHUB_OUTPUT
+          echo "SKIP_BUILD=False" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: Log pipeline parameters
+        run: |
+          echo "🪛 Pipeline parameters"
+          echo "DEV_DEPLOY=${{ steps.configure_pipeline_parameters.outputs.DEV_DEPLOY }}"
+          echo "UAT_PROD_DEPLOY=${{ steps.configure_pipeline_parameters.outputs.UAT_PROD_DEPLOY }}"
+          echo "RELEASE_SEMVER=${{ steps.configure_pipeline_parameters.outputs.RELEASE_SEMVER }}"
+          echo "RELEASE_CHART_SEMVER=${{ steps.configure_pipeline_parameters.outputs.RELEASE_CHART_SEMVER }}"
+          echo "FORCE_REPLACE_DOCKER_IMAGE=${{ steps.configure_pipeline_parameters.outputs.FORCE_REPLACE_DOCKER_IMAGE }}"
+          echo "SKIP_RELEASE=${{ steps.configure_pipeline_parameters.outputs.SKIP_RELEASE }}"
+          echo "UAT_SKIP_BLUE_DEPLOYMENT=${{ steps.configure_pipeline_parameters.outputs.UAT_SKIP_BLUE_DEPLOYMENT }}"
+          echo "PROD_SKIP_BLUE_DEPLOYMENT=${{ steps.configure_pipeline_parameters.outputs.PROD_SKIP_BLUE_DEPLOYMENT }}"
+          echo "SKIP_BUILD=${{ steps.configure_pipeline_parameters.outputs.SKIP_BUILD }}"
+        shell: bash
+      - name: Azure Pipelines Action
+        uses: jacopocarlini/azure-pipelines@v1.3
+        with:
+          azure-devops-project-url: https://dev.azure.com/pagopaspa/pagoPA-projects
+          azure-pipeline-name: 'pagopa-ecommerce-transactions-scheduler-service.deploy'
+          azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+          azure-template-parameters: |
+            {
+                "DEV_DEPLOY": "${{ steps.configure_pipeline_parameters.outputs.DEV_DEPLOY }}",
+                "UAT_PROD_DEPLOY": "${{ steps.configure_pipeline_parameters.outputs.UAT_PROD_DEPLOY }}",
+                "SKIP_BUILD": "${{ steps.configure_pipeline_parameters.outputs.SKIP_BUILD }}",
+                "RELEASE_SEMVER": "${{ steps.configure_pipeline_parameters.outputs.RELEASE_SEMVER }}",
+                "RELEASE_CHART_SEMVER": "${{ steps.configure_pipeline_parameters.outputs.RELEASE_CHART_SEMVER }}",
+                "FORCE_REPLACE_DOCKER_IMAGE": "${{ steps.configure_pipeline_parameters.outputs.FORCE_REPLACE_DOCKER_IMAGE }}",
+                "SKIP_RELEASE": "${{ steps.configure_pipeline_parameters.outputs.SKIP_RELEASE }}",
+                "UAT_SKIP_BLUE_DEPLOYMENT": "${{ steps.configure_pipeline_parameters.outputs.UAT_SKIP_BLUE_DEPLOYMENT }}",
+                "PROD_SKIP_BLUE_DEPLOYMENT": "${{ steps.configure_pipeline_parameters.outputs.PROD_SKIP_BLUE_DEPLOYMENT }}"
+            }

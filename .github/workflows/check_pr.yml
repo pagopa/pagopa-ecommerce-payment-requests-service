@@ -12,6 +12,15 @@ permissions:
   pull-requests: write
 
 jobs:
+  check_labels:
+    name: Check Required Labels
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ./.github/actions/check-pr-semver-labels
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
   check_size:
     runs-on: ubuntu-latest
     name: Check Size
