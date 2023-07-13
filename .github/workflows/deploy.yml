@@ -69,7 +69,7 @@ jobs:
         uses: jacopocarlini/azure-pipelines@v1.3
         with:
           azure-devops-project-url: https://dev.azure.com/pagopaspa/pagoPA-projects
-          azure-pipeline-name: 'pagopa-ecommerce-transactions-scheduler-service.deploy'
+          azure-pipeline-name: 'pagopa-ecommerce-payment-requests-service.deploy'
           azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
           azure-template-parameters: |
             {
