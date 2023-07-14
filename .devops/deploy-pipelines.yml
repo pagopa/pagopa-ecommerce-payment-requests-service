@@ -367,11 +367,11 @@ stages:
   # --- START Deploy PROD --- #
   - stage: "Prod_WaitForApproval"
     displayName: 'PROD approval deployment'
-    dependsOn: [ Deploy_UAT_Green,Release ]
+    dependsOn: [ API_Green_UAT_test,Release ]
     condition: |
       and(
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
-        eq(dependencies.Deploy_UAT_Green.result, 'Succeeded'),
+        eq(dependencies.API_Green_UAT_test.result, 'Succeeded'),
         in(dependencies.Release.result, 'Succeeded', 'Skipped')
       )
     variables:
