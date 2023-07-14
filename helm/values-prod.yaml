@@ -24,7 +24,8 @@ microservice-chart:
       ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
       ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
-      ELASTIC_APM_LOG_SENDING: "false"
+      ELASTIC_APM_LOG_SENDING: "true"
+      ELASTIC_APM_TRACE_CONTINUATION_STRATEGY: restart_external
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ECS_SERVICE_ENVIRONMENT: "prod"
       PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"
@@ -34,7 +35,7 @@ microservice-chart:
       PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "0.4.11"
+    tag: "0.4.13"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -103,7 +104,8 @@ microservice-chart:
     ELASTIC_APM_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ELASTIC_APM_APPLICATION_PACKAGES: it.pagopa.ecommerce.payment.requests
     ELASTIC_APM_SERVER_URL: http://quickstart-apm-http.elastic-system.svc:8200
-    ELASTIC_APM_LOG_SENDING: "false"
+    ELASTIC_APM_LOG_SENDING: "true"
+    ELASTIC_APM_TRACE_CONTINUATION_STRATEGY: restart_external
     ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ECS_SERVICE_ENVIRONMENT: "prod"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"

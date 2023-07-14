@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.PersistenceCreator
 import org.springframework.data.redis.core.RedisHash
 
-@RedisHash(value = "keys", timeToLive = 10 * 60)
+@RedisHash(value = "keys", timeToLive = 60)
 class PaymentRequestInfo
 @PersistenceCreator
 constructor(
