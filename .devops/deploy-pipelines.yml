@@ -354,6 +354,7 @@ stages:
   - stage: "API_Green_UAT_test"
     displayName: 'Running API test on green app'
     dependsOn: Deploy_UAT_Green
+    condition: succeeded()
     jobs:
       - job: newman_api_test
         steps:
@@ -367,11 +368,11 @@ stages:
   # --- START Deploy PROD --- #
   - stage: "Prod_WaitForApproval"
     displayName: 'PROD approval deployment'
-    dependsOn: [ API_Green_UAT_test,Release ]
+    dependsOn: [ Deploy_UAT_Green,Release ]
     condition: |
       and(
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
-        eq(dependencies.API_Green_UAT_test.result, 'Succeeded'),
+        eq(dependencies.Deploy_UAT_Green.result, 'Succeeded'),
         in(dependencies.Release.result, 'Succeeded', 'Skipped')
       )
     variables:
