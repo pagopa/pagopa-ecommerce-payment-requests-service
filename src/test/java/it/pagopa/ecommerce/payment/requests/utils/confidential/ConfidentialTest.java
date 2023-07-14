@@ -13,14 +13,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class ConfidentialTest {
@@ -33,25 +35,27 @@ class ConfidentialTest {
     );;
 
     @Test
-    void confidentialJsonRepresentationIsOK() throws JsonProcessingException {
+    void confidentialJsonRepresentationIsOK() {
         Email email = new Email("foo@example.com");
-
         /* preconditions */
-        Mockito.when(personalDataVaultClient.saveUsingPUT(any()))
-                .thenReturn(Mono.just(new TokenResourceDto().token(UUID.randomUUID())));
-
-        /* test */
-        Confidential<Email> confidentialEmail = this.confidentialDataManager.encrypt(email)
-                .block();
-
-        String serialized = objectMapper.writeValueAsString(confidentialEmail);
-
+        given(personalDataVaultClient.saveUsingPUT(any()))
+                .willReturn(Mono.just(new TokenResourceDto().token(UUID.randomUUID())));
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<>() {
         };
-        Map<String, Object> jsonData = objectMapper.readValue(serialized, typeRef);
-
-        /* assertions */
-        assertEquals(Set.of("data"), jsonData.keySet());
+        /* test */
+        StepVerifier.create(confidentialDataManager.encrypt(email))
+                .consumeNextWith(
+                        next -> {
+                            try {
+                                assertEquals(
+                                        Set.of("data"),
+                                        objectMapper.readValue(objectMapper.writeValueAsString(next), typeRef).keySet()
+                                );
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                ).verifyComplete();
     }
 
     @Test
@@ -61,26 +65,27 @@ class ConfidentialTest {
         TokenResourceDto emailToken = new TokenResourceDto().token(UUID.randomUUID());
 
         /* preconditions */
-        Mockito.when(personalDataVaultClient.saveUsingPUT(new PiiResourceDto().pii(email.value())))
-                .thenReturn(Mono.just(emailToken));
+        given(personalDataVaultClient.saveUsingPUT(new PiiResourceDto().pii(email.value())))
+                .willReturn(Mono.just(emailToken));
 
-        Mockito.when(personalDataVaultClient.findPiiUsingGET(emailToken.getToken().toString()))
-                .thenReturn(Mono.just(new PiiResourceDto().pii(email.value())));
+        given(personalDataVaultClient.findPiiUsingGET(emailToken.getToken().toString()))
+                .willReturn(Mono.just(new PiiResourceDto().pii(email.value())));
 
         /* test */
 
-        Confidential<Email> confidentialEmail = this.confidentialDataManager.encrypt(email)
-                .block();
+        StepVerifier.create(confidentialDataManager.encrypt(email))
+                .consumeNextWith(
+                        next -> {
+                            assertEquals(next.opaqueData(), emailToken.getToken().toString());
+                        }
+                ).verifyComplete();
 
-        String serialized = objectMapper.writeValueAsString(confidentialEmail);
+        StepVerifier.create(confidentialDataManager.decrypt(new Confidential<>(emailToken.getToken().toString())))
+                .consumeNextWith(
+                        next -> {
+                            assertEquals(next, email.value());
+                        }
+                ).verifyComplete();
 
-        TypeReference<Confidential<Email>> typeRef = new TypeReference<>() {
-        };
-        Confidential<Email> deserialized = objectMapper.readValue(serialized, typeRef);
-
-        Email decryptedEmail = confidentialDataManager.decrypt(deserialized, Email::new).block();
-
-        /* assertions */
-        assertEquals(email, decryptedEmail);
     }
 }

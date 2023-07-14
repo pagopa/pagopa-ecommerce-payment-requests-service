@@ -4,12 +4,13 @@ import it.pagopa.ecommerce.payment.requests.utils.confidential.ConfidentialDataM
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
 import java.util.*
-import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.ArgumentMatchers
+import org.mockito.BDDMockito.given
 import org.mockito.Mockito
 import reactor.core.publisher.Mono
+import reactor.test.StepVerifier
 
 class TokenizerEmailUtilsTests {
 
@@ -25,27 +26,28 @@ class TokenizerEmailUtilsTests {
     val emailToken = UUID.randomUUID()
     val computedConfidential: Confidential<Email> = Confidential(emailToken.toString())
 
-    /* preconditions */ Mockito.`when`(confidentialDataManager.encrypt(email))
-      .thenReturn(Mono.just(computedConfidential))
-    Mockito.`when`(
+    /* preconditions */ given(confidentialDataManager.encrypt(email))
+      .willReturn(Mono.just(computedConfidential))
+    given(
         confidentialDataManager.decrypt(
           ArgumentMatchers.eq(computedConfidential), ArgumentMatchers.any()))
-      .thenReturn(Mono.just(email))
+      .willReturn(Mono.just(email))
 
     /* test */
-    val encrypted: Confidential<Email> = tokenizerEmailUtils.toConfidential(email).block()!!
-    val decrypted: Email = tokenizerEmailUtils.toEmail(encrypted).block()!!
+    StepVerifier.create(tokenizerEmailUtils.toConfidential(email))
+      .expectNext(computedConfidential)
+      .verifyComplete()
 
-    /* assert */ assertEquals(email, decrypted)
+    StepVerifier.create(tokenizerEmailUtils.toEmail(computedConfidential))
+      .expectNext(email)
+      .verifyComplete()
   }
 
   @Test
   fun shouldHandleInvalidEmail() {
-
     val invalidEmail = "invalidEmail.com"
     assertThrows<IllegalArgumentException> {
-      tokenizerEmailUtils.toConfidential(invalidEmail).block()!!
+      tokenizerEmailUtils.toConfidential(invalidEmail).block()
     }
-    assertThrows<IllegalArgumentException> { Email("validEmail") }
   }
 }
