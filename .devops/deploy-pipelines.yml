@@ -19,10 +19,13 @@ parameters:
     values:
       - False
       - True
-  - name: 'skipBuild'
+  - name: 'SKIP_BUILD'
     displayName: 'Check this flag to skip build and proceed to deploy a docker image previously built'
     type: boolean
-    default: false
+    default: False
+    values:
+      - False
+      - True
   - name: 'RELEASE_SEMVER'
     displayName: 'When packing a release, define the version bump to apply (release is done automatically when deploying on UAT and skipped on DEV) '
     type: string
@@ -89,7 +92,7 @@ stages:
 
   - stage: 'Build_for_DEV'
     displayName: 'Build for DEV'
-    condition: and(succeeded(), not(${{ parameters.skipBuild }}), eq(${{parameters.DEV_DEPLOY}}, true))
+    condition: and(succeeded(), not(${{ parameters.SKIP_BUILD }}), eq(${{parameters.DEV_DEPLOY}}, true))
     jobs:
       - job: Build_docker
         displayName: Build docker with Build.SourceVersion as TAG
@@ -105,7 +108,7 @@ stages:
   - stage: 'Deploy_for_DEV'
     displayName: 'Deploy DEV'
     dependsOn: Build_for_DEV
-    condition: or(succeeded(), ${{ parameters.skipBuild }}, eq(${{parameters.DEV_DEPLOY}}, true) )
+    condition: or(succeeded(), ${{ parameters.SKIP_BUILD }}, eq(${{parameters.DEV_DEPLOY}}, true) )
     jobs:
       - deployment: "deploy"
         environment: 'DEV'
