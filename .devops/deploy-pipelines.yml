@@ -354,7 +354,7 @@ stages:
   - stage: "API_Green_UAT_test"
     displayName: 'Running API test on green app'
     dependsOn: Deploy_UAT_Green
-    condition: succeeded()
+    condition: eq(dependencies.Deploy_UAT_Green.result, 'Succeeded')
     jobs:
       - job: newman_api_test
         steps:
