@@ -330,6 +330,29 @@
                             <modelNameSuffix>dto</modelNameSuffix>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>personal-data-vault-tokenizer-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>https://api.uat.tokenizer.pdv.pagopa.it/docs/tokenizeruapis/openapi.json
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <library>webclient</library>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <configOptions>
+                                <swaggerAnnotations>false</swaggerAnnotations>
+                                <openApiNullable>false</openApiNullable>
+                            </configOptions>
+                            <modelPackage>it.pagopa.generated.pdv.v1.dto</modelPackage>
+                            <apiPackage>it.pagopa.generated.pdv.v1.api</apiPackage>
+                            <modelNameSuffix>Dto</modelNameSuffix>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

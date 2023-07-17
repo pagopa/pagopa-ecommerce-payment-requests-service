@@ -14,6 +14,9 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
+import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
+import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
 import java.net.URI
 import java.text.MessageFormat
 import java.util.*
@@ -33,6 +36,7 @@ class CartService(
   @Value("\${checkout.url}") private val checkoutUrl: String,
   @Autowired private val cartsRedisTemplateWrapper: CartsRedisTemplateWrapper,
   @Autowired private val nodoPerPmClient: NodoPerPmClient,
+  @Autowired private val tokenizerMailUtils: TokenizerEmailUtils,
   @Value("\${carts.max_allowed_payment_notices}") private val maxAllowedPaymentNotices: Int,
   private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
@@ -59,17 +63,6 @@ class CartService(
             RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
         }
 
-      val cart =
-        CartInfo(
-          UUID.randomUUID(),
-          paymentInfos,
-          cartRequestDto.idCart,
-          ReturnUrls(
-            returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
-            returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
-            returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
-          cartRequestDto.emailNotice)
-
       val checkPositionDto =
         CheckPositionDto()
           .positionslist(
@@ -91,14 +84,28 @@ class CartService(
             title = "Invalid payment info",
             description = "Invalid payment notice data")
         }
-        .map {
-          logger.info("Saving cart ${cart.id} for payments $paymentInfos")
+        .flatMap {
+          tokenizerMailUtils.toConfidential(Email(cartRequestDto.emailNotice)).map { tokenizedEmail
+            ->
+            CartInfo(
+              UUID.randomUUID(),
+              paymentInfos,
+              cartRequestDto.idCart,
+              ReturnUrls(
+                returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
+                returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
+                returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
+              tokenizedEmail.opaqueData)
+          }
+        }
+        .map { validCart ->
+          logger.info("Saving cart ${validCart.id} for payments $paymentInfos")
 
-          cartsRedisTemplateWrapper.save(cart)
+          cartsRedisTemplateWrapper.save(validCart)
           val retUrl =
             MessageFormat.format(
               checkoutUrl,
-              cart.id,
+              validCart.id,
             )
           logger.info("Return URL: $retUrl")
           return@map retUrl
@@ -116,25 +123,30 @@ class CartService(
   /*
    * Fetch the cart with the input cart id
    */
-  fun getCart(cartId: UUID): CartRequestDto {
-    val cart =
+  suspend fun getCart(cartId: UUID): CartRequestDto {
+    val cartWithTokenizedEmail =
       cartsRedisTemplateWrapper.findById(cartId.toString())
         ?: throw CartNotFoundException(cartId.toString())
 
-    return CartRequestDto(
-      paymentNotices =
-        cart.payments.map {
-          PaymentNoticeDto(
-            it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
-        },
-      returnUrls =
-        cart.returnUrls.let {
-          CartRequestReturnUrlsDto(
-            returnOkUrl = URI(it.returnSuccessUrl),
-            returnCancelUrl = URI(it.returnCancelUrl),
-            returnErrorUrl = URI(it.returnErrorUrl))
-        },
-      emailNotice = cart.email,
-      idCart = cart.idCart)
+    return tokenizerMailUtils
+      .toEmail(Confidential(cartWithTokenizedEmail.email))
+      .map { email ->
+        CartRequestDto(
+          paymentNotices =
+            cartWithTokenizedEmail.payments.map {
+              PaymentNoticeDto(
+                it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
+            },
+          returnUrls =
+            cartWithTokenizedEmail.returnUrls.let {
+              CartRequestReturnUrlsDto(
+                returnOkUrl = URI(it.returnSuccessUrl),
+                returnCancelUrl = URI(it.returnCancelUrl),
+                returnErrorUrl = URI(it.returnErrorUrl))
+            },
+          emailNotice = email.value,
+          idCart = cartWithTokenizedEmail.idCart)
+      }
+      .awaitSingle()
   }
 }

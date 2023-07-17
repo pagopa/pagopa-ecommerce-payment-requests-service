@@ -206,7 +206,7 @@ class CartsControllerTests {
   }
 
   @Test
-  fun `get cart by id`() {
+  suspend fun `get cart by id`() {
     val cartId = UUID.randomUUID()
     val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
@@ -239,7 +239,7 @@ class CartsControllerTests {
   }
 
   @Test
-  fun `get cart by id with non-existing cart returns 404`() {
+  suspend fun `get cart by id with non-existing cart returns 404`() {
     val cartId = UUID.randomUUID()
     val exception = CartNotFoundException(cartId.toString())
     val expected =
