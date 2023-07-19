@@ -92,20 +92,7 @@ class CartService(
               tokenizerMailUtils.toConfidential(Email(cartRequestDto.emailNotice)).map {
                 tokenizedEmail ->
                 CartInfo(
-                  id,
-                  paymentInfos,
-                  cartRequestDto.idCart,
-                  ReturnUrls(
-                    returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
-                    returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
-                    returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
-                  tokenizedEmail.opaqueData)
-              }
-            }
-            .orElse(
-              Mono.just(
-                CartInfo(
-                  id,
+                  id = id,
                   payments = paymentInfos,
                   idCart = cartRequestDto.idCart,
                   returnUrls =
@@ -113,7 +100,22 @@ class CartService(
                       returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
                       returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
                       returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
-                  email = null)))
+                  email = tokenizedEmail.opaqueData)
+              }
+            }
+            .orElse(
+              Mono.just(
+                CartInfo(
+                  id = id,
+                  payments = paymentInfos,
+                  idCart = cartRequestDto.idCart,
+                  returnUrls =
+                    ReturnUrls(
+                      returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
+                      returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
+                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
+                  email = null)),
+            )
         }
         .map { validCart ->
           logger.info("Saving cart ${validCart.id} for payments $paymentInfos")
@@ -180,7 +182,8 @@ class CartService(
                   returnCancelUrl = URI(it.returnCancelUrl),
                   returnErrorUrl = URI(it.returnErrorUrl))
               },
-            idCart = cartWithTokenizedEmail.idCart)))
+            idCart = cartWithTokenizedEmail.idCart,
+            emailNotice = null)))
       .awaitSingle()
   }
 }
