@@ -6,8 +6,9 @@ import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNotice
 import java.net.URI
 
 object CartRequests {
+  fun withOnePaymentNotice() = CartRequests.withOnePaymentNotice("my_email@mail.it")
 
-  fun withOnePaymentNotice(): CartRequestDto {
+  fun withOnePaymentNotice(email: String): CartRequestDto {
     return CartRequestDto(
       paymentNotices =
         listOf(
@@ -24,7 +25,7 @@ object CartRequests {
           returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
         ),
       idCart = "idCartExample",
-      emailNotice = "my_email@mail.it")
+      emailNotice = email)
   }
 
   fun withMultiplePaymentNotices(paymentNoticesNumber: Int): CartRequestDto {
