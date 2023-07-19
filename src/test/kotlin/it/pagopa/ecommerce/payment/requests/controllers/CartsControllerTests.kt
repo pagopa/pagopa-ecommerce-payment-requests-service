@@ -20,6 +20,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.NullSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.BDDMockito.*
 import org.mockito.InjectMocks
@@ -236,6 +237,37 @@ class CartsControllerTests {
   }
 
   @Test
+  fun `get cart by id without mail`() = runTest {
+    val cartId = UUID.randomUUID()
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    val response =
+      CartRequestDto(
+        paymentNotices =
+          listOf(
+            PaymentNoticeDto(
+              noticeNumber = "",
+              fiscalCode = "",
+              amount = 10000,
+              companyName = "companyName",
+              description = "description")),
+        returnUrls =
+          CartRequestReturnUrlsDto(
+            returnErrorUrl = URI.create("https://returnErrorUrl"),
+            returnOkUrl = URI.create("https://returnOkUrl"),
+            returnCancelUrl = URI.create("https://returnCancelUrl")))
+    given(cartService.getCart(cartId)).willReturn(response)
+    val parameters = mapOf("idCart" to cartId)
+    webClient
+      .get()
+      .uri("/carts/{idCart}", parameters)
+      .exchange()
+      .expectStatus()
+      .isOk
+      .expectBody()
+      .json(objectMapper.writeValueAsString(response))
+  }
+
+  @Test
   fun `get cart by id with non-existing cart returns 404`() = runTest {
     val cartId = UUID.randomUUID()
     val exception = CartNotFoundException(cartId.toString())
@@ -279,7 +311,8 @@ class CartsControllerTests {
 
   @ParameterizedTest
   @ValueSource(strings = ["foo@foo.it", "FOO@FOO.IT", "FoO@fOo.It"])
-  fun `post cart succeeded with mail multiple case`(email: String) = runTest {
+  @NullSource
+  fun `post cart succeeded with mail multiple case`(email: String?) = runTest {
     val request = CartRequests.withOnePaymentNotice(email)
     val locationUrl = "http://checkout-url.it/77777777777302000100440009424"
     given(cartService.processCart(request)).willReturn(locationUrl)

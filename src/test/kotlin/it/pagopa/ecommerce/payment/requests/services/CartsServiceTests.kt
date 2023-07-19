@@ -62,6 +62,22 @@ class CartsServiceTests {
   }
 
   @Test
+  fun `post cart succeeded with one payment notice without mail`() = runTest {
+    val cartId = UUID.randomUUID()
+    Mockito.mockStatic(UUID::class.java).use { uuidMock ->
+      uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
+      given(nodoPerPmClient.checkPosition(any()))
+        .willReturn(
+          Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
+      val request = CartRequests.withOnePaymentNotice(null)
+      val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
+      assertEquals(locationUrl, cartService.processCart(request))
+      verify(cartRedisTemplateWrapper, times(1)).save(any())
+      verify(tokenizerMailUtils, times(0)).toConfidential(any<Email>())
+    }
+  }
+
+  @Test
   fun `post cart failed with checkValidity KO`() = runTest {
     val cartId = UUID.randomUUID()
     val tokenizedEmail = UUID.randomUUID()
@@ -121,6 +137,38 @@ class CartsServiceTests {
         })
 
     assertEquals(expectedCart, cartService.getCart(cartId))
+  }
+
+  @Test
+  fun `get cart by id without mail`() = runTest {
+    val cartId = UUID.randomUUID()
+
+    val cart = CartRequests.withOnePaymentNotice()
+    val expectedCart =
+      CartRequestDto(
+        paymentNotices = cart.paymentNotices, returnUrls = cart.returnUrls, idCart = cart.idCart)
+
+    given(cartRedisTemplateWrapper.findById(cartId.toString()))
+      .willReturn(
+        cart.let { req ->
+          CartInfo(
+            cartId,
+            req.paymentNotices.map {
+              PaymentInfo(
+                RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
+            },
+            req.idCart,
+            req.returnUrls.let {
+              ReturnUrls(
+                returnSuccessUrl = it.returnOkUrl.toString(),
+                returnErrorUrl = it.returnErrorUrl.toString(),
+                returnCancelUrl = it.returnCancelUrl.toString())
+            },
+            null)
+        })
+
+    assertEquals(expectedCart, cartService.getCart(cartId))
+    verify(tokenizerMailUtils, times(0)).toEmail(any())
   }
 
   @Test
