@@ -19,6 +19,8 @@ import java.util.function.Predicate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.BDDMockito.*
 import org.mockito.InjectMocks
 import org.mockito.Mock
@@ -55,6 +57,8 @@ class CartsControllerTests {
 
   private val cartsMaxAllowedPaymentNotices = 5
 
+  private val objectMapper = ObjectMapper()
+
   @Test
   fun `post cart succeeded with one payment notice`() = runTest {
     val request = CartRequests.withOnePaymentNotice()
@@ -74,7 +78,6 @@ class CartsControllerTests {
 
   @Test
   fun `post cart KO with multiple payment notices`() = runTest {
-    val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     given(cartService.processCart(request))
@@ -103,7 +106,6 @@ class CartsControllerTests {
 
   @Test
   fun `post cart KO with internal server error while invoke checkPosition`() = runTest {
-    val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     given(cartService.processCart(request))
@@ -123,7 +125,6 @@ class CartsControllerTests {
 
   @Test
   fun `post cart KO with 404 while invoke checkPosition`() = runTest {
-    val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     given(cartService.processCart(request))
@@ -143,7 +144,6 @@ class CartsControllerTests {
 
   @Test
   fun `post cart KO with 400 while invoke checkPosition`() = runTest {
-    val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     given(cartService.processCart(request))
@@ -163,7 +163,6 @@ class CartsControllerTests {
 
   @Test
   fun `invalid request ko`() = runTest {
-    val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.invalidRequest()
     val errorResponse =
@@ -184,7 +183,6 @@ class CartsControllerTests {
 
   @Test
   fun `controller throw generic exception`() = runTest {
-    val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withOnePaymentNotice()
     val errorResponse =
@@ -206,9 +204,8 @@ class CartsControllerTests {
   }
 
   @Test
-  suspend fun `get cart by id`() {
+  fun `get cart by id`() = runTest {
     val cartId = UUID.randomUUID()
-    val objectMapper = ObjectMapper()
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val response =
       CartRequestDto(
@@ -239,7 +236,7 @@ class CartsControllerTests {
   }
 
   @Test
-  suspend fun `get cart by id with non-existing cart returns 404`() {
+  fun `get cart by id with non-existing cart returns 404`() = runTest {
     val cartId = UUID.randomUUID()
     val exception = CartNotFoundException(cartId.toString())
     val expected =
@@ -278,5 +275,43 @@ class CartsControllerTests {
     given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
     CartsController(webClient).warmupPostCarts()
     verify(webClient, times(1)).post()
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["foo@foo.it", "FOO@FOO.IT", "FoO@fOo.It"])
+  fun `post cart succeeded with mail multiple case`(email: String) = runTest {
+    val request = CartRequests.withOnePaymentNotice(email)
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424"
+    given(cartService.processCart(request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/carts")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .is3xxRedirection
+      .expectHeader()
+      .location(locationUrl)
+  }
+
+  @Test
+  fun `post cart KO with invalid email`() = runTest {
+    val request = CartRequests.withOnePaymentNotice("email")
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424"
+    val errorResponse =
+      ProblemJsonDto(
+        title = "Request validation error", detail = "The input request is invalid", status = 400)
+    given(cartService.processCart(request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/carts")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isBadRequest
+      .expectBody<ProblemJsonDto>()
+      .isEqualTo(errorResponse)
   }
 }
