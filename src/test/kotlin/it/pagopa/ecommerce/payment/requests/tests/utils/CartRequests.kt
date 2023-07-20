@@ -8,7 +8,7 @@ import java.net.URI
 object CartRequests {
   fun withOnePaymentNotice() = CartRequests.withOnePaymentNotice("my_email@mail.it")
 
-  fun withOnePaymentNotice(email: String): CartRequestDto {
+  fun withOnePaymentNotice(email: String?): CartRequestDto {
     return CartRequestDto(
       paymentNotices =
         listOf(

@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
@@ -85,18 +86,36 @@ class CartService(
             description = "Invalid payment notice data")
         }
         .flatMap {
-          tokenizerMailUtils.toConfidential(Email(cartRequestDto.emailNotice)).map { tokenizedEmail
-            ->
-            CartInfo(
-              UUID.randomUUID(),
-              paymentInfos,
-              cartRequestDto.idCart,
-              ReturnUrls(
-                returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
-                returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
-                returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
-              tokenizedEmail.opaqueData)
-          }
+          val id = UUID.randomUUID()
+          Optional.ofNullable(cartRequestDto.emailNotice)
+            .map {
+              tokenizerMailUtils.toConfidential(Email(cartRequestDto.emailNotice)).map {
+                tokenizedEmail ->
+                CartInfo(
+                  id = id,
+                  payments = paymentInfos,
+                  idCart = cartRequestDto.idCart,
+                  returnUrls =
+                    ReturnUrls(
+                      returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
+                      returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
+                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
+                  email = tokenizedEmail.opaqueData)
+              }
+            }
+            .orElse(
+              Mono.just(
+                CartInfo(
+                  id = id,
+                  payments = paymentInfos,
+                  idCart = cartRequestDto.idCart,
+                  returnUrls =
+                    ReturnUrls(
+                      returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
+                      returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
+                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
+                  email = null)),
+            )
         }
         .map { validCart ->
           logger.info("Saving cart ${validCart.id} for payments $paymentInfos")
@@ -128,25 +147,43 @@ class CartService(
       cartsRedisTemplateWrapper.findById(cartId.toString())
         ?: throw CartNotFoundException(cartId.toString())
 
-    return tokenizerMailUtils
-      .toEmail(Confidential(cartWithTokenizedEmail.email))
-      .map { email ->
-        CartRequestDto(
-          paymentNotices =
-            cartWithTokenizedEmail.payments.map {
-              PaymentNoticeDto(
-                it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
-            },
-          returnUrls =
-            cartWithTokenizedEmail.returnUrls.let {
-              CartRequestReturnUrlsDto(
-                returnOkUrl = URI(it.returnSuccessUrl),
-                returnCancelUrl = URI(it.returnCancelUrl),
-                returnErrorUrl = URI(it.returnErrorUrl))
-            },
-          emailNotice = email.value,
-          idCart = cartWithTokenizedEmail.idCart)
+    return Optional.ofNullable(cartWithTokenizedEmail.email)
+      .map { tokenizedMail ->
+        tokenizerMailUtils.toEmail(Confidential(tokenizedMail)).map { clearMail ->
+          CartRequestDto(
+            paymentNotices =
+              cartWithTokenizedEmail.payments.map {
+                PaymentNoticeDto(
+                  it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
+              },
+            returnUrls =
+              cartWithTokenizedEmail.returnUrls.let {
+                CartRequestReturnUrlsDto(
+                  returnOkUrl = URI(it.returnSuccessUrl),
+                  returnCancelUrl = URI(it.returnCancelUrl),
+                  returnErrorUrl = URI(it.returnErrorUrl))
+              },
+            emailNotice = clearMail.value,
+            idCart = cartWithTokenizedEmail.idCart)
+        }
       }
+      .orElse(
+        Mono.just(
+          CartRequestDto(
+            paymentNotices =
+              cartWithTokenizedEmail.payments.map {
+                PaymentNoticeDto(
+                  it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
+              },
+            returnUrls =
+              cartWithTokenizedEmail.returnUrls.let {
+                CartRequestReturnUrlsDto(
+                  returnOkUrl = URI(it.returnSuccessUrl),
+                  returnCancelUrl = URI(it.returnCancelUrl),
+                  returnErrorUrl = URI(it.returnErrorUrl))
+              },
+            idCart = cartWithTokenizedEmail.idCart,
+            emailNotice = null)))
       .awaitSingle()
   }
 }
