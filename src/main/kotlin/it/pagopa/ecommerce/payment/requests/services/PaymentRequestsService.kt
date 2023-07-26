@@ -1,14 +1,14 @@
 package it.pagopa.ecommerce.payment.requests.services
 
-import io.opentelemetry.api.trace.StatusCode
-import io.opentelemetry.api.trace.Tracer
+import io.opentelemetry.api.common.AttributeKey
+import io.opentelemetry.api.common.Attributes
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
 import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
-import it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.OpenTelemetryConfiguration
+import it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.util.OpenTelemetryUtils
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
@@ -33,7 +33,7 @@ class PaymentRequestsService(
     it.pagopa.ecommerce.generated.transactions.model.ObjectFactory,
   @Autowired private val nodoOperations: NodoOperations,
   @Autowired private val nodoConfig: NodoConfig,
-  @Autowired private val openTelemetryConfig: OpenTelemetryConfiguration
+  @Autowired private val openTelemetryUtils: OpenTelemetryUtils
 ) {
 
   private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -134,20 +134,9 @@ class PaymentRequestsService(
     }
 
   private fun traceNodoError(faultCode: String?) {
-    val tracer: Tracer? =
-      openTelemetryConfig.agentOpenTelemetrySDKInstance()?.let {
-        openTelemetryConfig.openTelemetryTracer(it)
-      }
-    val span = tracer?.spanBuilder("my span")?.startSpan()
-    try {
-      faultCode?.let { t -> span?.setAttribute("nodoError", t) }
-      span?.setStatus(StatusCode.ERROR)
-      span?.makeCurrent().use {}
-    } catch (t: Throwable) {
-      span?.setStatus(StatusCode.UNSET, "Something bad happened!")
-      throw t
-    } finally {
-      span?.end() // Cannot set a span after this call
+    faultCode?.let { code ->
+      openTelemetryUtils.addSpanWithAttributes(
+        "nodoError", Attributes.of(AttributeKey.stringKey("faultCode"), code))
     }
   }
 

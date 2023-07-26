@@ -3,7 +3,7 @@ package it.pagopa.ecommerce.payment.requests.services
 import it.pagopa.ecommerce.generated.transactions.model.*
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
-import it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.OpenTelemetryConfiguration
+import it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.util.OpenTelemetryUtils
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
@@ -44,7 +44,7 @@ class PaymentRequestsServiceTests {
 
   @Mock private lateinit var nodoConfig: NodoConfig
 
-  @Mock private lateinit var openTelemetryConfig: OpenTelemetryConfiguration
+  @Mock private lateinit var openTelemetryUtils: OpenTelemetryUtils
 
   @BeforeEach
   fun init() {
@@ -55,7 +55,7 @@ class PaymentRequestsServiceTests {
         ObjectFactory(),
         nodoOperations,
         nodoConfig,
-        openTelemetryConfig)
+        openTelemetryUtils)
   }
 
   @Test
