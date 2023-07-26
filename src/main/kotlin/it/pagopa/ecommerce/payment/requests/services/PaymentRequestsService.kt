@@ -15,14 +15,14 @@ import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.PaymentRequestsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
-import java.util.*
-import javax.xml.datatype.XMLGregorianCalendar
 import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.util.*
+import javax.xml.datatype.XMLGregorianCalendar
 
 @Service
 class PaymentRequestsService(
@@ -138,14 +138,16 @@ class PaymentRequestsService(
       openTelemetryConfig.agentOpenTelemetrySDKInstance()?.let {
         openTelemetryConfig.openTelemetryTracer(it)
       }
-    val span = tracer?.spanBuilder("nodoError")?.startSpan()
+    val span = tracer!!.spanBuilder("my span").startSpan()
+    span.setAttribute("nodoError", faultCode!!)
     try {
-      span?.setStatus(StatusCode.ERROR, "Nodo Error $faultCode")
+      span.setStatus(StatusCode.ERROR)
+      span.makeCurrent().use { scope ->  }
     } catch (t: Throwable) {
-      span?.setStatus(StatusCode.UNSET, "Something bad happened!")
+      span.setStatus(StatusCode.UNSET, "Something bad happened!")
       throw t
     } finally {
-      span?.end()
+      span.end() // Cannot set a span after this call
     }
   }
 
