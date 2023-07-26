@@ -138,16 +138,16 @@ class PaymentRequestsService(
       openTelemetryConfig.agentOpenTelemetrySDKInstance()?.let {
         openTelemetryConfig.openTelemetryTracer(it)
       }
-    val span = tracer!!.spanBuilder("my span").startSpan()
-    span.setAttribute("nodoError", faultCode!!)
+    val span = tracer?.spanBuilder("my span")?.startSpan()
     try {
-      span.setStatus(StatusCode.ERROR)
-      span.makeCurrent().use { scope -> }
+      faultCode?.let { t -> span?.setAttribute("nodoError", t) }
+      span?.setStatus(StatusCode.ERROR)
+      span?.makeCurrent().use {}
     } catch (t: Throwable) {
-      span.setStatus(StatusCode.UNSET, "Something bad happened!")
+      span?.setStatus(StatusCode.UNSET, "Something bad happened!")
       throw t
     } finally {
-      span.end() // Cannot set a span after this call
+      span?.end() // Cannot set a span after this call
     }
   }
 
