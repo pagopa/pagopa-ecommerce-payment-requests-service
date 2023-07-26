@@ -1,11 +1,14 @@
 package it.pagopa.ecommerce.payment.requests.services
 
+import io.opentelemetry.api.trace.StatusCode
+import io.opentelemetry.api.trace.Tracer
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
 import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
+import it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.OpenTelemetryConfiguration
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
@@ -29,7 +32,8 @@ class PaymentRequestsService(
   private val objectFactoryNodeForPsp:
     it.pagopa.ecommerce.generated.transactions.model.ObjectFactory,
   @Autowired private val nodoOperations: NodoOperations,
-  @Autowired private val nodoConfig: NodoConfig
+  @Autowired private val nodoConfig: NodoConfig,
+  @Autowired private val openTelemetryConfig: OpenTelemetryConfiguration
 ) {
 
   private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -103,6 +107,7 @@ class PaymentRequestsService(
               verifyPaymentNoticeResponse.outcome,
               verifyPaymentNoticeResponse?.fault?.faultCode,
               isNodoError)
+            traceNodoError(verifyPaymentNoticeResponse?.fault?.faultCode)
             if (isNodoError) {
               Mono.error(NodoErrorException(verifyPaymentNoticeResponse.fault))
             } else {
@@ -127,6 +132,22 @@ class PaymentRequestsService(
           }
       return@flatMap paymentRequestInfo
     }
+
+  private fun traceNodoError(faultCode: String?) {
+    val tracer: Tracer? =
+      openTelemetryConfig.agentOpenTelemetrySDKInstance()?.let {
+        openTelemetryConfig.openTelemetryTracer(it)
+      }
+    val span = tracer?.spanBuilder("nodoError")?.startSpan()
+    try {
+      span?.setStatus(StatusCode.ERROR, "Nodo Error $faultCode")
+    } catch (t: Throwable) {
+      span?.setStatus(StatusCode.UNSET, "Something bad happened!")
+      throw t
+    } finally {
+      span?.end()
+    }
+  }
 
   fun isNodoError(verifyPaymentResponse: VerifyPaymentNoticeRes): Boolean {
     val outcome = verifyPaymentResponse.outcome
