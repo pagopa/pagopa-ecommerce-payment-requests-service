@@ -8,27 +8,18 @@ import org.springframework.stereotype.Component
 
 @Component
 class OpenTelemetryUtils(
-    @Autowired private val openTelemetryTracer: Tracer,
+  @Autowired private val openTelemetryTracer: Tracer,
 ) {
 
-    fun addSpanWithAttributes(
-        spanName: String?,
-        attributes: Attributes?
-    ) {
-        val span = openTelemetryTracer.spanBuilder(spanName!!).startSpan()
-        span.setAllAttributes(attributes!!)
-        span.end()
-    }
+  fun addSpanWithAttributes(spanName: String?, attributes: Attributes?) {
+    val span = openTelemetryTracer.spanBuilder(spanName!!).startSpan()
+    span.setAllAttributes(attributes!!)
+    span.end()
+  }
 
-    fun addErrorSpanWithError(
-        spanName: String?,
-        throwable: Throwable?
-    ) {
-        val span = openTelemetryTracer.spanBuilder(spanName!!).startSpan()
-        span
-            .setStatus(StatusCode.ERROR)
-            .recordException(throwable!!)
-        span.end()
-    }
-
+  fun addErrorSpanWithError(spanName: String?, throwable: Throwable?) {
+    val span = openTelemetryTracer.spanBuilder(spanName!!).startSpan()
+    span.setStatus(StatusCode.ERROR).recordException(throwable!!)
+    span.end()
+  }
 }
