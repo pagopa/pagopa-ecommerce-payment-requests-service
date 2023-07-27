@@ -200,7 +200,7 @@ class PaymentRequestsServiceTests {
     /** assertions */
     assertEquals("PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE", exception.faultCode)
     verify(openTelemetryUtils, Mockito.times(1))
-      .addSpanWithAttributes(
+      .addErrorSpanWithAttributes(
         any(),
         eq(
           Attributes.of(

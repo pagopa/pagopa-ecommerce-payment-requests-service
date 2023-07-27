@@ -24,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
+private const val VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME = "VerifyPaymentNotice nodo error"
+private const val FAULT_CODE_SPAN_KEY = "faultCode"
+
 @Service
 class PaymentRequestsService(
   @Autowired private val paymentRequestInfoRepository: PaymentRequestsRedisTemplateWrapper,
@@ -107,7 +110,7 @@ class PaymentRequestsService(
               verifyPaymentNoticeResponse.outcome,
               verifyPaymentNoticeResponse?.fault?.faultCode,
               isNodoError)
-            traceNodoError(verifyPaymentNoticeResponse?.fault?.faultCode)
+            traceVerifyNodoError(verifyPaymentNoticeResponse?.fault?.faultCode)
             if (isNodoError) {
               Mono.error(NodoErrorException(verifyPaymentNoticeResponse.fault))
             } else {
@@ -133,11 +136,11 @@ class PaymentRequestsService(
       return@flatMap paymentRequestInfo
     }
 
-  private fun traceNodoError(faultCode: String?) {
-    faultCode?.let { code ->
-      openTelemetryUtils.addSpanWithAttributes(
-        "nodoError", Attributes.of(AttributeKey.stringKey("faultCode"), code))
-    }
+  private fun traceVerifyNodoError(faultCode: String?) {
+    openTelemetryUtils.addErrorSpanWithAttributes(
+      VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME,
+      Attributes.of(
+        AttributeKey.stringKey(FAULT_CODE_SPAN_KEY), Optional.ofNullable(faultCode).orElse("null")))
   }
 
   fun isNodoError(verifyPaymentResponse: VerifyPaymentNoticeRes): Boolean {

@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Configuration
 class OpenTelemetryConfiguration {
 
   @Bean
-  fun agentOpenTelemetrySDKInstance(): OpenTelemetry? {
+  fun agentOpenTelemetrySDKInstance(): OpenTelemetry {
     return GlobalOpenTelemetry.get()
   }
 
   @Bean
-  fun openTelemetryTracer(openTelemetry: OpenTelemetry): Tracer? {
+  fun openTelemetryTracer(openTelemetry: OpenTelemetry): Tracer {
     return openTelemetry.getTracer("pagopa-ecommerce-payment-requests-service")
   }
 }
