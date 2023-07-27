@@ -27,9 +27,9 @@ class OpenTelemetryUtils(
    * @param attributes
    * - span attributes
    */
-  fun addSpanWithAttributes(spanName: String?, attributes: Attributes?) {
-    val span = openTelemetryTracer.spanBuilder(spanName!!).startSpan()
-    span.setAllAttributes(attributes!!)
+  fun addSpanWithAttributes(spanName: String, attributes: Attributes) {
+    val span = openTelemetryTracer.spanBuilder(spanName).startSpan()
+    span.setAllAttributes(attributes)
     span.end()
   }
 
@@ -41,9 +41,9 @@ class OpenTelemetryUtils(
    * @param attributes
    * - error span attributes
    */
-  fun addErrorSpanWithAttributes(spanName: String?, attributes: Attributes?) {
-    val span = openTelemetryTracer.spanBuilder(spanName!!).startSpan()
-    span.setAllAttributes(attributes!!)
+  fun addErrorSpanWithAttributes(spanName: String, attributes: Attributes) {
+    val span = openTelemetryTracer.spanBuilder(spanName).startSpan()
+    span.setAllAttributes(attributes)
     span.setStatus(StatusCode.ERROR)
     span.end()
   }
@@ -56,10 +56,10 @@ class OpenTelemetryUtils(
    * @param throwable
    * - error cause Throwable
    */
-  fun addErrorSpanWithException(spanName: String?, throwable: Throwable?) {
-    val span = openTelemetryTracer.spanBuilder(spanName!!).startSpan()
+  fun addErrorSpanWithException(spanName: String, throwable: Throwable) {
+    val span = openTelemetryTracer.spanBuilder(spanName).startSpan()
     span.setStatus(StatusCode.ERROR)
-    span.recordException(throwable!!)
+    span.recordException(throwable)
     span.end()
   }
 }
