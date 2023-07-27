@@ -9,7 +9,7 @@ import it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.util.Op
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 
-class OpenTelemetryTestUtils {
+class OpenTelemetryUtilsTest {
 
   private val openTelemetryTracer: Tracer = Mockito.mock(Tracer::class.java)
 
