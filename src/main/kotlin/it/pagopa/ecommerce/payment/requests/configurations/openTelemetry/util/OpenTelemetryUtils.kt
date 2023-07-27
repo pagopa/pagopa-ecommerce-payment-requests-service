@@ -1,7 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.util
 
 import io.opentelemetry.api.common.Attributes
-import io.opentelemetry.api.trace.StatusCode
 import io.opentelemetry.api.trace.Tracer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
