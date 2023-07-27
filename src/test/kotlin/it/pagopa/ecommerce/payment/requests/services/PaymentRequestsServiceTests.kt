@@ -24,8 +24,10 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
 import org.springframework.http.HttpStatus
 import reactor.core.publisher.Mono
 
@@ -194,6 +196,7 @@ class PaymentRequestsServiceTests {
       }
     /** assertions */
     assertEquals("PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE", exception.faultCode)
+    verify(openTelemetryUtils, Mockito.times(1)).addSpanWithAttributes(any(),any())
   }
 
   @Test
