@@ -201,7 +201,7 @@ class PaymentRequestsServiceTests {
     assertEquals("PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE", exception.faultCode)
     verify(openTelemetryUtils, Mockito.times(1))
       .addErrorSpanWithAttributes(
-        any(),
+        eq("VerifyPaymentNotice nodo error"),
         eq(
           Attributes.of(
             AttributeKey.stringKey("faultCode"), "PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE")))

@@ -36,7 +36,7 @@ class OpenTelemetryUtilsTest {
     Mockito.verify(span, Mockito.times(1)).setAllAttributes(attributes)
     Mockito.verify(span, Mockito.times(1)).end()
   }
-
+  @Test
   fun shouldCreateErrorSpanWithAttributes() {
     // prerequisite
     val spanName = "spanName"

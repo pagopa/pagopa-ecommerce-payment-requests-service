@@ -140,7 +140,8 @@ class PaymentRequestsService(
     openTelemetryUtils.addErrorSpanWithAttributes(
       VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME,
       Attributes.of(
-        AttributeKey.stringKey(FAULT_CODE_SPAN_KEY), Optional.ofNullable(faultCode).orElse("null")))
+        AttributeKey.stringKey(FAULT_CODE_SPAN_KEY),
+        Optional.ofNullable(faultCode).orElse("No faultCode received")))
   }
 
   fun isNodoError(verifyPaymentResponse: VerifyPaymentNoticeRes): Boolean {
