@@ -29,7 +29,6 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.springframework.http.HttpStatus
 import reactor.core.publisher.Mono
@@ -201,10 +200,8 @@ class PaymentRequestsServiceTests {
     assertEquals("PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE", exception.faultCode)
     verify(openTelemetryUtils, Mockito.times(1))
       .addErrorSpanWithAttributes(
-        eq("VerifyPaymentNotice nodo error"),
-        eq(
-          Attributes.of(
-            AttributeKey.stringKey("faultCode"), "PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE")))
+        "VerifyPaymentNotice nodo error",
+        Attributes.of(AttributeKey.stringKey("faultCode"), "PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE"))
   }
 
   @Test
