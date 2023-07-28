@@ -1,11 +1,14 @@
 package it.pagopa.ecommerce.payment.requests.services
 
+import io.opentelemetry.api.common.AttributeKey
+import io.opentelemetry.api.common.Attributes
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
 import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
+import it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.util.OpenTelemetryUtils
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
@@ -21,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
+private const val VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME = "VerifyPaymentNotice nodo error"
+private const val FAULT_CODE_SPAN_KEY = "faultCode"
+
 @Service
 class PaymentRequestsService(
   @Autowired private val paymentRequestInfoRepository: PaymentRequestsRedisTemplateWrapper,
@@ -29,7 +35,8 @@ class PaymentRequestsService(
   private val objectFactoryNodeForPsp:
     it.pagopa.ecommerce.generated.transactions.model.ObjectFactory,
   @Autowired private val nodoOperations: NodoOperations,
-  @Autowired private val nodoConfig: NodoConfig
+  @Autowired private val nodoConfig: NodoConfig,
+  @Autowired private val openTelemetryUtils: OpenTelemetryUtils
 ) {
 
   private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -103,6 +110,7 @@ class PaymentRequestsService(
               verifyPaymentNoticeResponse.outcome,
               verifyPaymentNoticeResponse?.fault?.faultCode,
               isNodoError)
+            traceVerifyNodoError(verifyPaymentNoticeResponse?.fault?.faultCode)
             if (isNodoError) {
               Mono.error(NodoErrorException(verifyPaymentNoticeResponse.fault))
             } else {
@@ -127,6 +135,14 @@ class PaymentRequestsService(
           }
       return@flatMap paymentRequestInfo
     }
+
+  private fun traceVerifyNodoError(faultCode: String?) {
+    openTelemetryUtils.addErrorSpanWithAttributes(
+      VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME,
+      Attributes.of(
+        AttributeKey.stringKey(FAULT_CODE_SPAN_KEY),
+        Optional.ofNullable(faultCode).orElse("No faultCode received")))
+  }
 
   fun isNodoError(verifyPaymentResponse: VerifyPaymentNoticeRes): Boolean {
     val outcome = verifyPaymentResponse.outcome

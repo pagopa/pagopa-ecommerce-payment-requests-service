@@ -1,8 +1,11 @@
 package it.pagopa.ecommerce.payment.requests.services
 
+import io.opentelemetry.api.common.AttributeKey
+import io.opentelemetry.api.common.Attributes
 import it.pagopa.ecommerce.generated.transactions.model.*
 import it.pagopa.ecommerce.payment.requests.client.NodeForPspClient
 import it.pagopa.ecommerce.payment.requests.configurations.nodo.NodoConfig
+import it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.util.OpenTelemetryUtils
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
@@ -23,8 +26,10 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
 import org.springframework.http.HttpStatus
 import reactor.core.publisher.Mono
 
@@ -43,6 +48,8 @@ class PaymentRequestsServiceTests {
 
   @Mock private lateinit var nodoConfig: NodoConfig
 
+  @Mock private lateinit var openTelemetryUtils: OpenTelemetryUtils
+
   @BeforeEach
   fun init() {
     paymentRequestsService =
@@ -51,7 +58,8 @@ class PaymentRequestsServiceTests {
         nodeForPspClient,
         ObjectFactory(),
         nodoOperations,
-        nodoConfig)
+        nodoConfig,
+        openTelemetryUtils)
   }
 
   @Test
@@ -190,6 +198,10 @@ class PaymentRequestsServiceTests {
       }
     /** assertions */
     assertEquals("PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE", exception.faultCode)
+    verify(openTelemetryUtils, Mockito.times(1))
+      .addErrorSpanWithAttributes(
+        "VerifyPaymentNotice nodo error",
+        Attributes.of(AttributeKey.stringKey("faultCode"), "PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE"))
   }
 
   @Test
