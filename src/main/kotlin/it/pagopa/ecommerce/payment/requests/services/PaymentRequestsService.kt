@@ -24,7 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
-private const val VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME = "VerifyPaymentNotice nodo error"
+private const val VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME =
+  "VerifyPaymentNotice nodo error: [%s]"
+private const val VERIFY_PAYMENT_NOTICE_NODO_OK_SPAN_NAME = "VerifyPaymentNotice nodo ok"
 private const val FAULT_CODE_SPAN_KEY = "faultCode"
 
 @Service
@@ -110,7 +112,7 @@ class PaymentRequestsService(
               verifyPaymentNoticeResponse.outcome,
               verifyPaymentNoticeResponse?.fault?.faultCode,
               isNodoError)
-            traceVerifyNodoError(verifyPaymentNoticeResponse?.fault?.faultCode)
+            traceVerifyNodoOutcome(verifyPaymentNoticeResponse?.fault?.faultCode, isNodoError)
             if (isNodoError) {
               Mono.error(NodoErrorException(verifyPaymentNoticeResponse.fault))
             } else {
@@ -136,12 +138,17 @@ class PaymentRequestsService(
       return@flatMap paymentRequestInfo
     }
 
-  private fun traceVerifyNodoError(faultCode: String?) {
-    openTelemetryUtils.addErrorSpanWithAttributes(
-      VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME,
-      Attributes.of(
-        AttributeKey.stringKey(FAULT_CODE_SPAN_KEY),
-        Optional.ofNullable(faultCode).orElse("No faultCode received")))
+  private fun traceVerifyNodoOutcome(faultCode: String?, isNodoError: Boolean) {
+    val nodoFaultCode = Optional.ofNullable(faultCode).orElse("No faultCode received")
+    if (isNodoError) {
+      openTelemetryUtils.addErrorSpanWithAttributes(
+        VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME.format(nodoFaultCode),
+        Attributes.of(AttributeKey.stringKey(FAULT_CODE_SPAN_KEY), nodoFaultCode))
+    } else {
+      openTelemetryUtils.addSpanWithAttributes(
+        VERIFY_PAYMENT_NOTICE_NODO_OK_SPAN_NAME,
+        Attributes.of(AttributeKey.stringKey(FAULT_CODE_SPAN_KEY), StOutcome.OK.toString()))
+    }
   }
 
   fun isNodoError(verifyPaymentResponse: VerifyPaymentNoticeRes): Boolean {

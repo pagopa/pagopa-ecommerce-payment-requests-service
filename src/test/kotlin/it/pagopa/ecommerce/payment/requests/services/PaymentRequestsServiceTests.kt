@@ -128,6 +128,9 @@ class PaymentRequestsServiceTests {
     assertEquals(description, responseDto.description)
     assertNull(responseDto.dueDate)
     assertEquals(amount, responseDto.amount)
+    verify(openTelemetryUtils, Mockito.times(1))
+      .addSpanWithAttributes(
+        "VerifyPaymentNotice nodo ok", Attributes.of(AttributeKey.stringKey("faultCode"), "OK"))
   }
 
   @Test
@@ -200,7 +203,7 @@ class PaymentRequestsServiceTests {
     assertEquals("PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE", exception.faultCode)
     verify(openTelemetryUtils, Mockito.times(1))
       .addErrorSpanWithAttributes(
-        "VerifyPaymentNotice nodo error",
+        "VerifyPaymentNotice nodo error: [PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE]",
         Attributes.of(AttributeKey.stringKey("faultCode"), "PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE"))
   }
 
