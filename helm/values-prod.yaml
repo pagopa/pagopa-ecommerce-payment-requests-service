@@ -27,7 +27,7 @@ microservice-chart:
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
       OTEL_TRACES_EXPORTER: otlp
       OTEL_METRICS_EXPORTER: otlp
-      OTEL_LOGS_EXPORTER: none
+      OTEL_LOGS_EXPORTER: otlp
       OTEL_TRACES_SAMPLER: "always_on"
       PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"
     envSecret:
@@ -64,9 +64,9 @@ microservice-chart:
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: {}
+    annotations: { }
     name: ""
-  podAnnotations: {}
+  podAnnotations: { }
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -108,7 +108,7 @@ microservice-chart:
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_TRACES_EXPORTER: otlp
     OTEL_METRICS_EXPORTER: otlp
-    OTEL_LOGS_EXPORTER: none
+    OTEL_LOGS_EXPORTER: otlp
     OTEL_TRACES_SAMPLER: "always_on"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"
   envSecret:
@@ -119,8 +119,8 @@ microservice-chart:
   keyvault:
     name: "pagopa-p-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector: { }
+  tolerations: [ ]
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
