@@ -77,7 +77,7 @@ stages:
               echo "##[debug] Change placeholder for ecommerce-payment-request-service set branch: $(BRANCH_NAME)"
               sed -i "s/^ECOMMERCE_PAYMENT_REQUESTS_COMMIT_SHA=.*$/ECOMMERCE_PAYMENT_REQUESTS_COMMIT_SHA=$(BRANCH_NAME)/" .env
             displayName: 'Change payment-request branch name ecommerce-local .env'
-          - script: docker compose up --scale mongo-express=0 --scale redis-insight=0 --scale pagopa-notifications-service=0 --scale pagopa-ecommerce-transactions-service=0 --scale pagopa-ecommerce-payment-methods-service=0 --scale pagopa-ecommerce-event-dispatcher-service=0 -d
+          - script: docker compose up pagopa-ecommerce-payment-requests-service redis pagopa-node-mock pagopa-pdv-mock  -d
             displayName: 'Run app with docker-compose'
           - script: |
               timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8089/actuator/health/liveness)" != "200" ]]; do sleep 5; done' || exit 1
