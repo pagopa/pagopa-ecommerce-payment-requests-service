@@ -13,7 +13,7 @@ resources:
     - repository: pagopaEcommerceLocal
       type: github
       name: pagopa/pagopa-ecommerce-local 
-      ref: main
+      ref: CHK-1871-local-ecommerce-reorganization
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
@@ -84,7 +84,7 @@ stages:
             displayName: 'Health check'
           - script: yarn global add newman
             displayName: 'newman installation'
-          - script: newman run api-tests/ecommerce-for-checkout/payment-request-service/payment-request-service_ecommerce_local.postman_collection.json --environment=api-tests/ecommerce-for-checkout/payment-request-service/payment-request-service_ecommerce_local.postman_environment.json --reporters cli,junit --reporter-junit-export Results/checkout-api-TEST.xml --ignore-redirects  
+          - script: newman run api-tests/payment-request-service/payment-request-service_ecommerce_local.postman_collection.json --environment=api-tests/payment-request-service/payment-request-service_ecommerce_local.postman_environment.json --reporters cli,junit --reporter-junit-export Results/checkout-api-TEST.xml --ignore-redirects
             displayName: 'Run api test'
             continueOnError: false
           - task: PublishTestResults@2
