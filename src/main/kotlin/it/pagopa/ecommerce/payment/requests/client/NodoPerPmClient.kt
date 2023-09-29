@@ -23,11 +23,15 @@ public class NodoPerPmClient(
 
   private val logger = LoggerFactory.getLogger(javaClass)
 
+  @Value("\${nodo.checkposition.apikey}")
+  private val nodoCheckPositionApiKey: String? = null
+
   fun checkPosition(request: CheckPositionDto): Mono<CheckPositionResponseDto> {
     return nodoPerPmClient
       .post()
       .uri(nodoPerPmUrl)
       .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+      .header("ocp-apim-subscription-key", nodoCheckPositionApiKey)
       .body(Mono.just(request), CheckPositionDto::class.java)
       .retrieve()
       .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST)) { clientResponse ->

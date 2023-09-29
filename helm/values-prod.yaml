@@ -20,10 +20,16 @@ microservice-chart:
       REDIS_HOST: pagopa-p-weu-ecommerce-redis.redis.cache.windows.net
       REDIS_PORT: "6380"
       REDIS_SSL_ENABLED: "true"
+      CHECKOUT_URL: https://api.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
+      NODO_HOSTNAME: https://api.platform.pagopa.it
+      NODE_FOR_PSP_URI: /nodo-auth/node-for-psp/v1
+      NODO_PER_PM_URI: /nodo-auth/nodo-per-pm/v1/checkPosition
+      NODO_READ_TIMEOUT: "10000"
+      NODO_CONNECTION_TIMEOUT: "10000"
       CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
-      ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
+      ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
       ECS_SERVICE_ENVIRONMENT: "prod"
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,service.deployment.environment=prod"
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service,service.deployment.environment=prod"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
       OTEL_TRACES_EXPORTER: otlp
       OTEL_METRICS_EXPORTER: otlp
@@ -32,6 +38,9 @@ microservice-chart:
       PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"
     envSecret:
       REDIS_PASSWORD: redis-ecommerce-password
+      NODO_CONNECTION_STRING: nodo-connection-string
+      NODO_CHECKPOSITION_API_KEY: nodo-checkposition-api-key
+      NODO_NODEFORPSP_API_KEY: nodo-nodeforpsp-api-key
       OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
       PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   image:
@@ -97,8 +106,8 @@ microservice-chart:
     REDIS_SSL_ENABLED: "true"
     CHECKOUT_URL: https://api.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
     NODO_HOSTNAME: https://api.platform.pagopa.it
-    NODE_FOR_PSP_URI: /nodo/node-for-psp/v1
-    NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
+    NODE_FOR_PSP_URI: /nodo-auth/node-for-psp/v1
+    NODO_PER_PM_URI: /nodo-auth/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
     CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
@@ -114,6 +123,8 @@ microservice-chart:
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     NODO_CONNECTION_STRING: nodo-connection-string
+    NODO_CHECKPOSITION_API_KEY: nodo-checkposition-api-key
+    NODO_NODEFORPSP_API_KEY: nodo-nodeforpsp-api-key
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   keyvault:
