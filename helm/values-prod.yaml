@@ -27,9 +27,9 @@ microservice-chart:
       NODO_READ_TIMEOUT: "10000"
       NODO_CONNECTION_TIMEOUT: "10000"
       CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
-      ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
+      ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ECS_SERVICE_ENVIRONMENT: "prod"
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service,service.deployment.environment=prod"
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,service.deployment.environment=prod"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
       OTEL_TRACES_EXPORTER: otlp
       OTEL_METRICS_EXPORTER: otlp
