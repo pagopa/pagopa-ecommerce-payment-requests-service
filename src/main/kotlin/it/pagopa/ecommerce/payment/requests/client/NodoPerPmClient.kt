@@ -23,8 +23,7 @@ public class NodoPerPmClient(
 
   private val logger = LoggerFactory.getLogger(javaClass)
 
-  @Value("\${nodo.checkposition.apikey}")
-  private val nodoCheckPositionApiKey: String? = null
+  @Value("\${nodo.checkposition.apikey}") private val nodoCheckPositionApiKey: String? = null
 
   fun checkPosition(request: CheckPositionDto): Mono<CheckPositionResponseDto> {
     return nodoPerPmClient

@@ -52,7 +52,7 @@ class NodoPerPmClientTests {
 
   @Test
   fun `should return verify payment response given valid payment notice`() = runTest {
-    ReflectionTestUtils.setField(client, "nodoCheckPositionApiKey", "key");
+    ReflectionTestUtils.setField(client, "nodoCheckPositionApiKey", "key")
     val checkPositionDto =
       CheckPositionDto()
         .positionslist(
@@ -83,7 +83,7 @@ class NodoPerPmClientTests {
 
   @Test
   fun `should return checkPosition Rest api exception`() = runTest {
-    ReflectionTestUtils.setField(client, "nodoCheckPositionApiKey", "key");
+    ReflectionTestUtils.setField(client, "nodoCheckPositionApiKey", "key")
     val checkPositionDto =
       CheckPositionDto()
         .positionslist(

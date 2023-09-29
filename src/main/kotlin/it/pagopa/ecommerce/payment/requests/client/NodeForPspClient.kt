@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.payment.requests.client
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
+import javax.xml.bind.JAXBElement
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
-import javax.xml.bind.JAXBElement
 
 @Component
 class NodeForPspClient(
@@ -22,8 +22,7 @@ class NodeForPspClient(
 
   private val logger = LoggerFactory.getLogger(javaClass)
 
-  @Value("\${nodo.nodeforpsp.apikey}")
-  private val nodoPerPspApiKey: String? = null
+  @Value("\${nodo.nodeforpsp.apikey}") private val nodoPerPspApiKey: String? = null
 
   fun verifyPaymentNotice(
     request: JAXBElement<VerifyPaymentNoticeReq>
