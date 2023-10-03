@@ -57,7 +57,7 @@ class CartService(
     val receivedNotices = paymentsNotices.size
     logger.info("Received [$receivedNotices] payment notices")
 
-    return if (receivedNotices <= maxAllowedPaymentNotices) {
+    if (receivedNotices <= maxAllowedPaymentNotices) {
       val paymentInfos =
         paymentsNotices.map {
           PaymentInfo(
