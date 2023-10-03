@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono
 public class NodoPerPmClient(
   @Value("\${nodo.nodoperpm.uri}") private val nodoPerPmUrl: String,
   @Autowired private val nodoPerPmClient: WebClient,
-  @Value("\${nodo.checkposition.apikey}") private val nodoCheckPositionApiKey: String?
+  @Value("\${nodo.checkposition.apikey}") private val nodoCheckPositionApiKey: String
 ) {
 
   private val logger = LoggerFactory.getLogger(javaClass)
