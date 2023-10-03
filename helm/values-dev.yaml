@@ -91,7 +91,7 @@ microservice-chart:
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-password
     NODO_CONNECTION_STRING: nodo-connection-string
-    NODO_CHECKPOSITION_API_KEY: nodo-checkposition-api-key
+    NODO_CHECKPOSITION_API_KEY: nodo-nodeforpm-api-key
     NODO_NODEFORPSP_API_KEY: nodo-nodeforpm-api-key
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
