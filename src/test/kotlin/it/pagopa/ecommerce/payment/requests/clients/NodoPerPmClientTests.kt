@@ -23,7 +23,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -43,16 +42,13 @@ class NodoPerPmClientTests {
 
   @Mock private lateinit var customResponseSpec: ResponseSpecCustom
 
-  private val nodoCheckPositionApiKey = "key"
-
   @BeforeEach
   fun init() {
-    client = NodoPerPmClient("", nodoWebClient)
+    client = NodoPerPmClient("", nodoWebClient, "key")
   }
 
   @Test
   fun `should return verify payment response given valid payment notice`() = runTest {
-    ReflectionTestUtils.setField(client, "nodoCheckPositionApiKey", "key")
     val checkPositionDto =
       CheckPositionDto()
         .positionslist(
@@ -83,7 +79,6 @@ class NodoPerPmClientTests {
 
   @Test
   fun `should return checkPosition Rest api exception`() = runTest {
-    ReflectionTestUtils.setField(client, "nodoCheckPositionApiKey", "key")
     val checkPositionDto =
       CheckPositionDto()
         .positionslist(

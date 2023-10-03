@@ -20,7 +20,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClient.*
@@ -42,12 +41,11 @@ class NodeForPspClientTests {
 
   @BeforeEach
   fun init() {
-    client = NodeForPspClient("", nodoWebClient)
+    client = NodeForPspClient("", nodoWebClient, "key")
   }
 
   @Test
   fun `should return verify payment response given valid payment notice`() = runTest {
-    ReflectionTestUtils.setField(client, "nodoPerPspApiKey", "key")
     val objectFactory = ObjectFactory()
     val fiscalCode = "77777777777"
     val paymentNotice = "302000100000009424"
@@ -90,7 +88,6 @@ class NodeForPspClientTests {
 
   @Test
   fun `should return verify fault given duplicate payment notice`() = runTest {
-    ReflectionTestUtils.setField(client, "nodoPerPspApiKey", "key")
     val objectFactory = ObjectFactory()
     val fiscalCode = "77777777777"
     val paymentNotice = "302000100000009424"

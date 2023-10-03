@@ -18,11 +18,10 @@ import reactor.core.publisher.Mono
 class NodeForPspClient(
   @Value("\${nodo.nodeforpsp.uri}") private val nodoForPspUrl: String,
   @Autowired private val nodoWebClient: WebClient,
+  @Value("\${nodo.nodeforpsp.apikey}") private val nodoPerPspApiKey: String
 ) {
 
   private val logger = LoggerFactory.getLogger(javaClass)
-
-  @Value("\${nodo.nodeforpsp.apikey}") private val nodoPerPspApiKey: String? = null
 
   fun verifyPaymentNotice(
     request: JAXBElement<VerifyPaymentNoticeReq>

@@ -18,12 +18,11 @@ import reactor.core.publisher.Mono
 @Component
 public class NodoPerPmClient(
   @Value("\${nodo.nodoperpm.uri}") private val nodoPerPmUrl: String,
-  @Autowired private val nodoPerPmClient: WebClient
+  @Autowired private val nodoPerPmClient: WebClient,
+  @Value("\${nodo.checkposition.apikey}") private val nodoCheckPositionApiKey: String?
 ) {
 
   private val logger = LoggerFactory.getLogger(javaClass)
-
-  @Value("\${nodo.checkposition.apikey}") private val nodoCheckPositionApiKey: String? = null
 
   fun checkPosition(request: CheckPositionDto): Mono<CheckPositionResponseDto> {
     return nodoPerPmClient
