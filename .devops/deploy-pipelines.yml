@@ -156,7 +156,6 @@ stages:
     jobs:
       - job: e2e_tests
         steps:
-          - checkout: pagopaCheckoutTests
           - template: .devops/azure-templates/e2e-tests.yaml@pagopaCheckoutTests
             parameters:
               ENVIRONMENT: DEV
