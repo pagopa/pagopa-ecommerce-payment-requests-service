@@ -150,6 +150,8 @@ stages:
 
   - stage: "E2E_Tests_Checkout_DEV_environment"
     displayName: 'Running E2E test on dev app'
+    pool:
+      vmImage: 'ubuntu-latest'
     dependsOn: Deploy_for_DEV
     jobs:
       - job: e2e_tests
@@ -378,6 +380,8 @@ stages:
 
   - stage: "E2E_Tests_Checkout_UAT_environment"
     displayName: 'Running E2E test on uat app'
+    pool:
+      vmImage: 'ubuntu-latest'
     dependsOn: Deploy_UAT_Green
     condition: eq(dependencies.Deploy_UAT_Green.result, 'Succeeded')
     jobs:
