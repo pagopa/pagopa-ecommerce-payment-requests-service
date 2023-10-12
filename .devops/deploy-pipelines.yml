@@ -378,6 +378,7 @@ stages:
   - stage: "E2E_UAT_green_test"
     displayName: 'Running E2E test on uat app'
     dependsOn: Deploy_UAT_Green
+    condition: eq(dependencies.Deploy_UAT_Green.result, 'Succeeded')
     jobs:
       - job: e2e_tests
         steps:
