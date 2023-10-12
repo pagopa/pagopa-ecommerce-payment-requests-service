@@ -142,6 +142,7 @@ stages:
     jobs:
       - job: newman_api_test
         steps:
+          - checkout: pagopaCheckoutTests
           - template: azure-templates/api-tests.yml
             parameters:
               ENV_FILE: "api-tests/dev.envs.json"
