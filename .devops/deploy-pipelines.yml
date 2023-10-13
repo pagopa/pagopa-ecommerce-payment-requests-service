@@ -147,6 +147,19 @@ stages:
             parameters:
               ENV_FILE: "api-tests/dev.envs.json"
               TEST_FILE_PREFIX: "dev"
+
+  - stage: "E2E_Tests_Checkout_DEV_environment"
+    displayName: 'Running E2E test on dev app'
+    pool:
+      vmImage: 'ubuntu-latest'
+    dependsOn: Deploy_for_DEV
+    jobs:
+      - job: e2e_tests
+        steps:
+          - template: .devops/azure-templates/e2e-tests.yaml@pagopaCheckoutTests
+            parameters:
+              ENVIRONMENT: DEV
+              CHECKOUT_RESOURCE_REPO_NAME: pagopaCheckoutTests
   # --- END Deploy DEV --- #
   # --- START Deploy UAT --- #
   - stage: "Build_release_candidate"
@@ -363,6 +376,20 @@ stages:
             parameters:
               ENV_FILE: "api-tests/uat.envs.json"
               TEST_FILE_PREFIX: "green-uat"
+
+  - stage: "E2E_Tests_Checkout_UAT_environment"
+    displayName: 'Running E2E test on uat app'
+    pool:
+      vmImage: 'ubuntu-latest'
+    dependsOn: Deploy_UAT_Green
+    condition: eq(dependencies.Deploy_UAT_Green.result, 'Succeeded')
+    jobs:
+      - job: e2e_tests
+        steps:
+          - template: .devops/azure-templates/e2e-tests.yaml@pagopaCheckoutTests
+            parameters:
+              ENVIRONMENT: UAT
+              CHECKOUT_RESOURCE_REPO_NAME: pagopaCheckoutTests
   # --- END Deploy UAT --- #
 
   # --- START Deploy PROD --- #
