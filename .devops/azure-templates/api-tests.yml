@@ -1,5 +1,7 @@
 parameters:
   # Required
+  - name: "CHECKOUT_FOR_ECOMMERCE_COLLECTION"
+    type: "string"
   - name: "ENV_FILE"
     type: string
   - name: "TEST_FILE_PREFIX"
@@ -11,7 +13,7 @@ steps:
     displayName: 'Newman installation'
 
   - script: |
-      newman run api-tests/checkout-tests/checkout-for-ecommerce-api.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/checkout-for-ecommerce-${{ parameters.TEST_FILE_PREFIX }}-api-TEST.xml
+      newman run ${{ parameters.CHECKOUT_FOR_ECOMMERCE_COLLECTION }} -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/checkout-for-ecommerce-${{ parameters.TEST_FILE_PREFIX }}-api-TEST.xml
     displayName: 'Run api test app - env file: ${{ parameters.ENV_FILE }}'
   - task: PublishTestResults@2
     condition: succeededOrFailed()
