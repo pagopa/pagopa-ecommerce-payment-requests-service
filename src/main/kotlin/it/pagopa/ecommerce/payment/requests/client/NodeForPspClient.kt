@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono
 class NodeForPspClient(
   @Value("\${nodo.nodeforpsp.uri}") private val nodoForPspUrl: String,
   @Autowired private val nodoWebClient: WebClient,
+  @Value("\${nodo.nodeforpsp.apikey}") private val nodoPerPspApiKey: String
 ) {
 
   private val logger = LoggerFactory.getLogger(javaClass)
@@ -30,6 +31,7 @@ class NodeForPspClient(
       .uri(nodoForPspUrl)
       .header("Content-Type", MediaType.TEXT_XML_VALUE)
       .header("SOAPAction", "verifyPaymentNotice")
+      .header("ocp-apim-subscription-key", nodoPerPspApiKey)
       .body(Mono.just(SoapEnvelope("", request)), SoapEnvelope::class.java)
       .retrieve()
       .onStatus(HttpStatus::isError) { clientResponse ->
