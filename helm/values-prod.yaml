@@ -36,7 +36,7 @@ microservice-chart:
       PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "0.5.7"
+    tag: "0.6.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -137,5 +137,5 @@ microservice-chart:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/instance: pagopaecommercepaymentrequestsservice
-            namespaces: [ "ecommerce" ]
+            namespaces: ["ecommerce"]
             topologyKey: topology.kubernetes.io/zone
