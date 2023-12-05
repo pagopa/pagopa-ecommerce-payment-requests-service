@@ -33,7 +33,7 @@ class RedisConfiguration {
     paymentRequestInfoTemplate.valueSerializer = jackson2JsonRedisSerializer
     paymentRequestInfoTemplate.keySerializer = StringRedisSerializer()
     paymentRequestInfoTemplate.afterPropertiesSet()
-    return PaymentRequestsRedisTemplateWrapper(paymentRequestInfoTemplate, Duration.ofMinutes(1))
+    return PaymentRequestsRedisTemplateWrapper(paymentRequestInfoTemplate, Duration.ofMinutes(15))
   }
 
   @Bean
