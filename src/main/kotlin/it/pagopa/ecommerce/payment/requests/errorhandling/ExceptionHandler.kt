@@ -121,59 +121,76 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
       HttpStatus.BAD_GATEWAY)
   }
 
-  @ExceptionHandler(
-    NodoErrorException::class,
-  )
-  fun nodoErrorHandler(e: NodoErrorException): ResponseEntity<*> {
-    logger.error("Nodo error processing request", e)
-    val faultCode = e.faultCode
-    val response: ResponseEntity<*> =
-      if (Arrays.stream(PartyConfigurationFaultDto.values()).anyMatch { z ->
-        z.value == faultCode
-      }) {
-        ResponseEntity(
-          PartyConfigurationFaultPaymentProblemJsonDto(
-            title = "EC error",
-            faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE,
-            faultCodeDetail = PartyConfigurationFaultDto.valueOf(faultCode)),
-          HttpStatus.BAD_GATEWAY)
-      } else if (Arrays.stream(ValidationFaultDto.values()).anyMatch { z ->
-        z.value == faultCode
-      }) {
+  // TODO GENERIC ERROR is associated both to GatewayFaultDto (502) and PartyTimeoutFaultDto (504)
+  // error codes
+  val nodeErrorToResponseEntityMapping: Map<String, ResponseEntity<*>> =
+  // nodo error code to 404 response mapping
+  ValidationFaultDto.values().associate {
+      Pair(
+        it.toString(),
         ResponseEntity(
           ValidationFaultPaymentProblemJsonDto(
             title = "Validation Fault",
             faultCodeCategory = FaultCategoryDto.PAYMENT_UNKNOWN,
-            faultCodeDetail = ValidationFaultDto.valueOf(faultCode)),
-          HttpStatus.NOT_FOUND)
-      } else if (Arrays.stream(GatewayFaultDto.values()).anyMatch { z -> z.value == faultCode }) {
-        ResponseEntity(
-          GatewayFaultPaymentProblemJsonDto(
-            title = "Payment unavailable",
-            faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
-            faultCodeDetail = GatewayFaultDto.valueOf(faultCode)),
-          HttpStatus.BAD_GATEWAY)
-      } else if (Arrays.stream(PartyTimeoutFaultDto.values()).anyMatch { z ->
-        z.value == faultCode
-      }) {
-        ResponseEntity(
-          PartyTimeoutFaultPaymentProblemJsonDto(
-            title = "Gateway Timeout",
-            faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
-            faultCodeDetail = PartyTimeoutFaultDto.valueOf(faultCode)),
-          HttpStatus.GATEWAY_TIMEOUT)
-      } else if (Arrays.stream(PaymentStatusFaultDto.values()).anyMatch { z ->
-        z.value == faultCode
-      }) {
-        ResponseEntity(
-          PaymentStatusFaultPaymentProblemJsonDto(
-            title = "Payment Status Fault",
-            faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE,
-            faultCodeDetail = PaymentStatusFaultDto.valueOf(faultCode)),
-          HttpStatus.CONFLICT)
-      } else {
-        ResponseEntity(ProblemJsonDto(title = "Bad gateway"), HttpStatus.BAD_GATEWAY)
+            faultCodeDetail = it),
+          HttpStatus.NOT_FOUND))
+    } +
+      // nodo error code to 409 response mapping
+      PaymentStatusFaultDto.values().associate {
+        Pair(
+          it.toString(),
+          ResponseEntity(
+            PaymentStatusFaultPaymentProblemJsonDto(
+              title = "Payment Status Fault",
+              faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE,
+              faultCodeDetail = it),
+            HttpStatus.CONFLICT))
+      } +
+      // nodo error code to 502 response mapping
+      GatewayFaultDto.values().associate {
+        Pair(
+          it.toString(),
+          ResponseEntity(
+            GatewayFaultPaymentProblemJsonDto(
+              title = "Payment unavailable",
+              faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
+              faultCodeDetail = it),
+            HttpStatus.BAD_GATEWAY))
+      } +
+      // nodo error code to 503 response mapping
+      PartyConfigurationFaultDto.values().associate {
+        Pair(
+          it.toString(),
+          ResponseEntity(
+            PartyConfigurationFaultPaymentProblemJsonDto(
+              title = "EC error",
+              faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE,
+              faultCodeDetail = it),
+            HttpStatus.SERVICE_UNAVAILABLE))
+      } +
+      // nodo error code to 504 response mapping
+      PartyTimeoutFaultDto.values().associate {
+        Pair(
+          it.toString(),
+          ResponseEntity(
+            PartyTimeoutFaultPaymentProblemJsonDto(
+              title = "Gateway Timeout",
+              faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
+              faultCodeDetail = it),
+            HttpStatus.GATEWAY_TIMEOUT))
       }
+
+  @ExceptionHandler(
+    NodoErrorException::class,
+  )
+  fun nodoErrorHandler(e: NodoErrorException): ResponseEntity<*> {
+    val faultCode = e.faultCode
+    val response =
+      nodeErrorToResponseEntityMapping[faultCode]
+        ?: ResponseEntity(ProblemJsonDto(title = "Bad gateway"), HttpStatus.BAD_GATEWAY)
+    logger.error(
+      "Nodo error processing request with fault code: [$faultCode] mapped to http status code: [${response.statusCode}]",
+      e)
     return response
   }
 
