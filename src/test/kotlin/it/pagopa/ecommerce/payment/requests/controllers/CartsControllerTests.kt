@@ -111,7 +111,7 @@ class CartsControllerTests {
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     given(cartService.processCart(request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR))
-    val errorResponse = ProblemJsonDto(status = 502, title = "Bad gateway")
+    val errorResponse = ProblemJsonDto(status = 502, title = "Bad Gateway")
     webClient
       .post()
       .uri("/carts")
@@ -130,7 +130,7 @@ class CartsControllerTests {
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     given(cartService.processCart(request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.NOT_FOUND))
-    val errorResponse = ProblemJsonDto(status = 500, title = "Internal server error")
+    val errorResponse = ProblemJsonDto(status = 500, title = "Internal Server Error")
     webClient
       .post()
       .uri("/carts")

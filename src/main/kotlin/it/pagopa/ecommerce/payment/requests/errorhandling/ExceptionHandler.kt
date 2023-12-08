@@ -50,7 +50,8 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
       when (e.httpStatus) {
         HttpStatus.INTERNAL_SERVER_ERROR ->
           ResponseEntity(
-            ProblemJsonDto(status = HttpStatus.BAD_GATEWAY.value(), title = "Bad gateway"),
+            ProblemJsonDto(
+              status = HttpStatus.BAD_GATEWAY.value(), title = HttpStatus.BAD_GATEWAY.reasonPhrase),
             HttpStatus.BAD_GATEWAY)
         HttpStatus.UNPROCESSABLE_ENTITY ->
           ResponseEntity(
@@ -62,7 +63,8 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
         else ->
           ResponseEntity(
             ProblemJsonDto(
-              status = HttpStatus.INTERNAL_SERVER_ERROR.value(), title = "Internal server error"),
+              status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+              title = HttpStatus.INTERNAL_SERVER_ERROR.reasonPhrase),
             HttpStatus.INTERNAL_SERVER_ERROR)
       }
     return response
@@ -114,10 +116,11 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
 
   @ExceptionHandler(
     RedisSystemException::class, RedisConnectionException::class, WebClientRequestException::class)
-  fun genericBadGateweyHandler(e: Exception): ResponseEntity<ProblemJsonDto> {
+  fun genericBadGatewayHandler(e: Exception): ResponseEntity<ProblemJsonDto> {
     logger.error("Error processing request", e)
     return ResponseEntity(
-      ProblemJsonDto(status = HttpStatus.BAD_GATEWAY.value(), title = "Bad gateway"),
+      ProblemJsonDto(
+        status = HttpStatus.BAD_GATEWAY.value(), title = HttpStatus.BAD_GATEWAY.reasonPhrase),
       HttpStatus.BAD_GATEWAY)
   }
 
@@ -174,7 +177,7 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
           it.toString(),
           ResponseEntity(
             PartyTimeoutFaultPaymentProblemJsonDto(
-              title = "Gateway Timeout",
+              title = HttpStatus.GATEWAY_TIMEOUT.reasonPhrase,
               faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
               faultCodeDetail = it),
             HttpStatus.GATEWAY_TIMEOUT))
@@ -187,7 +190,8 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
     val faultCode = e.faultCode
     val response =
       nodeErrorToResponseEntityMapping[faultCode]
-        ?: ResponseEntity(ProblemJsonDto(title = "Bad gateway"), HttpStatus.BAD_GATEWAY)
+        ?: ResponseEntity(
+          ProblemJsonDto(title = HttpStatus.BAD_GATEWAY.reasonPhrase), HttpStatus.BAD_GATEWAY)
     logger.error(
       "Nodo error processing request with fault code: [$faultCode] mapped to http status code: [${response.statusCode}]",
       e)
