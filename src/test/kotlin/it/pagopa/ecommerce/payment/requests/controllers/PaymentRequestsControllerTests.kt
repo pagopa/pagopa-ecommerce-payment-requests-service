@@ -15,6 +15,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.BDDMockito.any
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
@@ -105,10 +107,13 @@ class PaymentRequestsControllerTests {
       .value { assertEquals(HttpStatus.BAD_REQUEST.value(), it.status) }
   }
 
-  @Test
-  fun `should return response entity with party configuration fault`() = runTest {
+  @ParameterizedTest
+  @EnumSource(PartyConfigurationFaultDto::class)
+  fun `should return response entity with party configuration fault`(
+    nodoErrorCode: PartyConfigurationFaultDto
+  ) = runTest {
     val rptId = "77777777777302000100000009424"
-    val faultBean = faultBeanWithCode(PartyConfigurationFaultDto.PPT_DOMINIO_DISABILITATO.value)
+    val faultBean = faultBeanWithCode(nodoErrorCode.value)
     given(paymentRequestsService.getPaymentRequestInfo(rptId))
       .willThrow(NodoErrorException(faultBean))
     val parameters = mapOf("rpt_id" to rptId)
@@ -117,39 +122,41 @@ class PaymentRequestsControllerTests {
       .uri("/payment-requests/{rpt_id}", parameters)
       .exchange()
       .expectStatus()
-      .isEqualTo(HttpStatus.BAD_GATEWAY)
+      .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
       .expectBody(PartyConfigurationFaultPaymentProblemJsonDto::class.java)
       .value {
         assertEquals(FaultCategoryDto.PAYMENT_UNAVAILABLE, it.faultCodeCategory)
-        assertEquals(
-          PartyConfigurationFaultDto.PPT_DOMINIO_DISABILITATO.value, it.faultCodeDetail.value)
+        assertEquals(nodoErrorCode.value, it.faultCodeDetail.value)
       }
   }
 
-  @Test
-  fun `should return response entity with validation fault`() = runTest {
-    val rptId = "77777777777302000100000009424"
-    val faultBean = faultBeanWithCode(ValidationFaultDto.PPT_DOMINIO_SCONOSCIUTO.value)
-    given(paymentRequestsService.getPaymentRequestInfo(rptId))
-      .willThrow(NodoErrorException(faultBean))
-    val parameters = mapOf("rpt_id" to rptId)
-    webClient
-      .get()
-      .uri("/payment-requests/{rpt_id}", parameters)
-      .exchange()
-      .expectStatus()
-      .isEqualTo(HttpStatus.NOT_FOUND)
-      .expectBody(ValidationFaultPaymentProblemJsonDto::class.java)
-      .value {
-        assertEquals(FaultCategoryDto.PAYMENT_UNKNOWN, it.faultCodeCategory)
-        assertEquals(ValidationFaultDto.PPT_DOMINIO_SCONOSCIUTO.value, it.faultCodeDetail.value)
-      }
-  }
+  @ParameterizedTest
+  @EnumSource(ValidationFaultDto::class)
+  fun `should return response entity with validation fault`(nodoErrorCode: ValidationFaultDto) =
+    runTest {
+      val rptId = "77777777777302000100000009424"
+      val faultBean = faultBeanWithCode(nodoErrorCode.value)
+      given(paymentRequestsService.getPaymentRequestInfo(rptId))
+        .willThrow(NodoErrorException(faultBean))
+      val parameters = mapOf("rpt_id" to rptId)
+      webClient
+        .get()
+        .uri("/payment-requests/{rpt_id}", parameters)
+        .exchange()
+        .expectStatus()
+        .isEqualTo(HttpStatus.NOT_FOUND)
+        .expectBody(ValidationFaultPaymentProblemJsonDto::class.java)
+        .value {
+          assertEquals(FaultCategoryDto.PAYMENT_UNKNOWN, it.faultCodeCategory)
+          assertEquals(nodoErrorCode.value, it.faultCodeDetail.value)
+        }
+    }
 
-  @Test
-  fun `should return response entity with gateway fault`() = runTest {
+  @ParameterizedTest
+  @EnumSource(GatewayFaultDto::class)
+  fun `should return response entity with gateway fault`(nodoErrorCode: GatewayFaultDto) = runTest {
     val rptId = "77777777777302000100000009424"
-    val faultBean = faultBeanWithCode(GatewayFaultDto.PAA_SYSTEM_ERROR.value)
+    val faultBean = faultBeanWithCode(nodoErrorCode.value)
     given(paymentRequestsService.getPaymentRequestInfo(rptId))
       .willThrow(NodoErrorException(faultBean))
     val parameters = mapOf("rpt_id" to rptId)
@@ -162,15 +169,17 @@ class PaymentRequestsControllerTests {
       .expectBody(GatewayFaultPaymentProblemJsonDto::class.java)
       .value {
         assertEquals(FaultCategoryDto.GENERIC_ERROR, it.faultCodeCategory)
-        assertEquals(GatewayFaultDto.PAA_SYSTEM_ERROR.value, it.faultCodeDetail.value)
+        assertEquals(nodoErrorCode.value, it.faultCodeDetail.value)
       }
   }
 
-  @Test
-  fun `should return response entity with party timeout fault`() = runTest {
+  @ParameterizedTest
+  @EnumSource(PartyTimeoutFaultDto::class)
+  fun `should return response entity with party timeout fault`(
+    nodoErrorCode: PartyTimeoutFaultDto
+  ) = runTest {
     val rptId = "77777777777302000100000009424"
-    val faultBean =
-      faultBeanWithCode(PartyTimeoutFaultDto.PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE.value)
+    val faultBean = faultBeanWithCode(nodoErrorCode.value)
     given(paymentRequestsService.getPaymentRequestInfo(rptId))
       .willThrow(NodoErrorException(faultBean))
     val parameters = mapOf("rpt_id" to rptId)
@@ -183,15 +192,17 @@ class PaymentRequestsControllerTests {
       .expectBody(PartyTimeoutFaultPaymentProblemJsonDto::class.java)
       .value {
         assertEquals(FaultCategoryDto.GENERIC_ERROR, it.faultCodeCategory)
-        assertEquals(
-          PartyTimeoutFaultDto.PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE.value, it.faultCodeDetail.value)
+        assertEquals(nodoErrorCode.value, it.faultCodeDetail.value)
       }
   }
 
-  @Test
-  fun `should return response entity with payment status fault`() = runTest {
+  @ParameterizedTest
+  @EnumSource(PaymentStatusFaultDto::class)
+  fun `should return response entity with payment status fault`(
+    nodoErrorCode: PaymentStatusFaultDto
+  ) = runTest {
     val rptId = "77777777777302000100000009424"
-    val faultBean = faultBeanWithCode(PaymentStatusFaultDto.PAA_PAGAMENTO_IN_CORSO.value)
+    val faultBean = faultBeanWithCode(nodoErrorCode.value)
     given(paymentRequestsService.getPaymentRequestInfo(rptId))
       .willThrow(NodoErrorException(faultBean))
     val parameters = mapOf("rpt_id" to rptId)
@@ -204,7 +215,7 @@ class PaymentRequestsControllerTests {
       .expectBody(PaymentStatusFaultPaymentProblemJsonDto::class.java)
       .value {
         assertEquals(FaultCategoryDto.PAYMENT_UNAVAILABLE, it.faultCodeCategory)
-        assertEquals(PaymentStatusFaultDto.PAA_PAGAMENTO_IN_CORSO.value, it.faultCodeDetail.value)
+        assertEquals(nodoErrorCode.value, it.faultCodeDetail.value)
       }
   }
 
