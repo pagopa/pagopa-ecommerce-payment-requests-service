@@ -108,7 +108,7 @@ class PaymentRequestsControllerTests {
   @Test
   fun `should return response entity with party configuration fault`() = runTest {
     val rptId = "77777777777302000100000009424"
-    val faultBean = faultBeanWithCode(PartyConfigurationFaultDto.PPT_DOMINIO_DISABILITATO.value)
+    val faultBean = faultBeanWithCode(PartyConfigurationFaultDto.PAA_ID_DOMINIO_ERRATO.value)
     given(paymentRequestsService.getPaymentRequestInfo(rptId))
       .willThrow(NodoErrorException(faultBean))
     val parameters = mapOf("rpt_id" to rptId)
@@ -117,19 +117,22 @@ class PaymentRequestsControllerTests {
       .uri("/payment-requests/{rpt_id}", parameters)
       .exchange()
       .expectStatus()
-      .isEqualTo(HttpStatus.BAD_GATEWAY)
+      .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
       .expectBody(PartyConfigurationFaultPaymentProblemJsonDto::class.java)
       .value {
-        assertEquals(FaultCategoryDto.PAYMENT_UNAVAILABLE, it.faultCodeCategory)
         assertEquals(
-          PartyConfigurationFaultDto.PPT_DOMINIO_DISABILITATO.value, it.faultCodeDetail.value)
+          PartyConfigurationFaultPaymentProblemJsonDto.FaultCodeCategory.DOMAIN_UNKNOWN,
+          it.faultCodeCategory)
+        assertEquals(
+          PartyConfigurationFaultDto.PAA_ID_DOMINIO_ERRATO.value, it.faultCodeDetail.value)
       }
   }
 
   @Test
-  fun `should return response entity with validation fault`() = runTest {
+  fun `should return response entity with validation unknown fault`() = runTest {
     val rptId = "77777777777302000100000009424"
-    val faultBean = faultBeanWithCode(ValidationFaultDto.PPT_DOMINIO_SCONOSCIUTO.value)
+    val faultBean =
+      faultBeanWithCode(ValidationFaultPaymentUnknownDto.PPT_DOMINIO_SCONOSCIUTO.value)
     given(paymentRequestsService.getPaymentRequestInfo(rptId))
       .willThrow(NodoErrorException(faultBean))
     val parameters = mapOf("rpt_id" to rptId)
@@ -139,17 +142,21 @@ class PaymentRequestsControllerTests {
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.NOT_FOUND)
-      .expectBody(ValidationFaultPaymentProblemJsonDto::class.java)
+      .expectBody(ValidationFaultPaymentUnknownProblemJsonDto::class.java)
       .value {
-        assertEquals(FaultCategoryDto.PAYMENT_UNKNOWN, it.faultCodeCategory)
-        assertEquals(ValidationFaultDto.PPT_DOMINIO_SCONOSCIUTO.value, it.faultCodeDetail.value)
+        assertEquals(
+          ValidationFaultPaymentUnknownProblemJsonDto.FaultCodeCategory.PAYMENT_UNKNOWN,
+          it.faultCodeCategory)
+        assertEquals(
+          ValidationFaultPaymentUnknownDto.PPT_DOMINIO_SCONOSCIUTO.value, it.faultCodeDetail.value)
       }
   }
 
   @Test
-  fun `should return response entity with gateway fault`() = runTest {
+  fun `should return response entity with validation unavailable fault`() = runTest {
     val rptId = "77777777777302000100000009424"
-    val faultBean = faultBeanWithCode(GatewayFaultDto.PAA_SYSTEM_ERROR.value)
+    val faultBean =
+      faultBeanWithCode(ValidationFaultPaymentUnavailableDto.PPT_CANALE_DISABILITATO.value)
     given(paymentRequestsService.getPaymentRequestInfo(rptId))
       .willThrow(NodoErrorException(faultBean))
     val parameters = mapOf("rpt_id" to rptId)
@@ -159,39 +166,21 @@ class PaymentRequestsControllerTests {
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.BAD_GATEWAY)
-      .expectBody(GatewayFaultPaymentProblemJsonDto::class.java)
+      .expectBody(ValidationFaultPaymentUnavailableProblemJsonDto::class.java)
       .value {
-        assertEquals(FaultCategoryDto.GENERIC_ERROR, it.faultCodeCategory)
-        assertEquals(GatewayFaultDto.PAA_SYSTEM_ERROR.value, it.faultCodeDetail.value)
-      }
-  }
-
-  @Test
-  fun `should return response entity with party timeout fault`() = runTest {
-    val rptId = "77777777777302000100000009424"
-    val faultBean =
-      faultBeanWithCode(PartyTimeoutFaultDto.PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE.value)
-    given(paymentRequestsService.getPaymentRequestInfo(rptId))
-      .willThrow(NodoErrorException(faultBean))
-    val parameters = mapOf("rpt_id" to rptId)
-    webClient
-      .get()
-      .uri("/payment-requests/{rpt_id}", parameters)
-      .exchange()
-      .expectStatus()
-      .isEqualTo(HttpStatus.GATEWAY_TIMEOUT)
-      .expectBody(PartyTimeoutFaultPaymentProblemJsonDto::class.java)
-      .value {
-        assertEquals(FaultCategoryDto.GENERIC_ERROR, it.faultCodeCategory)
         assertEquals(
-          PartyTimeoutFaultDto.PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE.value, it.faultCodeDetail.value)
+          ValidationFaultPaymentUnavailableProblemJsonDto.FaultCodeCategory.PAYMENT_UNAVAILABLE,
+          it.faultCodeCategory)
+        assertEquals(
+          ValidationFaultPaymentUnavailableDto.PPT_CANALE_DISABILITATO.value,
+          it.faultCodeDetail.value)
       }
   }
 
   @Test
   fun `should return response entity with payment status fault`() = runTest {
     val rptId = "77777777777302000100000009424"
-    val faultBean = faultBeanWithCode(PaymentStatusFaultDto.PAA_PAGAMENTO_IN_CORSO.value)
+    val faultBean = faultBeanWithCode(PaymentOngoingStatusFaultDto.PAA_PAGAMENTO_IN_CORSO.value)
     given(paymentRequestsService.getPaymentRequestInfo(rptId))
       .willThrow(NodoErrorException(faultBean))
     val parameters = mapOf("rpt_id" to rptId)
@@ -201,10 +190,13 @@ class PaymentRequestsControllerTests {
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.CONFLICT)
-      .expectBody(PaymentStatusFaultPaymentProblemJsonDto::class.java)
+      .expectBody(PaymentOngoingStatusFaultPaymentProblemJsonDto::class.java)
       .value {
-        assertEquals(FaultCategoryDto.PAYMENT_UNAVAILABLE, it.faultCodeCategory)
-        assertEquals(PaymentStatusFaultDto.PAA_PAGAMENTO_IN_CORSO.value, it.faultCodeDetail.value)
+        assertEquals(
+          PaymentOngoingStatusFaultPaymentProblemJsonDto.FaultCodeCategory.PAYMENT_ONGOING,
+          it.faultCodeCategory)
+        assertEquals(
+          PaymentOngoingStatusFaultDto.PAA_PAGAMENTO_IN_CORSO.value, it.faultCodeDetail.value)
       }
   }
 

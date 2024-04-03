@@ -134,45 +134,79 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
         ResponseEntity(
           PartyConfigurationFaultPaymentProblemJsonDto(
             title = "EC error",
-            faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE,
+            faultCodeCategory =
+              PartyConfigurationFaultPaymentProblemJsonDto.FaultCodeCategory.DOMAIN_UNKNOWN,
             faultCodeDetail = PartyConfigurationFaultDto.valueOf(faultCode)),
-          HttpStatus.BAD_GATEWAY)
-      } else if (Arrays.stream(ValidationFaultDto.values()).anyMatch { z ->
+          HttpStatus.SERVICE_UNAVAILABLE)
+      } else if (Arrays.stream(ValidationFaultPaymentUnavailableDto.values()).anyMatch { z ->
         z.value == faultCode
       }) {
         ResponseEntity(
-          ValidationFaultPaymentProblemJsonDto(
+          ValidationFaultPaymentUnavailableProblemJsonDto(
             title = "Validation Fault",
-            faultCodeCategory = FaultCategoryDto.PAYMENT_UNKNOWN,
-            faultCodeDetail = ValidationFaultDto.valueOf(faultCode)),
+            faultCodeCategory =
+              ValidationFaultPaymentUnavailableProblemJsonDto.FaultCodeCategory.PAYMENT_UNAVAILABLE,
+            faultCodeDetail = ValidationFaultPaymentUnavailableDto.valueOf(faultCode)),
+          HttpStatus.BAD_GATEWAY)
+      } else if (Arrays.stream(PaymentOngoingStatusFaultDto.values()).anyMatch { z ->
+        z.value == faultCode
+      }) {
+        ResponseEntity(
+          PaymentOngoingStatusFaultPaymentProblemJsonDto(
+            title = "Payment Status Fault",
+            faultCodeCategory =
+              PaymentOngoingStatusFaultPaymentProblemJsonDto.FaultCodeCategory.PAYMENT_ONGOING,
+            faultCodeDetail = PaymentOngoingStatusFaultDto.valueOf(faultCode)),
+          HttpStatus.CONFLICT)
+      } else if (Arrays.stream(PaymentExpiredStatusFaultDto.values()).anyMatch { z ->
+        z.value == faultCode
+      }) {
+        ResponseEntity(
+          PaymentExpiredStatusFaultPaymentProblemJsonDto(
+            title = "Payment Status Fault",
+            faultCodeCategory =
+              PaymentExpiredStatusFaultPaymentProblemJsonDto.FaultCodeCategory.PAYMENT_EXPIRED,
+            faultCodeDetail = PaymentExpiredStatusFaultDto.valueOf(faultCode)),
+          HttpStatus.CONFLICT)
+      } else if (Arrays.stream(PaymentCanceledStatusFaultDto.values()).anyMatch { z ->
+        z.value == faultCode
+      }) {
+        ResponseEntity(
+          PaymentCanceledStatusFaultPaymentProblemJsonDto(
+            title = "Payment Status Fault",
+            faultCodeCategory =
+              PaymentCanceledStatusFaultPaymentProblemJsonDto.FaultCodeCategory.PAYMENT_CANCELED,
+            faultCodeDetail = PaymentCanceledStatusFaultDto.valueOf(faultCode)),
+          HttpStatus.CONFLICT)
+      } else if (Arrays.stream(PaymentDuplicatedStatusFaultDto.values()).anyMatch { z ->
+        z.value == faultCode
+      }) {
+        ResponseEntity(
+          PaymentDuplicatedStatusFaultPaymentProblemJsonDto(
+            title = "Payment Status Fault",
+            faultCodeCategory =
+              PaymentDuplicatedStatusFaultPaymentProblemJsonDto.FaultCodeCategory
+                .PAYMENT_DUPLICATED,
+            faultCodeDetail = PaymentDuplicatedStatusFaultDto.valueOf(faultCode)),
+          HttpStatus.CONFLICT)
+      } else if (Arrays.stream(ValidationFaultPaymentUnknownDto.values()).anyMatch { z ->
+        z.value == faultCode
+      }) {
+        ResponseEntity(
+          ValidationFaultPaymentUnknownProblemJsonDto(
+            title = "Payment Status Fault",
+            faultCodeCategory =
+              ValidationFaultPaymentUnknownProblemJsonDto.FaultCodeCategory.PAYMENT_UNKNOWN,
+            faultCodeDetail = ValidationFaultPaymentUnknownDto.valueOf(faultCode)),
           HttpStatus.NOT_FOUND)
-      } else if (Arrays.stream(GatewayFaultDto.values()).anyMatch { z -> z.value == faultCode }) {
+      } else {
+
         ResponseEntity(
           GatewayFaultPaymentProblemJsonDto(
-            title = "Payment unavailable",
-            faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
-            faultCodeDetail = GatewayFaultDto.valueOf(faultCode)),
+            title = "Bad gateway",
+            faultCodeCategory = GatewayFaultPaymentProblemJsonDto.FaultCodeCategory.GENERIC_ERROR,
+            faultCodeDetail = faultCode),
           HttpStatus.BAD_GATEWAY)
-      } else if (Arrays.stream(PartyTimeoutFaultDto.values()).anyMatch { z ->
-        z.value == faultCode
-      }) {
-        ResponseEntity(
-          PartyTimeoutFaultPaymentProblemJsonDto(
-            title = "Gateway Timeout",
-            faultCodeCategory = FaultCategoryDto.GENERIC_ERROR,
-            faultCodeDetail = PartyTimeoutFaultDto.valueOf(faultCode)),
-          HttpStatus.GATEWAY_TIMEOUT)
-      } else if (Arrays.stream(PaymentStatusFaultDto.values()).anyMatch { z ->
-        z.value == faultCode
-      }) {
-        ResponseEntity(
-          PaymentStatusFaultPaymentProblemJsonDto(
-            title = "Payment Status Fault",
-            faultCodeCategory = FaultCategoryDto.PAYMENT_UNAVAILABLE,
-            faultCodeDetail = PaymentStatusFaultDto.valueOf(faultCode)),
-          HttpStatus.CONFLICT)
-      } else {
-        ResponseEntity(ProblemJsonDto(title = "Bad gateway"), HttpStatus.BAD_GATEWAY)
       }
     return response
   }
