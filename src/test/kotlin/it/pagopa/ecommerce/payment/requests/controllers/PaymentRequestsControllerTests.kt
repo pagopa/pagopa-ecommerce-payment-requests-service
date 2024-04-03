@@ -178,7 +178,7 @@ class PaymentRequestsControllerTests {
   }
 
   @Test
-  fun `should return response entity with payment status fault`() = runTest {
+  fun `should return response entity with ongoing payment status fault`() = runTest {
     val rptId = "77777777777302000100000009424"
     val faultBean = faultBeanWithCode(PaymentOngoingStatusFaultDto.PAA_PAGAMENTO_IN_CORSO.value)
     given(paymentRequestsService.getPaymentRequestInfo(rptId))
@@ -197,6 +197,75 @@ class PaymentRequestsControllerTests {
           it.faultCodeCategory)
         assertEquals(
           PaymentOngoingStatusFaultDto.PAA_PAGAMENTO_IN_CORSO.value, it.faultCodeDetail.value)
+      }
+  }
+
+  @Test
+  fun `should return response entity with expired payment status fault`() = runTest {
+    val rptId = "77777777777302000100000009424"
+    val faultBean = faultBeanWithCode(PaymentExpiredStatusFaultDto.PAA_PAGAMENTO_SCADUTO.value)
+    given(paymentRequestsService.getPaymentRequestInfo(rptId))
+      .willThrow(NodoErrorException(faultBean))
+    val parameters = mapOf("rpt_id" to rptId)
+    webClient
+      .get()
+      .uri("/payment-requests/{rpt_id}", parameters)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.CONFLICT)
+      .expectBody(PaymentExpiredStatusFaultPaymentProblemJsonDto::class.java)
+      .value {
+        assertEquals(
+          PaymentExpiredStatusFaultPaymentProblemJsonDto.FaultCodeCategory.PAYMENT_EXPIRED,
+          it.faultCodeCategory)
+        assertEquals(
+          PaymentExpiredStatusFaultDto.PAA_PAGAMENTO_SCADUTO.value, it.faultCodeDetail.value)
+      }
+  }
+
+  @Test
+  fun `should return response entity with canceled payment status fault`() = runTest {
+    val rptId = "77777777777302000100000009424"
+    val faultBean = faultBeanWithCode(PaymentCanceledStatusFaultDto.PAA_PAGAMENTO_ANNULLATO.value)
+    given(paymentRequestsService.getPaymentRequestInfo(rptId))
+      .willThrow(NodoErrorException(faultBean))
+    val parameters = mapOf("rpt_id" to rptId)
+    webClient
+      .get()
+      .uri("/payment-requests/{rpt_id}", parameters)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.CONFLICT)
+      .expectBody(PaymentCanceledStatusFaultPaymentProblemJsonDto::class.java)
+      .value {
+        assertEquals(
+          PaymentCanceledStatusFaultPaymentProblemJsonDto.FaultCodeCategory.PAYMENT_CANCELED,
+          it.faultCodeCategory)
+        assertEquals(
+          PaymentCanceledStatusFaultDto.PAA_PAGAMENTO_ANNULLATO.value, it.faultCodeDetail.value)
+      }
+  }
+
+  @Test
+  fun `should return response entity with duplicated payment status fault`() = runTest {
+    val rptId = "77777777777302000100000009424"
+    val faultBean = faultBeanWithCode(PaymentDuplicatedStatusFaultDto.PAA_PAGAMENTO_DUPLICATO.value)
+    given(paymentRequestsService.getPaymentRequestInfo(rptId))
+      .willThrow(NodoErrorException(faultBean))
+    val parameters = mapOf("rpt_id" to rptId)
+    webClient
+      .get()
+      .uri("/payment-requests/{rpt_id}", parameters)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.CONFLICT)
+      .expectBody(PaymentDuplicatedStatusFaultPaymentProblemJsonDto::class.java)
+      .value {
+        assertEquals(
+          PaymentDuplicatedStatusFaultPaymentProblemJsonDto.FaultCodeCategory.PAYMENT_DUPLICATED,
+          it.faultCodeCategory)
+        assertEquals(
+          PaymentDuplicatedStatusFaultDto.PAA_PAGAMENTO_DUPLICATO.value, it.faultCodeDetail.value)
       }
   }
 
