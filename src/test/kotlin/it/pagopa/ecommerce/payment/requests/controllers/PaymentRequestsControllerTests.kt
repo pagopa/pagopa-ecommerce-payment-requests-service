@@ -107,7 +107,6 @@ class PaymentRequestsControllerTests {
       .value { assertEquals(HttpStatus.BAD_REQUEST.value(), it.status) }
   }
 
-  @Test
   @ParameterizedTest
   @EnumSource(PartyConfigurationFaultDto::class)
   fun `should return response entity with party configuration fault`(
@@ -133,7 +132,6 @@ class PaymentRequestsControllerTests {
       }
   }
 
-  @Test
   @ParameterizedTest
   @EnumSource(ValidationFaultPaymentUnknownDto::class)
   fun `should return response entity with validation unknown fault`(
@@ -159,7 +157,6 @@ class PaymentRequestsControllerTests {
       }
   }
 
-  @Test
   @ParameterizedTest
   @EnumSource(ValidationFaultPaymentUnavailableDto::class)
   fun `should return response entity with validation unavailable fault`(
@@ -185,7 +182,6 @@ class PaymentRequestsControllerTests {
       }
   }
 
-  @Test
   @ParameterizedTest
   @EnumSource(PaymentOngoingStatusFaultDto::class)
   fun `should return response entity with ongoing payment status fault`(
@@ -211,7 +207,6 @@ class PaymentRequestsControllerTests {
       }
   }
 
-  @Test
   @ParameterizedTest
   @EnumSource(PaymentExpiredStatusFaultDto::class)
   fun `should return response entity with expired payment status fault`(
@@ -237,7 +232,6 @@ class PaymentRequestsControllerTests {
       }
   }
 
-  @Test
   @ParameterizedTest
   @EnumSource(PaymentCanceledStatusFaultDto::class)
   fun `should return response entity with canceled payment status fault`(
@@ -263,7 +257,6 @@ class PaymentRequestsControllerTests {
       }
   }
 
-  @Test
   @ParameterizedTest
   @EnumSource(PaymentDuplicatedStatusFaultDto::class)
   fun `should return response entity with duplicated payment status fault`(
