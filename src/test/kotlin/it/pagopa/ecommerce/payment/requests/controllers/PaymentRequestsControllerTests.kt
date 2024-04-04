@@ -159,10 +159,11 @@ class PaymentRequestsControllerTests {
 
   @ParameterizedTest
   @EnumSource(ValidationFaultPaymentDataErrorDto::class)
-  fun `should return response entity with validation unknown fault`(
+  fun `should return response entity with validation data error fault`(
     nodoErrorCode: ValidationFaultPaymentDataErrorDto
   ) = runTest {
     val rptId = "77777777777302000100000009424"
+    System.out.println(ValidationFaultPaymentDataErrorDto.values().get(0).value)
     val faultBean = faultBeanWithCode(nodoErrorCode.value)
     given(paymentRequestsService.getPaymentRequestInfo(rptId))
       .willThrow(NodoErrorException(faultBean))

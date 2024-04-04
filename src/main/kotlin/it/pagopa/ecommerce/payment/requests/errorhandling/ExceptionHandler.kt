@@ -126,7 +126,7 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
   // nodo error code to 404 response mapping
   ValidationFaultPaymentUnknownDto.values().associate {
       Pair(
-        it.toString(),
+        it.value,
         ResponseEntity(
           ValidationFaultPaymentUnknownProblemJsonDto(
             title = "Payment Status Fault",
@@ -137,7 +137,7 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
     } +
       ValidationFaultPaymentDataErrorDto.values().associate {
         Pair(
-          it.toString(),
+          it.value,
           ResponseEntity(
             ValidationFaultPaymentDataErrorProblemJsonDto(
               title = "Payment Status Fault",
@@ -149,7 +149,7 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
       // nodo error code to 409 response mapping
       PaymentOngoingStatusFaultDto.values().associate {
         Pair(
-          it.toString(),
+          it.value,
           ResponseEntity(
             PaymentOngoingStatusFaultPaymentProblemJsonDto(
               title = "Payment Status Fault",
@@ -160,7 +160,7 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
       } +
       PaymentExpiredStatusFaultDto.values().associate {
         Pair(
-          it.toString(),
+          it.value,
           ResponseEntity(
             PaymentExpiredStatusFaultPaymentProblemJsonDto(
               title = "Payment Status Fault",
@@ -171,7 +171,7 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
       } +
       PaymentCanceledStatusFaultDto.values().associate {
         Pair(
-          it.toString(),
+          it.value,
           ResponseEntity(
             PaymentCanceledStatusFaultPaymentProblemJsonDto(
               title = "Payment Status Fault",
@@ -182,7 +182,7 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
       } +
       PaymentDuplicatedStatusFaultDto.values().associate {
         Pair(
-          it.toString(),
+          it.value,
           ResponseEntity(
             PaymentDuplicatedStatusFaultPaymentProblemJsonDto(
               title = "Payment Status Fault",
@@ -195,7 +195,7 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
       // nodo error code to 502 response mapping
       ValidationFaultPaymentUnavailableDto.values().associate {
         Pair(
-          it.toString(),
+          it.value,
           ResponseEntity(
             ValidationFaultPaymentUnavailableProblemJsonDto(
               title = "Payment unavailable",
@@ -208,7 +208,7 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
       // nodo error code to 503 response mapping
       PartyConfigurationFaultDto.values().associate {
         Pair(
-          it.toString(),
+          it.value,
           ResponseEntity(
             PartyConfigurationFaultPaymentProblemJsonDto(
               title = "EC error",
