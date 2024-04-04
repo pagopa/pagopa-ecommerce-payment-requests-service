@@ -44,7 +44,7 @@ class NodoPerPmClientTests {
 
   @BeforeEach
   fun init() {
-    client = NodoPerPmClient("", nodoWebClient)
+    client = NodoPerPmClient("", nodoWebClient, "key")
   }
 
   @Test

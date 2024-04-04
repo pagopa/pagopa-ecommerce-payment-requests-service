@@ -41,7 +41,7 @@ class NodeForPspClientTests {
 
   @BeforeEach
   fun init() {
-    client = NodeForPspClient("", nodoWebClient)
+    client = NodeForPspClient("", nodoWebClient, "key")
   }
 
   @Test
@@ -65,6 +65,7 @@ class NodeForPspClientTests {
     given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
     given(requestBodyUriSpec.uri(any<String>(), any<Array<*>>())).willReturn(requestBodyUriSpec)
     given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
+
     given(requestBodyUriSpec.body(any(), eq(SoapEnvelope::class.java)))
       .willReturn(requestHeadersSpec)
     given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
