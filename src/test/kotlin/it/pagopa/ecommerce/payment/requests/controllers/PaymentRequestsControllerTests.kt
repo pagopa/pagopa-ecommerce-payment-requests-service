@@ -158,6 +158,31 @@ class PaymentRequestsControllerTests {
   }
 
   @ParameterizedTest
+  @EnumSource(ValidationFaultPaymentDataErrorDto::class)
+  fun `should return response entity with validation unknown fault`(
+    nodoErrorCode: ValidationFaultPaymentDataErrorDto
+  ) = runTest {
+    val rptId = "77777777777302000100000009424"
+    val faultBean = faultBeanWithCode(nodoErrorCode.value)
+    given(paymentRequestsService.getPaymentRequestInfo(rptId))
+      .willThrow(NodoErrorException(faultBean))
+    val parameters = mapOf("rpt_id" to rptId)
+    webClient
+      .get()
+      .uri("/payment-requests/{rpt_id}", parameters)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.NOT_FOUND)
+      .expectBody(ValidationFaultPaymentDataErrorProblemJsonDto::class.java)
+      .value {
+        assertEquals(
+          ValidationFaultPaymentDataErrorProblemJsonDto.FaultCodeCategory.PAYMENT_DATA_ERROR,
+          it.faultCodeCategory)
+        assertEquals(nodoErrorCode.value, it.faultCodeDetail.value)
+      }
+  }
+
+  @ParameterizedTest
   @EnumSource(ValidationFaultPaymentUnavailableDto::class)
   fun `should return response entity with validation unavailable fault`(
     nodoErrorCode: ValidationFaultPaymentUnavailableDto

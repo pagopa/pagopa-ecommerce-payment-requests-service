@@ -135,6 +135,17 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
             faultCodeDetail = it),
           HttpStatus.NOT_FOUND))
     } +
+      ValidationFaultPaymentDataErrorDto.values().associate {
+        Pair(
+          it.toString(),
+          ResponseEntity(
+            ValidationFaultPaymentDataErrorProblemJsonDto(
+              title = "Payment Status Fault",
+              faultCodeCategory =
+                ValidationFaultPaymentDataErrorProblemJsonDto.FaultCodeCategory.PAYMENT_DATA_ERROR,
+              faultCodeDetail = it),
+            HttpStatus.NOT_FOUND))
+      } +
       // nodo error code to 409 response mapping
       PaymentOngoingStatusFaultDto.values().associate {
         Pair(

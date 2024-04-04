@@ -48,7 +48,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationFaultPaymentUnknownProblemJson'
+                oneOf:
+                  - $ref: '#/components/schemas/ValidationFaultPaymentDataErrorProblemJson'
+                  - $ref: '#/components/schemas/ValidationFaultPaymentUnknownProblemJson'
         '409':
           description: Conflict on payment status
           content:
@@ -243,6 +245,27 @@ components:
       required:
         - faultCodeCategory
         - faultCodeDetail
+    ValidationFaultPaymentDataErrorProblemJson:
+      description: |-
+        A PaymentProblemJson-like type specific for the GetPayment operations.
+        Possible values of `detail_v2` are limited to faults pertaining to validation errors.
+      type: object
+      properties:
+        title:
+          type: string
+          description: |-
+            A short, summary of the problem type. Written in english and readable
+            for engineers (usually not suited for non technical stakeholders and
+            not localized); example: Service Unavailable
+        faultCodeCategory:
+          type: string
+          enum:
+            - PAYMENT_DATA_ERROR
+        faultCodeDetail:
+          $ref: '#/components/schemas/ValidationFaultPaymentDataError'
+      required:
+        - faultCodeCategory
+        - faultCodeDetail
     PaymentOngoingStatusFaultPaymentProblemJson:
       description: |-
         A PaymentProblemJson-like type specific for the GetPayment and ActivatePayment operations.
@@ -421,6 +444,7 @@ components:
         - `DOMAIN_UNKNOWN`
         - `PAYMENT_CANCELED`
         - `GENERIC_ERROR`
+        - `PAYMENT_DATA_ERROR`
       type: string
       enum:
         - PAYMENT_DUPLICATED
@@ -431,6 +455,7 @@ components:
         - DOMAIN_UNKNOWN
         - PAYMENT_CANCELED
         - GENERIC_ERROR
+        - PAYMENT_DATA_ERROR
     PaymentOngoingStatusFault:
       description: |-
         Fault codes for errors related to payment attempts that cause conflict with the current payment status,
@@ -517,7 +542,7 @@ components:
         - PPT_SEMANTICA
         - PPT_SYSTEM_ERROR
         - PAA_SEMANTICA
-    ValidationFaultPaymentUnknown:
+    ValidationFaultPaymentDataError:
       description: |-
         Fault codes for errors related to well-formed requests to ECs not present inside Nodo, should be mapped to 404 HTTP status code.
         Most of the time these are generated when users input a wrong fiscal code or notice number.
@@ -527,13 +552,21 @@ components:
         - `PPT_SINTASSI_XSD`
         - `PPT_DOMINIO_SCONOSCIUTO`
         - `PPT_STAZIONE_INT_PA_SCONOSCIUTA`
-        - `PAA_PAGAMENTO_SCONOSCIUTO`
       type: string
       enum:
         - PPT_SINTASSI_EXTRAXSD
         - PPT_SINTASSI_XSD
         - PPT_DOMINIO_SCONOSCIUTO
         - PPT_STAZIONE_INT_PA_SCONOSCIUTA
+    ValidationFaultPaymentUnknown:
+      description: |-
+        Fault codes for errors related to well-formed requests to ECs not present inside Nodo, should be mapped to 404 HTTP status code.
+        Most of the time these are generated when users input a wrong fiscal code or notice number.
+        For further information visit https://docs.pagopa.it/gestionedeglierrori/struttura-degli-errori/fault-code.
+        Possible fault codes are:
+        - `PAA_PAGAMENTO_SCONOSCIUTO`
+      type: string
+      enum:
         - PAA_PAGAMENTO_SCONOSCIUTO
     GatewayFault:
       description: |-
