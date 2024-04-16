@@ -17,7 +17,6 @@ microservice-chart:
         tag: "latest"
         pullPolicy: Always
     envConfig:
-      REDIS_HOST: pagopa-p-weu-ecommerce-redis.redis.cache.windows.net
       REDIS_PORT: "6380"
       REDIS_SSL_ENABLED: "true"
       CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
@@ -31,7 +30,8 @@ microservice-chart:
       OTEL_TRACES_SAMPLER: "always_on"
       PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"
     envSecret:
-      REDIS_PASSWORD: redis-ecommerce-password
+      REDIS_PASSWORD: redis-ecommerce-access-key
+      REDIS_HOST: redis-ecommerce-hostname
       OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
       PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   image:
@@ -92,7 +92,6 @@ microservice-chart:
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "80"
   envConfig:
-    REDIS_HOST: pagopa-p-weu-ecommerce-redis.redis.cache.windows.net
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
     CHECKOUT_URL: https://api.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
@@ -112,7 +111,8 @@ microservice-chart:
     OTEL_TRACES_SAMPLER: "always_on"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"
   envSecret:
-    REDIS_PASSWORD: redis-ecommerce-password
+    REDIS_PASSWORD: redis-ecommerce-access-key
+    REDIS_HOST: redis-ecommerce-hostname
     NODO_CONNECTION_STRING: nodo-connection-string
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
