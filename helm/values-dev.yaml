@@ -69,7 +69,6 @@ microservice-chart:
           metricAggregationType: Count
           targetValue: "30"
   envConfig:
-    REDIS_HOST: pagopa-d-weu-ecommerce-redis.redis.cache.windows.net
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
     CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
@@ -89,7 +88,8 @@ microservice-chart:
     ECS_SERVICE_ENVIRONMENT: "dev"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.tokenizer.pdv.pagopa.it/tokenizer/v1"
   envSecret:
-    REDIS_PASSWORD: redis-ecommerce-password
+    REDIS_PASSWORD: redis-ecommerce-access-key
+    REDIS_HOST: redis-ecommerce-hostname
     NODO_CONNECTION_STRING: nodo-connection-string
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
