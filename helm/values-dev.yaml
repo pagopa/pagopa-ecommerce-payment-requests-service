@@ -20,7 +20,7 @@ microservice-chart:
     periodSeconds: 10
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "1.2.0" #improve
+    tag: "1.2.1" #improve
     pullPolicy: Always
     port: 8080
   ingress:
