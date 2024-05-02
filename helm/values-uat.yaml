@@ -52,6 +52,9 @@ microservice-chart:
     initialDelaySeconds: 40
     failureThreshold: 6
     periodSeconds: 10
+  deployment:
+    create: true
+    replicas: 1
   service:
     create: true
     type: ClusterIP
@@ -91,6 +94,12 @@ microservice-chart:
           # Required
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "80"
+  terminationGracePeriodSeconds: 30
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   envConfig:
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
