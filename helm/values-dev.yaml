@@ -19,7 +19,7 @@ microservice-chart:
       envConfig:
         NODO_HOSTNAME: https://api.dev.platform.pagopa.it
         ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
-        CHECKOUT_URL: https://pagopa-d-checkout-cdn-endpoint.azureedge.net/ecommerce/checkout/v1/carts/{0}/redirect
+        CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
   deployment:
     create: true
   livenessProbe:
