@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   deployment:
     create: true
-    replicas: 3
+    replicas: 1
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
@@ -53,7 +53,7 @@ microservice-chart:
       cpu: "300m"
   autoscaling:
     minReplica: 1
-    maxReplica: 10
+    maxReplica: 2
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
