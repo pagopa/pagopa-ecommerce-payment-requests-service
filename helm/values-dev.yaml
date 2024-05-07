@@ -2,6 +2,24 @@ microservice-chart:
   namespace: "ecommerce"
   nameOverride: ""
   fullnameOverride: ""
+  canaryDelivery:
+    create: true
+    ingress:
+      create: true
+      canary:
+        type: bluegreen
+    service:
+      create: true
+    deployment:
+      create: true
+      image:
+        repository: pagopadcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
+        tag: "latest"
+        pullPolicy: Always
+      envConfig:
+        NODO_HOSTNAME: https://api.dev.platform.pagopa.it
+        ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
+        CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
   deployment:
     create: true
   livenessProbe:
