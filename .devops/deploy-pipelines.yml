@@ -129,13 +129,14 @@ stages:
                 - template: azure-templates/helm-microservice-chart-deploy.yml
                   parameters:
                     DO_DEPLOY: true
+                    DO_BLUE_GREEN_DEPLOY: true
                     ENV: 'DEV'
                     KUBERNETES_SERVICE_CONN: $(DEV_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: ecommerce
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-dev.yaml"
                     GREEN_VERSION: $(Build.SourceVersion)
-
+                    BLUE_VERSION: $(Build.SourceVersion)
   - stage: "API_DEV_test"
     displayName: 'Running API test on dev app'
     dependsOn: Deploy_for_DEV
