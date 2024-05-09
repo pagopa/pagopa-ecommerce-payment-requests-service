@@ -1,7 +1,7 @@
 microservice-chart:
   namespace: "ecommerce"
-  nameOverride: ""
-  fullnameOverride: ""
+  nameOverride: "b-pagopa-ecommerce-payment-requests-service"
+  fullnameOverride: "b-pagopaecommercepaymentrequestsservice"
   canaryDelivery:
     create: false
     ingress:
@@ -14,13 +14,9 @@ microservice-chart:
       create: true
       image:
         repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-        tag: "latest"
+        tag: "1.3.0"
         pullPolicy: Always
     envConfig:
-      REDIS_PORT: "6380"
-      REDIS_SSL_ENABLED: "true"
-      CHECKOUT_URL: https://api.uat.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
-      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
       OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,service.deployment.environment=uat"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
       OTEL_TRACES_EXPORTER: otlp
@@ -29,7 +25,9 @@ microservice-chart:
       OTEL_TRACES_SAMPLER: "always_on"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ECS_SERVICE_ENVIRONMENT: "uat"
-      PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.tokenizer.pdv.pagopa.it/tokenizer/v1"
+      NODO_HOSTNAME: https://api.uat.platform.pagopa.it
+      NODE_FOR_PSP_URI: /ecommerce/mock/nodo/v1
+      NODO_PER_PM_URI: /ecommerce/mock/nodoPerPM/v1/checkPosition
     envSecret:
       REDIS_PASSWORD: redis-ecommerce-access-key
       REDIS_HOST: redis-ecommerce-hostname
@@ -60,13 +58,13 @@ microservice-chart:
   ingress:
     create: true
     host: "weuuat.ecommerce.internal.uat.platform.pagopa.it"
-    path: /pagopa-ecommerce-payment-requests-service/(.*)
+    path: /beta/pagopa-ecommerce-payment-requests-service/(.*)
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: {}
+    annotations: { }
     name: ""
-  podAnnotations: {}
+  podAnnotations: { }
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -81,8 +79,8 @@ microservice-chart:
       cpu: "500m"
   autoscaling:
     enable: true
-    minReplica: 1
-    maxReplica: 5
+    minReplica: 3
+    maxReplica: 10
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
@@ -96,8 +94,8 @@ microservice-chart:
     REDIS_SSL_ENABLED: "true"
     CHECKOUT_URL: https://api.uat.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
     NODO_HOSTNAME: https://api.uat.platform.pagopa.it
-    NODE_FOR_PSP_URI: /nodo/node-for-psp/v1
-    NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
+    NODE_FOR_PSP_URI: /ecommerce/mock/nodo/v1/verifyPaymentNotice
+    NODO_PER_PM_URI: /ecommerce/mock/nodoPerPM/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
     CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
@@ -119,8 +117,8 @@ microservice-chart:
   keyvault:
     name: "pagopa-u-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector: { }
+  tolerations: [ ]
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
