@@ -37,6 +37,7 @@ class WebClientsConfig {
           connection.addHandlerLast(
             ReadTimeoutHandler(nodoReadTimeout.toLong(), TimeUnit.MILLISECONDS))
         }
+        .resolver { it.ndots(1) }
     val exchangeStrategies =
       ExchangeStrategies.builder()
         .codecs { clientCodecConfigurer: ClientCodecConfigurer ->
