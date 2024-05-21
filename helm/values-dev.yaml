@@ -22,6 +22,7 @@ microservice-chart:
         CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
   deployment:
     create: true
+    replicas: 1
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
@@ -86,6 +87,12 @@ microservice-chart:
           # metricAggregationInterval: "-1:1:0"
           metricAggregationType: Count
           targetValue: "30"
+  terminationGracePeriodSeconds: 30
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   envConfig:
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
