@@ -19,7 +19,7 @@ microservice-chart:
     envConfig:
       REDIS_PORT: "6380"
       REDIS_SSL_ENABLED: "true"
-      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
+      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ECS_SERVICE_ENVIRONMENT: "prod"
       OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,service.deployment.environment=prod"
