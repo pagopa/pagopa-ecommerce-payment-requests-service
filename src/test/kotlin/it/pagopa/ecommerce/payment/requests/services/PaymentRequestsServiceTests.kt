@@ -171,6 +171,41 @@ class PaymentRequestsServiceTests {
     }
 
   @Test
+  fun `should return payment info request from nodo with VerifyPaymentNotice with due date with offset`() =
+    runTest {
+      val rptIdAsString = "77777777777302016723749670035"
+      val description = "Payment request description"
+      val amount = 1000
+      val amountForNodo = BigDecimal.valueOf(amount.toLong())
+
+      val dueDate = DatatypeFactory.newInstance().newXMLGregorianCalendar("2022-04-24+02:00")
+
+      val verifyPaymentNotice = VerifyPaymentNoticeRes()
+      verifyPaymentNotice.outcome = StOutcome.OK
+      verifyPaymentNotice.paymentDescription = description
+      val paymentList = CtPaymentOptionsDescriptionList()
+      val paymentDescription = CtPaymentOptionDescription()
+      paymentDescription.amount = amountForNodo
+      paymentDescription.dueDate = dueDate
+      paymentList.paymentOptionDescription.add(paymentDescription)
+      verifyPaymentNotice.paymentList = paymentList
+
+      /** preconditions */
+      given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
+      given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
+      given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
+      given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
+
+      /** test */
+      val responseDto = paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
+      /** assertions */
+      assertEquals(rptIdAsString, responseDto.rptId)
+      assertEquals(description, responseDto.description)
+      assertEquals(responseDto.dueDate, "2022-04-24")
+      assertEquals(amount, responseDto.amount)
+    }
+
+  @Test
   fun `should return invalid request for invalid rpt id`() = runTest {
     val rptIdAsString = "invalid rpt id"
     val exception =
