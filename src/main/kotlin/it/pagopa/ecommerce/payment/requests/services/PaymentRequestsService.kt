@@ -158,8 +158,6 @@ class PaymentRequestsService(
     return StOutcome.KO == outcome
   }
 
-  fun getDueDateString(date: XMLGregorianCalendar?): String? = date?.toString()
-
   private fun dueDateToLocalDate(date: XMLGregorianCalendar?): String? =
     date?.let {
       LocalDate.ofInstant(date.toGregorianCalendar().toInstant(), ZoneId.of("Europe/Paris"))
