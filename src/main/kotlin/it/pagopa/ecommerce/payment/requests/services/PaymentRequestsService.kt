@@ -15,8 +15,8 @@ import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.PaymentRequestsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
+import java.time.LocalDate
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.*
 import javax.xml.datatype.XMLGregorianCalendar
 import kotlinx.coroutines.reactor.awaitSingle
@@ -160,8 +160,9 @@ class PaymentRequestsService(
 
   fun getDueDateString(date: XMLGregorianCalendar?): String? = date?.toString()
 
-  private fun dueDateToLocalDate(date: XMLGregorianCalendar): String =
-    ZonedDateTime.ofInstant(date.toGregorianCalendar().toInstant(), ZoneId.of("Europe/Paris"))
-      .toLocalDate()
-      .toString()
+  private fun dueDateToLocalDate(date: XMLGregorianCalendar?): String? =
+    date?.let {
+      LocalDate.ofInstant(date.toGregorianCalendar().toInstant(), ZoneId.of("Europe/Paris"))
+        .toString()
+    }
 }
