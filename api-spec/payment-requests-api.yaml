@@ -709,5 +709,4 @@ components:
       description: Enumerations of client ids set by APIM
       enum:
         - WISP_REDIRECT
-        - CHECKOUT
         - CHECKOUT_CART
