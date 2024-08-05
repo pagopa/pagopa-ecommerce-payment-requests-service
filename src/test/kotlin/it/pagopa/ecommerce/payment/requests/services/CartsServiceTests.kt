@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.payment.requests.services
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
@@ -36,7 +37,7 @@ class CartsServiceTests {
   private val cartsMaxAllowedPaymentNotices = 5
   private val cartService: CartService =
     CartService(
-      "${TEST_CHECKOUT_URL}/c/{0}",
+      "${TEST_CHECKOUT_URL}/c/{0}?clientId={1}",
       cartRedisTemplateWrapper,
       nodoPerPmClient,
       tokenizerMailUtils,
@@ -46,6 +47,7 @@ class CartsServiceTests {
   fun `post cart succeeded with one payment notice`() = runTest {
     val cartId = UUID.randomUUID()
     val tokenizedEmail = UUID.randomUUID()
+    val clientId = ClientIdDto.WISP_REDIRECT
 
     Mockito.mockStatic(UUID::class.java).use { uuidMock ->
       uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
@@ -53,10 +55,10 @@ class CartsServiceTests {
         .willReturn(
           Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
       val request = CartRequests.withOnePaymentNotice()
-      val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
+      val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}?clientId=${clientId.value}"
       given(tokenizerMailUtils.toConfidential(Email(request.emailNotice)))
         .willReturn(Mono.just(Confidential<Email>(tokenizedEmail.toString())))
-      assertEquals(locationUrl, cartService.processCart(request))
+      assertEquals(locationUrl, cartService.processCart(clientId, request))
       verify(cartRedisTemplateWrapper, times(1)).save(any())
     }
   }
@@ -70,8 +72,9 @@ class CartsServiceTests {
         .willReturn(
           Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
       val request = CartRequests.withOnePaymentNotice(null)
-      val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}"
-      assertEquals(locationUrl, cartService.processCart(request))
+      val clientId = ClientIdDto.WISP_REDIRECT
+      val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}?clientId=${clientId.value}"
+      assertEquals(locationUrl, cartService.processCart(clientId, request))
       verify(cartRedisTemplateWrapper, times(1)).save(any())
       verify(tokenizerMailUtils, times(0)).toConfidential(any<Email>())
     }
@@ -88,17 +91,20 @@ class CartsServiceTests {
         .willReturn(
           Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.KO)))
       val request = CartRequests.withOnePaymentNotice()
+      val clientId = ClientIdDto.WISP_REDIRECT
       given(tokenizerMailUtils.toConfidential(request.emailNotice))
         .willReturn(Mono.just(Confidential<Email>(tokenizedEmail.toString())))
 
-      assertThrows<RestApiException> { cartService.processCart(request) }
+      assertThrows<RestApiException> { cartService.processCart(clientId, request) }
     }
   }
 
   @Test
   fun `post cart ko with multiple payment notices`() = runTest {
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices + 1)
-    assertThrows<RestApiException> { cartService.processCart(request) }
+    val clientId = ClientIdDto.WISP_REDIRECT
+
+    assertThrows<RestApiException> { cartService.processCart(clientId, request) }
   }
 
   @Test
