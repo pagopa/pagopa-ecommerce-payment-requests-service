@@ -132,7 +132,8 @@ class PaymentRequestsService(
                   idempotencyKey = null,
                   activationDate = null,
                   transferList = null,
-                  isAllCCP = null))
+                  isAllCCP = null,
+                  creditorReferenceId = null))
             }
           }
       return@flatMap paymentRequestInfo
