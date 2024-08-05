@@ -38,7 +38,18 @@ class PaymentRequestsRedisTemplateWrapperTest {
     val amount = Integer.valueOf(1000)
     val paymentRequestInfo =
       PaymentRequestInfo(
-        rptIdAsObject, paTaxCode, paName, description, amount, null, null, null, null, null, null)
+        rptIdAsObject,
+        paTaxCode,
+        paName,
+        description,
+        amount,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null)
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
     doNothing()
       .`when`(valueOperations)
@@ -61,7 +72,18 @@ class PaymentRequestsRedisTemplateWrapperTest {
     val amount = Integer.valueOf(1000)
     val paymentRequestInfo =
       PaymentRequestInfo(
-        rptIdAsObject, paTaxCode, paName, description, amount, null, null, null, null, null, null)
+        rptIdAsObject,
+        paTaxCode,
+        paName,
+        description,
+        amount,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null)
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
     given(valueOperations.get("keys:$rptIdAsString")).willReturn(paymentRequestInfo)
 

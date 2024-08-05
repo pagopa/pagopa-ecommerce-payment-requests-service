@@ -1,7 +1,6 @@
-package it.pagopa.ecommerce.payment.requests.configurations.opentelemetry
+package it.pagopa.ecommerce.payment.requests.configurations.openTelemetry
 
 import io.opentelemetry.api.OpenTelemetry
-import it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.OpenTelemetryConfiguration
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

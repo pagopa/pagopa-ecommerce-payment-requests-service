@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.configurations.redis
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.JacksonIdempotencyKeyDeserializer
@@ -61,6 +62,7 @@ class RedisConfiguration {
       IdempotencyKey::class.java, JacksonIdempotencyKeyDeserializer())
 
     jacksonObjectMapper.registerModule(rptSerializationModule)
+    jacksonObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     jackson2JsonRedisSerializer.setObjectMapper(jacksonObjectMapper)
     return jackson2JsonRedisSerializer
   }

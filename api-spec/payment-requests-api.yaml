@@ -89,6 +89,13 @@ paths:
       operationId: PostCarts
       summary: Create a cart
       description: Create a cart of payment notices checking each payment notice by mean of checkPosition
+      parameters:
+        - in: header
+          name: x-client-id
+          required: true
+          description: Transaction origin (populated by APIM policy)
+          schema:
+            $ref: '#/components/schemas/ClientId'
       requestBody:
         description: New Cart related to payment requests
         required: true
@@ -697,3 +704,9 @@ components:
           description: Payment notice description
           type: string
           maxLength: 140 # as paymentDescription for paForNode
+    ClientId:
+      type: string
+      description: Enumerations of client ids set by APIM
+      enum:
+        - WISP_REDIRECT
+        - CHECKOUT_CART

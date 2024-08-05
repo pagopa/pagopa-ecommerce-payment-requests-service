@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.payment.requests.controllers
 
 import it.pagopa.ecommerce.generated.payment.requests.server.api.CartsApi
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto
 import it.pagopa.ecommerce.payment.requests.services.CartService
 import it.pagopa.ecommerce.payment.requests.warmup.annotations.WarmupFunction
 import it.pagopa.ecommerce.payment.requests.warmup.exceptions.WarmUpException
@@ -20,9 +21,12 @@ import reactor.core.publisher.Mono
 class CartsController(private val webClient: WebClient = WebClient.create()) : CartsApi {
   @Autowired private lateinit var cartService: CartService
 
-  override suspend fun postCarts(cartRequestDto: CartRequestDto): ResponseEntity<Unit> {
+  override suspend fun postCarts(
+    xClientId: ClientIdDto,
+    cartRequestDto: CartRequestDto
+  ): ResponseEntity<Unit> {
     return ResponseEntity.status(HttpStatus.FOUND)
-      .location(URI.create(cartService.processCart(cartRequestDto)))
+      .location(URI.create(cartService.processCart(xClientId, cartRequestDto)))
       .build()
   }
 

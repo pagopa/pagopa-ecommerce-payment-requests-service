@@ -2,10 +2,7 @@ package it.pagopa.ecommerce.payment.requests.controllers
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.ProblemJsonDto
+import it.pagopa.ecommerce.generated.payment.requests.server.model.*
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
@@ -63,11 +60,13 @@ class CartsControllerTests {
   @Test
   fun `post cart succeeded with one payment notice`() = runTest {
     val request = CartRequests.withOnePaymentNotice()
-    val locationUrl = "http://checkout-url.it/77777777777302000100440009424"
-    given(cartService.processCart(request)).willReturn(locationUrl)
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
       .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -81,7 +80,8 @@ class CartsControllerTests {
   fun `post cart KO with multiple payment notices`() = runTest {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
-    given(cartService.processCart(request))
+    val clientId = ClientIdDto.WISP_REDIRECT
+    given(cartService.processCart(clientId, request))
       .willThrow(
         RestApiException(
           httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
@@ -96,6 +96,7 @@ class CartsControllerTests {
     webClient
       .post()
       .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -109,12 +110,14 @@ class CartsControllerTests {
   fun `post cart KO with internal server error while invoke checkPosition`() = runTest {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
-    given(cartService.processCart(request))
+    val clientId = ClientIdDto.WISP_REDIRECT
+    given(cartService.processCart(clientId, request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR))
     val errorResponse = ProblemJsonDto(status = 502, title = "Bad gateway")
     webClient
       .post()
       .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -128,12 +131,14 @@ class CartsControllerTests {
   fun `post cart KO with 404 while invoke checkPosition`() = runTest {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
-    given(cartService.processCart(request))
+    val clientId = ClientIdDto.WISP_REDIRECT
+    given(cartService.processCart(clientId, request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.NOT_FOUND))
     val errorResponse = ProblemJsonDto(status = 500, title = "Internal server error")
     webClient
       .post()
       .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -147,12 +152,14 @@ class CartsControllerTests {
   fun `post cart KO with 400 while invoke checkPosition`() = runTest {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
-    given(cartService.processCart(request))
+    val clientId = ClientIdDto.WISP_REDIRECT
+    given(cartService.processCart(clientId, request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.UNPROCESSABLE_ENTITY))
     val errorResponse = ProblemJsonDto(status = 422, title = "Invalid payment info")
     webClient
       .post()
       .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -166,10 +173,11 @@ class CartsControllerTests {
   fun `invalid request ko`() = runTest {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.invalidRequest()
+    val clientId = ClientIdDto.WISP_REDIRECT
     val errorResponse =
       ProblemJsonDto(
         status = 400, title = "Request validation error", detail = "The input request is invalid")
-    given(cartService.processCart(request)).willReturn("")
+    given(cartService.processCart(clientId, request)).willReturn("")
     webClient
       .post()
       .uri("/carts")
@@ -186,15 +194,18 @@ class CartsControllerTests {
   fun `controller throw generic exception`() = runTest {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withOnePaymentNotice()
+    val clientId = ClientIdDto.WISP_REDIRECT
     val errorResponse =
       ProblemJsonDto(
         title = "Error processing the request",
         detail = "An internal error occurred processing the request",
         status = 500)
-    given(cartService.processCart(request)).willThrow(RuntimeException("Test unmanaged exception"))
+    given(cartService.processCart(clientId, request))
+      .willThrow(RuntimeException("Test unmanaged exception"))
     webClient
       .post()
       .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -314,11 +325,13 @@ class CartsControllerTests {
   @NullSource
   fun `post cart succeeded with mail multiple case`(email: String?) = runTest {
     val request = CartRequests.withOnePaymentNotice(email)
-    val locationUrl = "http://checkout-url.it/77777777777302000100440009424"
-    given(cartService.processCart(request)).willReturn(locationUrl)
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
       .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -331,11 +344,12 @@ class CartsControllerTests {
   @Test
   fun `post cart KO with invalid email`() = runTest {
     val request = CartRequests.withOnePaymentNotice("email")
-    val locationUrl = "http://checkout-url.it/77777777777302000100440009424"
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
     val errorResponse =
       ProblemJsonDto(
         title = "Request validation error", detail = "The input request is invalid", status = 400)
-    given(cartService.processCart(request)).willReturn(locationUrl)
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
       .uri("/carts")

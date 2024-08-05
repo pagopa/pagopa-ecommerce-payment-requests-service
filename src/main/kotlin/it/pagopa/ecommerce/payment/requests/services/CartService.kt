@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
+import it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
@@ -52,7 +53,7 @@ class CartService(
    * - 1 payment notice is present -> redirect response is given to the checkout location
    * - 2 or more payment notices are present -> error response
    */
-  suspend fun processCart(cartRequestDto: CartRequestDto): String {
+  suspend fun processCart(xClientId: ClientIdDto, cartRequestDto: CartRequestDto): String {
     val paymentsNotices = cartRequestDto.paymentNotices
     val receivedNotices = paymentsNotices.size
     logger.info("Received [$receivedNotices] payment notices")
@@ -121,11 +122,7 @@ class CartService(
           logger.info("Saving cart ${validCart.id} for payments $paymentInfos")
 
           cartsRedisTemplateWrapper.save(validCart)
-          val retUrl =
-            MessageFormat.format(
-              checkoutUrl,
-              validCart.id,
-            )
+          val retUrl = MessageFormat.format(checkoutUrl, validCart.id, xClientId.value)
           logger.info("Return URL: $retUrl")
           return@map retUrl
         }
