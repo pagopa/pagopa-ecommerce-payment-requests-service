@@ -19,7 +19,7 @@ microservice-chart:
     envConfig:
       REDIS_PORT: "6380"
       REDIS_SSL_ENABLED: "true"
-      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
+      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ECS_SERVICE_ENVIRONMENT: "prod"
       OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,service.deployment.environment=prod"
@@ -36,7 +36,7 @@ microservice-chart:
       PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "1.3.0"
+    tag: "1.3.2"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -52,6 +52,9 @@ microservice-chart:
     initialDelaySeconds: 40
     failureThreshold: 6
     periodSeconds: 10
+  deployment:
+    create: true
+    replicas: 5
   service:
     create: true
     type: ClusterIP
@@ -81,7 +84,7 @@ microservice-chart:
       cpu: "500m"
   autoscaling:
     enable: true
-    minReplica: 3
+    minReplica: 5
     maxReplica: 10
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
@@ -91,6 +94,12 @@ microservice-chart:
           # Required
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "80"
+  terminationGracePeriodSeconds: 30
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   envConfig:
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
@@ -100,7 +109,7 @@ microservice-chart:
     NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
-    CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "1"
+    CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
     ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ECS_SERVICE_ENVIRONMENT: "prod"
     OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service,service.deployment.environment=prod"
