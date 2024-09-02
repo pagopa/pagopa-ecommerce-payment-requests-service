@@ -83,7 +83,8 @@ class PaymentRequestsServiceTests {
         null,
         null,
         null,
-        isAllCCP)
+        isAllCCP,
+        null)
     /** preconditions */
     given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString))
       .willReturn(paymentRequestInfo)
