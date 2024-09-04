@@ -19,7 +19,7 @@ microservice-chart:
       envConfig:
         NODO_HOSTNAME: https://api.dev.platform.pagopa.it
         ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
-        CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
+        CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
   deployment:
     create: true
     replicas: 1
@@ -39,7 +39,7 @@ microservice-chart:
     periodSeconds: 10
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "1.3.2" #improve
+    tag: "1.4.0" #improve
     pullPolicy: Always
     port: 8080
   ingress:
@@ -96,7 +96,7 @@ microservice-chart:
   envConfig:
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
-    CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
+    CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
     NODO_HOSTNAME: https://api.uat.platform.pagopa.it
     NODE_FOR_PSP_URI: /nodo/node-for-psp/v1
     NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
