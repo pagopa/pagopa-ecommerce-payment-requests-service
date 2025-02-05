@@ -52,7 +52,7 @@ steps:
 
   # bump version
   - ${{ if ne(parameters['semver'], 'none') }}:
-    - task: Maven@3
+    - task: Maven@4
       displayName: 'Bump version'
       name: dump_version
       inputs:
