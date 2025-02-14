@@ -22,7 +22,7 @@ microservice-chart:
       CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ECS_SERVICE_ENVIRONMENT: "prod"
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,service.deployment.environment=prod"
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,deployment.environment=prod"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
       OTEL_TRACES_EXPORTER: otlp
       OTEL_METRICS_EXPORTER: otlp
