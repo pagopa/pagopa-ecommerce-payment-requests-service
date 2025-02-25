@@ -112,7 +112,8 @@ class CartsServiceTests {
           Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
       val request = CartRequests.withMultiplePaymentNotices(2)
       val exc = assertThrows<RestApiException> { cartService.processCart(clientId, request) }
-      assertEquals(HttpStatus.BAD_REQUEST, exc.httpStatus)
+      assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, exc.httpStatus)
+      assertEquals("Duplicate payment notice values found.", exc.description)
     }
   }
 

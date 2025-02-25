@@ -68,8 +68,8 @@ class CartService(
       if (receivedNotices != paymentInfos.map { it.rptId }.toSet().size) {
         logger.error("Duplicate payment notice values found for paymentNotices: $paymentsNotices")
         throw RestApiException(
-          httpStatus = HttpStatus.BAD_REQUEST,
-          title = "Bad request",
+          httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+          title = "Invalid payment info",
           description = "Duplicate payment notice values found.")
       }
 
