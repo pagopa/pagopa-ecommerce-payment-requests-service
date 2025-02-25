@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.kotlin.*
+import org.springframework.http.HttpStatus
 import reactor.core.publisher.Mono
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -96,6 +97,22 @@ class CartsServiceTests {
         .willReturn(Mono.just(Confidential<Email>(tokenizedEmail.toString())))
 
       assertThrows<RestApiException> { cartService.processCart(clientId, request) }
+    }
+  }
+
+  @Test
+  fun `post cart failed with duplicate payments`() = runTest {
+    val cartId = UUID.randomUUID()
+    val clientId = ClientIdDto.WISP_REDIRECT
+
+    Mockito.mockStatic(UUID::class.java).use { uuidMock ->
+      uuidMock.`when`<UUID>(UUID::randomUUID).thenReturn(cartId)
+      given(nodoPerPmClient.checkPosition(any()))
+        .willReturn(
+          Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
+      val request = CartRequests.withMultiplePaymentNotices(2)
+      val exc = assertThrows<RestApiException> { cartService.processCart(clientId, request) }
+      assertEquals(HttpStatus.BAD_REQUEST, exc.httpStatus)
     }
   }
 
