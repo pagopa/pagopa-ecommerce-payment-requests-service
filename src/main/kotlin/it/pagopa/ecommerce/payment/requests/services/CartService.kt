@@ -65,6 +65,14 @@ class CartService(
             RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
         }
 
+      if (receivedNotices != paymentInfos.map { it.rptId }.toSet().size) {
+        logger.error("Duplicate payment notice values found for paymentNotices: $paymentsNotices")
+        throw RestApiException(
+          httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+          title = "Invalid payment info",
+          description = "Duplicate payment notice values found.")
+      }
+
       val checkPositionDto =
         CheckPositionDto()
           .positionslist(
