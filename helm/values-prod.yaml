@@ -5,35 +5,19 @@ microservice-chart:
   canaryDelivery:
     create: false
     ingress:
-      create: true
-      canary:
-        type: bluegreen
-    service:
-      create: true
-    deployment:
-      create: true
-      image:
-        repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-        tag: "latest"
-        pullPolicy: Always
+      bluegreen: false
+      #set canary deployment with traffic balancing see https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#canary for more info
+      header: true
+      headerName: deployment
+      headerValue: blue
+      weightPercent: 10
+    image:
+      repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
+      tag: "latest"
     envConfig:
-      REDIS_PORT: "6380"
-      REDIS_SSL_ENABLED: "true"
-      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
-      ECS_SERVICE_ENVIRONMENT: "prod"
       OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,deployment.environment=prod"
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
-      OTEL_TRACES_EXPORTER: otlp
-      OTEL_METRICS_EXPORTER: otlp
-      OTEL_LOGS_EXPORTER: none
-      OTEL_TRACES_SAMPLER: "always_on"
-      PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"
-    envSecret:
-      REDIS_PASSWORD: redis-ecommerce-access-key
-      REDIS_HOST: redis-ecommerce-hostname
-      OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
-      PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
+    envSecret: {}
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
     tag: "1.5.0"
@@ -67,8 +51,8 @@ microservice-chart:
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: {}
-    name: ""
+    annotations: { }
+    name: "ecommerce-workload-identity"
   podAnnotations: {}
   podSecurityContext:
     seccompProfile:
@@ -148,3 +132,5 @@ microservice-chart:
                 app.kubernetes.io/instance: pagopaecommercepaymentrequestsservice
             namespaces: ["ecommerce"]
             topologyKey: topology.kubernetes.io/zone
+  azure:
+    workloadIdentityClientId: "d5614882-90dd-47a1-aad1-cdf295201469"
