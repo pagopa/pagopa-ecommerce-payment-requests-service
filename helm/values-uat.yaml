@@ -20,7 +20,7 @@ microservice-chart:
     envSecret: {}
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "1.5.0"
+    tag: "1.6.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -51,7 +51,7 @@ microservice-chart:
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: { }
+    annotations: {}
     name: "ecommerce-workload-identity"
   podAnnotations: {}
   podSecurityContext:
