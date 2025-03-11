@@ -3,26 +3,22 @@ microservice-chart:
   nameOverride: ""
   fullnameOverride: ""
   canaryDelivery:
-    create: true
+    create: false
     ingress:
-      create: true
-      canary:
-        type: bluegreen
-    service:
-      create: true
-    deployment:
-      create: true
-      image:
-        repository: pagopadcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-        tag: "latest"
-        pullPolicy: Always
-      envConfig:
-        NODO_HOSTNAME: https://api.dev.platform.pagopa.it
-        ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
-        CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
-  deployment:
-    create: true
-    replicas: 1
+      bluegreen: true
+      #set canary deployment with traffic balancing see https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#canary for more info
+      header: true
+      headerName: deployment
+      headerValue: blue
+      weightPercent: 10
+    image:
+      repository: pagopadcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
+      tag: "latest"
+    envConfig:
+      NODO_HOSTNAME: https://api.dev.platform.pagopa.it
+      ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
+      CHECKOUT_URL: https://api.dev.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
+    envSecret: {}
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
@@ -50,8 +46,8 @@ microservice-chart:
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: {}
-    name: ""
+    annotations: { }
+    name: "ecommerce-workload-identity"
   podAnnotations: {}
   podSecurityContext:
     seccompProfile:
@@ -132,3 +128,5 @@ microservice-chart:
                 operator: In
                 values:
                   - user
+  azure:
+    workloadIdentityClientId: 1be61b58-24e2-49c8-b401-89ebd004bf2e
