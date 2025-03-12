@@ -13,12 +13,17 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.PaymentRequestsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.ReactivePaymentRequestsRedisTemplateWrapper
 import java.time.Duration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory
 import org.springframework.data.redis.connection.RedisConnectionFactory
+import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
+import org.springframework.data.redis.serializer.RedisSerializationContext
+import org.springframework.data.redis.serializer.RedisSerializationContext.RedisSerializationContextBuilder
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
@@ -35,6 +40,23 @@ class RedisConfiguration {
     paymentRequestInfoTemplate.keySerializer = StringRedisSerializer()
     paymentRequestInfoTemplate.afterPropertiesSet()
     return PaymentRequestsRedisTemplateWrapper(paymentRequestInfoTemplate, Duration.ofMinutes(15))
+  }
+
+  @Bean
+  fun reactivePaymentRequestsInfoRedisTemplate(
+    redisConnectionFactory: ReactiveRedisConnectionFactory
+  ): ReactivePaymentRequestsRedisTemplateWrapper {
+    val jackson2JsonRedisSerializer = buildJackson2RedisSerializer(PaymentRequestInfo::class.java)
+
+    val builder: RedisSerializationContextBuilder<String, PaymentRequestInfo> =
+      RedisSerializationContext.newSerializationContext(StringRedisSerializer())
+
+    val context: RedisSerializationContext<String, PaymentRequestInfo> =
+      builder.value(jackson2JsonRedisSerializer).build()
+
+    val paymentRequestInfoTemplate = ReactiveRedisTemplate(redisConnectionFactory, context)
+    return ReactivePaymentRequestsRedisTemplateWrapper(
+      paymentRequestInfoTemplate, Duration.ofMinutes(15))
   }
 
   @Bean

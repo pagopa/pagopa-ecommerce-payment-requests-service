@@ -13,7 +13,7 @@ import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.PaymentRequestsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.ReactivePaymentRequestsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
 import java.time.LocalDate
 import java.time.ZoneId
@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 
 private const val VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME =
   "VerifyPaymentNotice nodo error: [%s]"
@@ -33,7 +34,7 @@ private const val FAULT_CODE_SPAN_KEY = "faultCode"
 
 @Service
 class PaymentRequestsService(
-  @Autowired private val paymentRequestInfoRepository: PaymentRequestsRedisTemplateWrapper,
+  @Autowired private val paymentRequestInfoRepository: ReactivePaymentRequestsRedisTemplateWrapper,
   @Autowired private val nodeForPspClient: NodeForPspClient,
   @Autowired
   private val objectFactoryNodeForPsp:
@@ -81,14 +82,7 @@ class PaymentRequestsService(
   }
 
   suspend fun getPaymentInfoFromCache(rptId: RptId): Mono<PaymentRequestInfo> {
-    val paymentRequestInfoOptional: Optional<PaymentRequestInfo> =
-      Optional.ofNullable(paymentRequestInfoRepository.findById(rptId.value))
-    logger.info(
-      "PaymentRequestInfo cache hit for {}: {}", rptId, paymentRequestInfoOptional.isPresent)
-    return paymentRequestInfoOptional
-      .filter { it.amount != null }
-      .map { Mono.just(it) }
-      .orElseGet { Mono.empty() }
+    return paymentRequestInfoRepository.findById(rptId.value).filter { it.amount != null }
   }
 
   fun getPaymentInfoFromNodo(rptId: RptId, paymentContextCode: String): Mono<PaymentRequestInfo> =
