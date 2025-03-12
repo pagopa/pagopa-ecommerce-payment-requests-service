@@ -10,8 +10,8 @@ abstract class ReactiveRedisTemplateWrapper<V>(
   private val ttl: Duration
 ) {
 
-  fun save(value: V) {
-    redisTemplate.opsForValue()["$keyspace:${getKeyFromEntity(value)}", value!!] = ttl
+  fun save(value: V): Mono<Boolean> {
+    return redisTemplate.opsForValue().set("$keyspace:${getKeyFromEntity(value)}", value!!, ttl)
   }
 
   fun findById(key: String): Mono<V> = redisTemplate.opsForValue()["$keyspace:$key"]
