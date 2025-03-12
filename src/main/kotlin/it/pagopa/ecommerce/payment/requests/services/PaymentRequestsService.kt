@@ -65,7 +65,7 @@ class PaymentRequestsService(
                   rptId,
                 )
               }
-              .doOnSuccess { paymentRequestInfoRepository.save(it).thenReturn { Mono.just(it) } }
+              .doOnSuccess { paymentRequestInfoRepository.save(it).subscribe() }
           })
         .map { paymentInfo ->
           PaymentRequestsGetResponseDto(
