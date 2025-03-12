@@ -120,6 +120,7 @@ class PaymentRequestsServiceTests {
     /** preconditions */
     given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(Mono.empty())
+    given(paymentRequestsRedisTemplateWrapper.save(any())).willReturn(Mono.just(true))
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
@@ -160,6 +161,7 @@ class PaymentRequestsServiceTests {
       /** preconditions */
       given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
       given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(Mono.empty())
+      given(paymentRequestsRedisTemplateWrapper.save(any())).willReturn(Mono.just(true))
       given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
       given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
@@ -195,6 +197,7 @@ class PaymentRequestsServiceTests {
       /** preconditions */
       given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
       given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(Mono.empty())
+      given(paymentRequestsRedisTemplateWrapper.save(any())).willReturn(Mono.just(true))
       given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
       given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
