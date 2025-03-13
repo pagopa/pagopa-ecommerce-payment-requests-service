@@ -19,7 +19,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
 import javax.xml.datatype.XMLGregorianCalendar
-import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,7 +45,7 @@ class PaymentRequestsService(
 
   private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-  suspend fun getPaymentRequestInfo(rptId: String): PaymentRequestsGetResponseDto {
+  fun getPaymentRequestInfo(rptId: String): Mono<PaymentRequestsGetResponseDto> {
     val rptIdRecord: RptId
     try {
       rptIdRecord = RptId(rptId)
@@ -68,20 +67,21 @@ class PaymentRequestsService(
               .doOnSuccess { paymentRequestInfoRepository.save(it).subscribe() }
           })
         .map { paymentInfo ->
-          PaymentRequestsGetResponseDto(
-            rptId = paymentInfo.id.value,
-            paFiscalCode = paymentInfo.paFiscalCode,
-            paName = paymentInfo.paName,
-            dueDate = paymentInfo.dueDate,
-            description = paymentInfo.description,
-            amount = paymentInfo.amount!!,
-            paymentContextCode = paymentContextCode)
+          val dto = PaymentRequestsGetResponseDto()
+          dto.rptId = paymentInfo.id.value
+          dto.paFiscalCode = paymentInfo.paFiscalCode
+          dto.paName = paymentInfo.paName
+          dto.dueDate = paymentInfo.dueDate
+          dto.description = paymentInfo.description
+          dto.amount = paymentInfo.amount!!
+          dto.paymentContextCode = paymentContextCode
+          dto
         }
         .doOnNext { logger.info("PaymentRequestInfo retrieved for {}", rptId) }
-    return paymentInfo.awaitSingle()
+    return paymentInfo
   }
 
-  suspend fun getPaymentInfoFromCache(rptId: RptId): Mono<PaymentRequestInfo> {
+  fun getPaymentInfoFromCache(rptId: RptId): Mono<PaymentRequestInfo> {
     return paymentRequestInfoRepository.findById(rptId.value).filter { it.amount != null }
   }
 

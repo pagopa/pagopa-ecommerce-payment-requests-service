@@ -4,9 +4,7 @@ import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
 import it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
@@ -18,7 +16,6 @@ import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedi
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
-import java.net.URI
 import java.text.MessageFormat
 import java.util.*
 import kotlinx.coroutines.CoroutineDispatcher
@@ -155,40 +152,10 @@ class CartService(
     return Optional.ofNullable(cartWithTokenizedEmail.email)
       .map { tokenizedMail ->
         tokenizerMailUtils.toEmail(Confidential(tokenizedMail)).map { clearMail ->
-          CartRequestDto(
-            paymentNotices =
-              cartWithTokenizedEmail.payments.map {
-                PaymentNoticeDto(
-                  it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
-              },
-            returnUrls =
-              cartWithTokenizedEmail.returnUrls.let {
-                CartRequestReturnUrlsDto(
-                  returnOkUrl = URI(it.returnSuccessUrl),
-                  returnCancelUrl = URI(it.returnCancelUrl),
-                  returnErrorUrl = URI(it.returnErrorUrl))
-              },
-            emailNotice = clearMail.value,
-            idCart = cartWithTokenizedEmail.idCart)
+          CartRequestDto()
         }
       }
-      .orElse(
-        Mono.just(
-          CartRequestDto(
-            paymentNotices =
-              cartWithTokenizedEmail.payments.map {
-                PaymentNoticeDto(
-                  it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
-              },
-            returnUrls =
-              cartWithTokenizedEmail.returnUrls.let {
-                CartRequestReturnUrlsDto(
-                  returnOkUrl = URI(it.returnSuccessUrl),
-                  returnCancelUrl = URI(it.returnCancelUrl),
-                  returnErrorUrl = URI(it.returnErrorUrl))
-              },
-            idCart = cartWithTokenizedEmail.idCart,
-            emailNotice = null)))
+      .orElse(Mono.just(CartRequestDto()))
       .awaitSingle()
   }
 }
