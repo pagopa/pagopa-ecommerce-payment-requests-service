@@ -89,7 +89,7 @@ microservice-chart:
     REDIS_SSL_ENABLED: "true"
     CHECKOUT_URL: https://api.uat.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
     NODO_HOSTNAME: https://api.uat.platform.pagopa.it
-    NODE_FOR_PSP_URI: /nodo/node-for-psp/v1
+    NODE_FOR_PSP_URI: /nodo-auth/node-for-psp/v1
     NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
@@ -107,6 +107,8 @@ microservice-chart:
     REDIS_PASSWORD: redis-ecommerce-access-key
     REDIS_HOST: redis-ecommerce-hostname
     NODO_CONNECTION_STRING: nodo-connection-string
+    NODO_CHECKPOSITION_API_KEY: nodo-nodeforpm-api-key
+    NODO_NODEFORPSP_API_KEY: nodo-nodeforpsp-api-key
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   keyvault:

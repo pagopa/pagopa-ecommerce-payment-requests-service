@@ -41,7 +41,7 @@ class NodeForPspClientTests {
 
   @BeforeEach
   fun init() {
-    client = NodeForPspClient("", nodoWebClient)
+    client = NodeForPspClient("", nodoWebClient, "key")
   }
 
   @Test
