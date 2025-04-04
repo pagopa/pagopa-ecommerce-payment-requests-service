@@ -45,7 +45,7 @@ class NodoPerPmClientTests {
 
   @BeforeEach
   fun init() {
-    client = NodoPerPmClient("", nodoWebClient, "key")
+    client = NodoPerPmClient("", nodoWebClient, "nodoPerPmApiKey")
   }
 
   @Test
@@ -80,7 +80,7 @@ class NodoPerPmClientTests {
     Assertions.assertThat(testResponse!!.outcome.value).isEqualTo(EsitoEnum.OK.value)
 
     /** Verify that the header ocp-apim-subscription-key is correctly set */
-    verify(requestBodyUriSpec).header("ocp-apim-subscription-key", "key")
+    verify(requestBodyUriSpec).header("ocp-apim-subscription-key", "nodoPerPmApiKey")
   }
 
   @Test
@@ -107,6 +107,6 @@ class NodoPerPmClientTests {
     assertThrows<CheckPositionErrorException> { client.checkPosition(checkPositionDto) }
 
     /** Verify that the header ocp-apim-subscription-key is correctly set */
-    verify(requestBodyUriSpec).header("ocp-apim-subscription-key", "key")
+    verify(requestBodyUriSpec).header("ocp-apim-subscription-key", "nodoPerPmApiKey")
   }
 }

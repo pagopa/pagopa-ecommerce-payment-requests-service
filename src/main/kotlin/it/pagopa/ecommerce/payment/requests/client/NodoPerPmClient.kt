@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono
 public class NodoPerPmClient(
   @Value("\${nodo.nodoperpm.uri}") private val nodoPerPmUrl: String,
   @Autowired private val nodoPerPmClient: WebClient,
-  @Value("\${nodo.checkposition.apikey}") private val nodoCheckPositionApiKey: String
+  @Value("\${nodo.nodeforpm.apikey}") private val nodoPerPmApiKey: String
 ) {
 
   private val logger = LoggerFactory.getLogger(javaClass)
@@ -29,7 +29,7 @@ public class NodoPerPmClient(
       .post()
       .uri(nodoPerPmUrl)
       .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-      .header("ocp-apim-subscription-key", nodoCheckPositionApiKey)
+      .header("ocp-apim-subscription-key", nodoPerPmApiKey)
       .body(Mono.just(request), CheckPositionDto::class.java)
       .retrieve()
       .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST)) { clientResponse ->
