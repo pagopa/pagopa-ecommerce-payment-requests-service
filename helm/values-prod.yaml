@@ -93,6 +93,7 @@ microservice-chart:
     NODO_PER_PM_URI: /nodo-auth/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
+    NODO_CONNECTION_STRING: "{\"idPSP\":\"AGID_01\",\"idChannel\":\"97735020584_09\",\"idBrokerPSP\":\"97735020584\",\"idChannelPayment\":\"97735020584_02\"}"
     CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
     ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ECS_SERVICE_ENVIRONMENT: "prod"
@@ -106,7 +107,6 @@ microservice-chart:
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-access-key
     REDIS_HOST: redis-ecommerce-hostname
-    NODO_CONNECTION_STRING: nodo-connection-string
     NODO_NODEFORPM_API_KEY: nodo-nodeforpm-api-key
     NODO_NODEFORPSP_API_KEY: nodo-nodeforpsp-api-key
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
