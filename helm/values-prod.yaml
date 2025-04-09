@@ -89,7 +89,7 @@ microservice-chart:
     REDIS_SSL_ENABLED: "true"
     CHECKOUT_URL: https://api.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
     NODO_HOSTNAME: https://api.platform.pagopa.it
-    NODE_FOR_PSP_URI: /nodo-auth/node-for-psp/v1
+    NODO_PER_PM_URI: /nodo-auth/node-for-ecommerce/v1/checkPosition
     NODO_PER_PM_URI: /nodo-auth/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
