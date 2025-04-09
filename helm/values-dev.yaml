@@ -112,7 +112,7 @@ microservice-chart:
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-access-key
     REDIS_HOST: redis-ecommerce-hostname
-    NODO_NODEFORECOMMERCE_API_KEY: nodo-nodeforpm-api-key
+    NODO_NODEFORECOMMERCE_API_KEY: node-for-ecommerce-api-v1-key
     NODO_NODEFORPSP_API_KEY: nodo-nodeforpsp-api-key
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
