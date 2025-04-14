@@ -89,11 +89,10 @@ microservice-chart:
     REDIS_SSL_ENABLED: "true"
     CHECKOUT_URL: https://api.uat.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
     NODO_HOSTNAME: https://api.uat.platform.pagopa.it
-    NODE_FOR_PSP_URI: /nodo-auth/node-for-psp/v1
-    NODO_PER_PM_URI: /nodo-auth/nodo-per-pm/v1/checkPosition
+    NODE_FOR_PSP_URI: /nodo/node-for-psp/v1
+    NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
-    NODO_CONNECTION_STRING: "{\"idPSP\":\"AGID_01\",\"idChannel\":\"97735020584_09\",\"idBrokerPSP\":\"97735020584\"}"
     CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
     OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service,deployment.environment=uat"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
@@ -107,8 +106,7 @@ microservice-chart:
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-access-key
     REDIS_HOST: redis-ecommerce-hostname
-    NODO_NODEFORECOMMERCE_API_KEY: node-for-ecommerce-api-v1-key
-    NODO_NODEFORPSP_API_KEY: nodo-nodeforpsp-api-key
+    NODO_CONNECTION_STRING: nodo-connection-string
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   keyvault:

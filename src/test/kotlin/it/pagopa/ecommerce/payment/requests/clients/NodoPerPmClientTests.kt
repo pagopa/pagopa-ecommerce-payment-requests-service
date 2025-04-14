@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
-import org.mockito.kotlin.verify
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
 import org.springframework.web.reactive.function.client.ClientResponse
@@ -45,7 +44,7 @@ class NodoPerPmClientTests {
 
   @BeforeEach
   fun init() {
-    client = NodoPerPmClient("", nodoWebClient, "nodoPerPmApiKey")
+    client = NodoPerPmClient("", nodoWebClient)
   }
 
   @Test
@@ -55,10 +54,8 @@ class NodoPerPmClientTests {
         .positionslist(
           listOf(
             ListelementRequestDto().fiscalCode("77777777777").noticeNumber("303312387654312381")))
-
     val objectFactory = ObjectFactory()
     val response = CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)
-
     /** precondition */
     given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
     given(requestBodyUriSpec.uri(any(), any<Array<*>>())).willReturn(requestBodyUriSpec)
@@ -78,9 +75,6 @@ class NodoPerPmClientTests {
 
     /** asserts */
     Assertions.assertThat(testResponse!!.outcome.value).isEqualTo(EsitoEnum.OK.value)
-
-    /** Verify that the header ocp-apim-subscription-key is correctly set */
-    verify(requestBodyUriSpec).header("ocp-apim-subscription-key", "nodoPerPmApiKey")
   }
 
   @Test
@@ -90,7 +84,6 @@ class NodoPerPmClientTests {
         .positionslist(
           listOf(
             ListelementRequestDto().fiscalCode("77777777777").noticeNumber("303312387654312381")))
-
     /** precondition */
     given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
     given(requestBodyUriSpec.uri(any(), any<Array<*>>())).willReturn(requestBodyUriSpec)
@@ -105,8 +98,6 @@ class NodoPerPmClientTests {
       .willCallRealMethod()
 
     assertThrows<CheckPositionErrorException> { client.checkPosition(checkPositionDto) }
-
-    /** Verify that the header ocp-apim-subscription-key is correctly set */
-    verify(requestBodyUriSpec).header("ocp-apim-subscription-key", "nodoPerPmApiKey")
+    /** test */
   }
 }

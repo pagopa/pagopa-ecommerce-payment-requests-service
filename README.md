@@ -23,8 +23,7 @@ with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 | CARTS_MAX_ALLOWED_PAYMENT_NOTICES | Max allowed number of payment notices to be processed for a POST carts request                      | number        |         |
 | PERSONAL_DATA_VAULT_API_KEY       | API Key for Personal Data Vault (PDV is used to safely encrypt PIIs, e.g. the user's email address) | string        |         |
 | PERSONAL_DATA_VAULT_API_BASE_PATH | API base path for Personal Data Vault                                                               | string        |         |
-| NODO_NODEFORPSP_API_KEY           | API Key for NODE FOR PSP WS                                                                         | string        |         |
-| NODO_NODEFORECOMMERCE_API_KEY        | API Key for Nodo checkposition API                                                                  | string        |         |
+
 An example configuration of these environment variables is in the `.env.example` file.
 
 ## Run the application with `Docker`
