@@ -287,7 +287,7 @@ stages:
       and(
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         in(dependencies.tag_docker_release.result, 'Succeeded', 'Skipped'),
-        in(dependencies.Get_Release_Version.result, 'Succeeded', 'Skipped'),
+        eq(dependencies.Get_Release_Version.result, 'Succeeded'),
         or(
           eq(variables['Build.SourceBranch'], 'refs/heads/main'),
           startsWith(variables['Build.SourceBranch'], 'refs/tags')
@@ -365,7 +365,7 @@ stages:
       and(
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         eq(dependencies.Deploy_UAT_Green.result, 'Succeeded'),
-        in(dependencies.Get_Release_Version.result, 'Succeeded', 'Skipped')
+        eq(dependencies.Get_Release_Version.result, 'Succeeded')
       )
     variables:
       release_url: $[ stageDependencies.Get_Release_Version.get_version.outputs['chart_current_version.releaseUrl'] ]
@@ -392,7 +392,7 @@ stages:
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         eq(${{parameters.PROD_SKIP_BLUE_DEPLOYMENT}}, False),
         eq(dependencies.Prod_WaitForApproval.result, 'Succeeded'),
-        in(dependencies.Get_Release_Version.result, 'Succeeded', 'Skipped')
+        eq(dependencies.Get_Release_Version.result, 'Succeeded')
       )
     variables:
       app_version: $[ stageDependencies.Get_Release_Version.get_version.outputs['chart_current_version.appVersion'] ]
@@ -431,7 +431,7 @@ stages:
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         eq(${{parameters.PROD_SKIP_BLUE_DEPLOYMENT}}, False),
         eq(dependencies.Build_PROD_Blue.result, 'Succeeded'),
-        in(dependencies.Get_Release_Version.result, 'Succeeded', 'Skipped')
+        eq(dependencies.Get_Release_Version.result, 'Succeeded')
       )
     variables:
       app_version: $[ stageDependencies.Get_Release_Version.get_version.outputs['chart_current_version.appVersion'] ]
@@ -502,7 +502,7 @@ stages:
       and(
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         eq(dependencies.PROD_Green_WaitForApproval.result, 'Succeeded'),
-        in(dependencies.Get_Release_Version.result, 'Succeeded', 'Skipped')
+        eq(dependencies.Get_Release_Version.result, 'Succeeded')
       )
     jobs:
       - job: "PROD_image"
@@ -538,7 +538,7 @@ stages:
       and(
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         eq(dependencies.Build_PROD_Green.result, 'Succeeded'),
-        in(dependencies.Get_Release_Version.result, 'Succeeded', 'Skipped')
+        eq(dependencies.Get_Release_Version.result, 'Succeeded')
       )
     variables:
       prod_version: $[ stageDependencies.Get_Release_Version.get_version.outputs['chart_current_version.appVersion'] ]
@@ -582,7 +582,7 @@ stages:
       and(
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         in(dependencies.Deploy_PROD_Green.result, 'Succeeded', 'SucceededWithIssues', 'Failed', 'Skipped', 'Canceled'),
-        in(dependencies.Get_Release_Version.result, 'Succeeded', 'Skipped')
+        eq(dependencies.Get_Release_Version.result, 'Succeeded')
       )
     variables:
       release_url: $[ stageDependencies.Get_Release_Version.get_version.outputs['chart_current_version.releaseUrl'] ]
