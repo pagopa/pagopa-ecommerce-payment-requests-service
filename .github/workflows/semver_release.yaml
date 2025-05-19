@@ -1,0 +1,140 @@
+name: Make new release
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  semver_labels:
+    name: Read semver labels from merged PR
+    runs-on: ubuntu-latest
+    environment: prod
+    outputs:
+      semver_app: ${{ steps.semver_labels.outputs.semver_app }}
+      semver_chart: ${{ steps.semver_labels.outputs.semver_chart }}
+      skip_release: ${{ steps.semver_labels.outputs.skip_release }}
+    steps:
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 #v3
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+      - uses: ./.github/actions/check-pr-semver-labels
+        id: semver_labels
+        with:
+          github_token: ${{ secrets.BOT_GITHUB_TOKEN}}
+  semver_update:
+    if: ${{needs.semver_labels.outputs.skip_release == 'False'}}
+    name: Update semver for every eligible file of repo (helm charts, mvn files, etc.)
+    runs-on: ubuntu-latest
+    needs: semver_labels
+    environment: prod
+    outputs:
+      app_version: ${{ steps.get_new_ver.outputs.version }}
+    steps:
+      # Without this step, changes would be applied to a detached head
+      - name: Checkout release branch
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 #v3
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+      # setup git author
+      - name: Setup git author
+        run: |
+          git config --global user.email "${{ secrets.BOT_GIT_MAIL }}" && git config --global user.name "${{ secrets.BOT_GIT_USER }}"
+        # bump version
+      - name: Set up JDK 17
+        uses:  actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+      - name: Get New App Version
+        id: get_new_ver
+        run: |
+          RELEASE_APP_SEMVER=${{ needs.semver_labels.outputs.semver_app }}
+          if [[ $RELEASE_APP_SEMVER = "patch" ]]
+          then
+            mvn -f pom.xml build-helper:parse-version versions:set '-DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}'
+          elif [[ $RELEASE_APP_SEMVER = "minor" ]]
+          then
+            mvn -f pom.xml build-helper:parse-version versions:set '-DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0'
+          elif [[ $RELEASE_APP_SEMVER = "major" ]]
+          then
+            mvn -f pom.xml build-helper:parse-version versions:set '-DnewVersion=${parsedVersion.nextMajorVersion}.0.0'
+          fi
+          git add pom.xml
+          version=$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo $version
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Update Helm Version Values
+        run: |
+          for i in helm/values-*.yaml; do
+            [ -f "$i" ] || break
+            yq -i ".microservice-chart.image.tag = \"${{steps.get_new_ver.outputs.version}}\"" "$i"
+            git add "$i"
+          done
+      - name: Update Chart App Version
+        run: |
+          CHART_FILE="helm/Chart.yaml"
+            if [[ -f "$CHART_FILE" ]]; then
+              yq -i ".appVersion = \"${{steps.get_new_ver.outputs.version}}\"" "$CHART_FILE"
+              git add "$CHART_FILE"
+          fi
+      - name: Setup Node.js
+        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3
+        with:
+          node-version: '22'
+      - name: Install semver globally
+        run: yarn global add semver
+      - name: Update Chart Version
+        run: |
+          RELEASE_CHART_SEMVER=$(echo ${{ needs.semver_labels.outputs.semver_chart }} |  cut -d'-' -f2 )
+          CHART_FILE="helm/Chart.yaml"
+          CURRENT_CHART_VERSION=$(yq -r '.version' $CHART_FILE)
+          if [[ -f "$CHART_FILE" ]]; then
+            yq -i ".version = \"$(semver $CURRENT_CHART_VERSION -i $RELEASE_CHART_SEMVER )\"" "$CHART_FILE"
+            git add "$CHART_FILE"
+          fi
+        # push new version
+      - name: Push New Version
+        run: |
+          git diff --cached
+          git commit -m "Bump version [skip ci]"
+          git push origin 'main'
+  github_release:
+    if: ${{needs.semver_labels.outputs.skip_release == 'False'}}
+    name: Create a New Github Release
+    needs: semver_update
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 #v3
+        with:
+          persist-credentials: false
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          ref: 'main'
+      - name: Set Up Github Release
+        id: setup_github_release
+        run: |
+          CHART_FILE="helm/Chart.yaml"
+          chart_version=$(yq -r '.version' $CHART_FILE)
+          HEAD_SHA=$(git rev-parse HEAD)
+          TAG="$chart_version"
+          TITLE="Release $chart_version"
+          echo "HEAD_SHA=$HEAD_SHA" >> $GITHUB_OUTPUT
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          echo "TITLE=$TITLE" >> $GITHUB_OUTPUT
+        # create new github release
+      - name: Create New Github Release
+        uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 #v1.16.0
+        with:
+          commit: ${{ steps.setup_github_release.outputs.HEAD_SHA }}
+          tag: ${{ steps.setup_github_release.outputs.TAG }}
+          name: ${{ steps.setup_github_release.outputs.TITLE }}
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          makeLatest: true
+          generateReleaseNotes: true
+          draft: false
+          prerelease: false

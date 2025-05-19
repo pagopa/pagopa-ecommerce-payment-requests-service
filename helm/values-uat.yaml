@@ -5,38 +5,22 @@ microservice-chart:
   canaryDelivery:
     create: false
     ingress:
-      create: true
-      canary:
-        type: bluegreen
-    service:
-      create: true
-    deployment:
-      create: true
-      image:
-        repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-        tag: "latest"
-        pullPolicy: Always
+      bluegreen: false
+      #set canary deployment with traffic balancing see https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#canary for more info
+      header: true
+      headerName: deployment
+      headerValue: blue
+      weightPercent: 10
+    image:
+      repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
+      tag: "latest"
     envConfig:
-      REDIS_PORT: "6380"
-      REDIS_SSL_ENABLED: "true"
-      CHECKOUT_URL: https://api.uat.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
-      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,service.deployment.environment=uat"
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
-      OTEL_TRACES_EXPORTER: otlp
-      OTEL_METRICS_EXPORTER: otlp
-      OTEL_LOGS_EXPORTER: none
-      OTEL_TRACES_SAMPLER: "always_on"
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,deployment.environment=uat"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
-      ECS_SERVICE_ENVIRONMENT: "uat"
-      PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.tokenizer.pdv.pagopa.it/tokenizer/v1"
-    envSecret:
-      REDIS_PASSWORD: redis-ecommerce-access-key
-      REDIS_HOST: redis-ecommerce-hostname
-      PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
+    envSecret: {}
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "1.3.2"
+    tag: "1.7.3"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -68,7 +52,7 @@ microservice-chart:
   serviceAccount:
     create: false
     annotations: {}
-    name: ""
+    name: "ecommerce-workload-identity"
   podAnnotations: {}
   podSecurityContext:
     seccompProfile:
@@ -103,14 +87,14 @@ microservice-chart:
   envConfig:
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
-    CHECKOUT_URL: https://api.uat.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect
+    CHECKOUT_URL: https://api.uat.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
     NODO_HOSTNAME: https://api.uat.platform.pagopa.it
     NODE_FOR_PSP_URI: /nodo/node-for-psp/v1
     NODO_PER_PM_URI: /nodo/nodo-per-pm/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
     CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
-    OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service,service.deployment.environment=uat"
+    OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service,deployment.environment=uat"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_TRACES_EXPORTER: otlp
     OTEL_METRICS_EXPORTER: otlp
@@ -139,3 +123,5 @@ microservice-chart:
                 operator: In
                 values:
                   - user
+  azure:
+    workloadIdentityClientId: 449c5b65-f368-487a-881a-b03676420c53

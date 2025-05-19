@@ -30,7 +30,7 @@ stages:
               path: $(MAVEN_CACHE_FOLDER)
             displayName: Cache Maven local repo
 
-          - task: SonarCloudPrepare@1
+          - task: SonarCloudPrepare@3
             displayName: 'Prepare SonarCloud analysis configuration'
             inputs:
               SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
@@ -43,7 +43,7 @@ stages:
                 sonar.coverage.jacoco.xmlReportPaths=./target/site/jacoco/jacoco.xml
                 sonar.junit.reportPaths=target/surefire-reports/
 
-          - task: Maven@3
+          - task: Maven@4
             inputs:
               mavenPomFile: 'pom.xml'
               mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
@@ -55,12 +55,12 @@ stages:
               goals: 'clean verify'
               sonarQubeRunAnalysis: true
 
-          - task: SonarCloudPublish@1
+          - task: SonarCloudPublish@3
             displayName: 'Publish SonarCloud results on build summary'
             inputs:
               pollingTimeoutSec: '300'
 
-          - task: PublishCodeCoverageResults@1
+          - task: PublishCodeCoverageResults@2
             inputs:
               codeCoverageTool: 'JaCoCo'
               summaryFileLocation: 'target/site/jacoco/jacoco.xml'

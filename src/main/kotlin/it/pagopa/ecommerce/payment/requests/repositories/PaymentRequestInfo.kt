@@ -20,5 +20,6 @@ constructor(
   val activationDate: String?,
   val idempotencyKey: IdempotencyKey?,
   val transferList: List<PaymentTransferInfo>?,
-  val isAllCCP: Boolean?
+  val isAllCCP: Boolean?,
+  val creditorReferenceId: String?
 ) {}
