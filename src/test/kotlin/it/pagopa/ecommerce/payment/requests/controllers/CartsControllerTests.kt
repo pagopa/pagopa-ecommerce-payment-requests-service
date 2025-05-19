@@ -306,6 +306,7 @@ class CartsControllerTests {
   fun `warm up controller`() {
     val webClient = mock(WebClient::class.java)
     given(webClient.post()).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.uri(any<String>())).willReturn(requestBodyUriSpec)
     given(requestBodyUriSpec.uri(any(), any<Array<*>>())).willReturn(requestBodyUriSpec)
     given(requestBodyUriSpec.header(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
       .willReturn(requestBodyUriSpec)
