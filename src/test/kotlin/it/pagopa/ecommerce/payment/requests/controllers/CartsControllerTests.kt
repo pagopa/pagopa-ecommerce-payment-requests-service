@@ -27,6 +27,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -313,7 +314,7 @@ class CartsControllerTests {
     given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
     given(
         responseSpec.onStatus(
-          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
+          any<Predicate<HttpStatusCode>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
       .willReturn(responseSpec)
     given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
     CartsController(webClient).warmupPostCarts()

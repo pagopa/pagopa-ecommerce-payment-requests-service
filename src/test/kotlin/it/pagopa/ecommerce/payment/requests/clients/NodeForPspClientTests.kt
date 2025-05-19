@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.test.context.TestPropertySource
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
@@ -70,7 +70,7 @@ class NodeForPspClientTests {
     given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
     given(
         responseSpec.onStatus(
-          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
+          any<Predicate<HttpStatusCode>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
       .willReturn(responseSpec)
     given(responseSpec.bodyToMono(VerifyPaymentNoticeRes::class.java))
       .willReturn(Mono.just(response))
@@ -111,7 +111,7 @@ class NodeForPspClientTests {
     given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
     given(
         responseSpec.onStatus(
-          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
+          any<Predicate<HttpStatusCode>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
       .willReturn(responseSpec)
     given(responseSpec.bodyToMono(VerifyPaymentNoticeRes::class.java))
       .willReturn(Mono.just(response))

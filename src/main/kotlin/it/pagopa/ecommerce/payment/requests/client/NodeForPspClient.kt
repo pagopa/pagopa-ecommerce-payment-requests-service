@@ -3,11 +3,11 @@ package it.pagopa.ecommerce.payment.requests.client
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
-import javax.xml.bind.JAXBElement
+import jakarta.xml.bind.JAXBElement
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -32,7 +32,7 @@ class NodeForPspClient(
       .header("SOAPAction", "verifyPaymentNotice")
       .body(Mono.just(SoapEnvelope("", request)), SoapEnvelope::class.java)
       .retrieve()
-      .onStatus(HttpStatus::isError) { clientResponse ->
+      .onStatus(HttpStatusCode::isError) { clientResponse ->
         clientResponse.bodyToMono(String::class.java).flatMap { errorResponseBody: String ->
           Mono.error(ResponseStatusException(clientResponse.statusCode(), errorResponseBody))
         }

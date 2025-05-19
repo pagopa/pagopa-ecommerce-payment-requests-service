@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.5</version>
+        <version>3.4.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>it.pagopa.ecommerce</groupId>
@@ -17,19 +17,46 @@
     </description>
     <properties>
         <java.version>17</java.version>
-        <kotlin.version>1.6.21</kotlin.version>
-        <jacoco.version>0.8.8</jacoco.version>
-        <kotlinx-coroutines.version>1.6.4</kotlinx-coroutines.version>
-        <mockito-kotlin.version>4.0.0</mockito-kotlin.version>
+        <kotlin.version>2.1.21</kotlin.version>
+        <jacoco.version>0.8.13</jacoco.version>
+        <kotlinx-coroutines.version>1.10.2</kotlinx-coroutines.version>
+        <mockito-kotlin.version>5.4.0</mockito-kotlin.version>
         <sonar.coverage.exclusions>
             **/it/pagopa/generated/**/*,
             **/it/pagopa/ecommerce/payment/requests/utils/soap/**/*
             **/it/pagopa/ecommerce/payment/requests/warmup/**/*
         </sonar.coverage.exclusions>
         <spotless.version>2.28.0</spotless.version>
-        <ecs-logging-version>1.5.0</ecs-logging-version>
+        <ecs-logging-version>1.7.0</ecs-logging-version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/jakarta.xml.soap/jakarta.xml.soap-api -->
+        <dependency>
+            <groupId>jakarta.xml.soap</groupId>
+            <artifactId>jakarta.xml.soap-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.sun.xml.messaging.saaj/saaj-impl -->
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>3.0.4</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
@@ -80,17 +107,22 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.1.0</version>
+            <version>0.2.6</version>
         </dependency>
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.6.5</version>
+            <version>1.6.15</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
             <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+            <version>2.8.8</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -115,6 +147,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
+            <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -126,7 +159,7 @@
         <dependency>
             <groupId>com.ninja-squad</groupId>
             <artifactId>springmockk</artifactId>
-            <version>3.1.1</version>
+            <version>4.0.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -147,12 +180,12 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.1</version>
+            <version>4.0.5</version>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>3.0.0</version>
+            <version>4.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.ws</groupId>
@@ -303,7 +336,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>6.2.0</version>
+                <version>7.13.0</version>
                 <executions>
                     <execution>
                         <id>payment-requests-api</id>
@@ -330,6 +363,8 @@
                                 <useSwaggerUI>false</useSwaggerUI>
                                 <reactive>true</reactive>
                                 <enumPropertyNaming>UPPERCASE</enumPropertyNaming>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useSpringBoot3>true</useSpringBoot3>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -384,9 +419,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.15.1</version>
+                <groupId>com.helger.maven</groupId>
+                <artifactId>jaxb40-maven-plugin</artifactId>
+                <version>0.16.1</version>
                 <executions>
                     <execution>
                         <id>node-for-psp</id>
