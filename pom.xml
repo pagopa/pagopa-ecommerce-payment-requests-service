@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.5</version>
+        <version>3.4.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>it.pagopa.ecommerce</groupId>
@@ -17,7 +17,7 @@
     </description>
     <properties>
         <java.version>17</java.version>
-        <kotlin.version>1.6.21</kotlin.version>
+        <kotlin.version>1.9.24</kotlin.version>
         <jacoco.version>0.8.8</jacoco.version>
         <kotlinx-coroutines.version>1.6.4</kotlinx-coroutines.version>
         <mockito-kotlin.version>4.0.0</mockito-kotlin.version>
@@ -115,6 +115,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
+            <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -283,6 +284,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <parameters>true</parameters> <!-- necessario -->
+                </configuration>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -303,7 +307,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>6.2.0</version>
+                <version>7.13.0</version>
                 <executions>
                     <execution>
                         <id>payment-requests-api</id>
@@ -330,6 +334,8 @@
                                 <useSwaggerUI>false</useSwaggerUI>
                                 <reactive>true</reactive>
                                 <enumPropertyNaming>UPPERCASE</enumPropertyNaming>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useSpringBoot3>true</useSpringBoot3>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -352,6 +358,8 @@
                                 <swaggerAnnotations>false</swaggerAnnotations>
                                 <openApiNullable>false</openApiNullable>
                                 <reactive>true</reactive>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useSpringBoot3>true</useSpringBoot3>
                             </configOptions>
                             <modelPackage>it.pagopa.ecommerce.generated.nodoperpm.v1.dto</modelPackage>
                             <apiPackage>it.pagopa.ecommerce.generated.nodoperpm.v1.api</apiPackage>
@@ -375,6 +383,8 @@
                             <configOptions>
                                 <swaggerAnnotations>false</swaggerAnnotations>
                                 <openApiNullable>false</openApiNullable>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useSpringBoot3>true</useSpringBoot3>
                             </configOptions>
                             <modelPackage>it.pagopa.generated.pdv.v1.dto</modelPackage>
                             <apiPackage>it.pagopa.generated.pdv.v1.api</apiPackage>

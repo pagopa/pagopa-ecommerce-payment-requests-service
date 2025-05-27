@@ -1,12 +1,12 @@
 package it.pagopa.ecommerce.payment.requests.validation
 
+// import org.springframework.core.LocalVariableTableParameterNameDiscoverer
+import jakarta.validation.ClockProvider
+import jakarta.validation.Configuration
+import jakarta.validation.ParameterNameProvider
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
-import javax.validation.ClockProvider
-import javax.validation.Configuration
-import javax.validation.ParameterNameProvider
 import org.hibernate.validator.internal.engine.DefaultClockProvider
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer
 import org.springframework.core.PrioritizedParameterNameDiscoverer
 import org.springframework.core.StandardReflectionParameterNameDiscoverer
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean
@@ -29,7 +29,7 @@ class CustomLocalValidatorFactoryBean : LocalValidatorFactoryBean() {
     val discoverer = PrioritizedParameterNameDiscoverer()
     discoverer.addDiscoverer(SuspendAwareKotlinParameterNameDiscoverer())
     discoverer.addDiscoverer(StandardReflectionParameterNameDiscoverer())
-    discoverer.addDiscoverer(LocalVariableTableParameterNameDiscoverer())
+    // discoverer.addDiscoverer(LocalVariableTableParameterNameDiscoverer())
 
     val defaultProvider = configuration.defaultParameterNameProvider
     configuration.parameterNameProvider(
