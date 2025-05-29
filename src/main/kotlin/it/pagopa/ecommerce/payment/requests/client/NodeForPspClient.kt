@@ -3,7 +3,7 @@ package it.pagopa.ecommerce.payment.requests.client
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
-import javax.xml.bind.JAXBElement
+import jakarta.xml.bind.JAXBElement
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -27,7 +27,7 @@ class NodeForPspClient(
   ): Mono<VerifyPaymentNoticeRes> =
     nodoWebClient
       .post()
-      .uri(nodoForPspUrl)
+      .uri("http://localhost:9999/wsdl")
       .header("Content-Type", MediaType.TEXT_XML_VALUE)
       .header("SOAPAction", "verifyPaymentNotice")
       .body(Mono.just(SoapEnvelope("", request)), SoapEnvelope::class.java)

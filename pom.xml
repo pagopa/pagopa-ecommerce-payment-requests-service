@@ -145,15 +145,15 @@
             <groupId>wsdl4j</groupId>
             <artifactId>wsdl4j</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.1</version>
-        </dependency>
+            <version>3.0.2</version>
+        </dependency>-->
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.ws</groupId>
@@ -396,7 +396,7 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.15.1</version>
+                <version>0.15.3</version>
                 <executions>
                     <execution>
                         <id>node-for-psp</id>
@@ -413,6 +413,7 @@
                                     </url>
                                 </schema>
                             </schemas>
+
                         </configuration>
                     </execution>
                 </executions>
@@ -494,6 +495,38 @@
                     </execution>
                 </executions>
             </plugin>
+
+
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>maven-replacer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*.java</include>
+                            </includes>
+                            <basedir>${project.build.directory}/generated-sources/xjc</basedir>
+                            <replacements>
+                                <replacement>
+                                    <token>javax\.xml\.bind\.annotation</token>
+                                    <value>jakarta.xml.bind.annotation</value>
+                                </replacement>
+                                <replacement>
+                                    <token>javax\.xml\.bind</token>
+                                    <value>jakarta.xml.bind</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
