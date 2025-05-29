@@ -10,9 +10,14 @@ services:
     networks:
       - pagopa-ecommerce-net
     env_file: .env
-    cpus: "0.4"
-    mem_limit: "512m"
-
+    deploy:
+      resources:
+        limits:
+          cpus: '0.400'
+          memory: 512M
+        reservations:
+          cpus: '0.400'
+          memory: 512M
   redis:
     container_name: pagopa-ecommerce-redis
     image: redis
