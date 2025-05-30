@@ -27,7 +27,7 @@ class NodeForPspClient(
   ): Mono<VerifyPaymentNoticeRes> =
     nodoWebClient
       .post()
-      .uri("http://localhost:9999/wsdl")
+      .uri(nodoForPspUrl)
       .header("Content-Type", MediaType.TEXT_XML_VALUE)
       .header("SOAPAction", "verifyPaymentNotice")
       .body(Mono.just(SoapEnvelope("", request)), SoapEnvelope::class.java)
