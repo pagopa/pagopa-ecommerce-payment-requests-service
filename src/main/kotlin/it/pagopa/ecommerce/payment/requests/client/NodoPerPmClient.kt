@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -36,7 +37,7 @@ public class NodoPerPmClient(
           .onErrorMap { CheckPositionErrorException(clientResponse.statusCode()) }
           .flatMap { Mono.error(CheckPositionErrorException(HttpStatus.UNPROCESSABLE_ENTITY)) }
       }
-      .onStatus(HttpStatus::isError) { clientResponse ->
+      .onStatus(HttpStatusCode::isError) { clientResponse ->
         Mono.error(CheckPositionErrorException(clientResponse.statusCode()))
       }
       .bodyToMono(CheckPositionResponseDto::class.java)
