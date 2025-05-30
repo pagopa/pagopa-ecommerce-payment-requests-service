@@ -394,9 +394,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.15.3</version>
+                <groupId>org.jvnet.jaxb</groupId>
+                <artifactId>jaxb-maven-plugin</artifactId>
+                <version>4.0.0</version>
                 <executions>
                     <execution>
                         <id>node-for-psp</id>
@@ -495,38 +495,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
-            <plugin>
-                <groupId>com.google.code.maven-replacer-plugin</groupId>
-                <artifactId>maven-replacer-plugin</artifactId>
-                <version>1.4.1</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>replace</goal>
-                        </goals>
-                        <configuration>
-                            <includes>
-                                <include>**/*.java</include>
-                            </includes>
-                            <basedir>${project.build.directory}/generated-sources/xjc</basedir>
-                            <replacements>
-                                <replacement>
-                                    <token>javax\.xml\.bind\.annotation</token>
-                                    <value>jakarta.xml.bind.annotation</value>
-                                </replacement>
-                                <replacement>
-                                    <token>javax\.xml\.bind</token>
-                                    <value>jakarta.xml.bind</value>
-                                </replacement>
-                            </replacements>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
     </build>
 </project>
