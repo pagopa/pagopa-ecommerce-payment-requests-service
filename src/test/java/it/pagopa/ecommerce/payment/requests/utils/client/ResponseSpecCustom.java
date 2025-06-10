@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 
 public abstract class ResponseSpecCustom implements WebClient.ResponseSpec {
 
-    public abstract HttpStatus getStatus(); // Restituisce HttpStatus, compatibile con HttpStatusCode
+    public abstract HttpStatus getStatus();
 
     @Override
     public WebClient.ResponseSpec onStatus(
