@@ -2,8 +2,8 @@ apiVersion: v2
 name: pagopa-ecommerce-payment-requests-service
 description: Microservice that handles payment requests in ecommerce pagoPA
 type: application
-version: 1.8.0
-appVersion: 1.7.3
+version: 1.8.1
+appVersion: 1.7.4
 dependencies:
   - name: microservice-chart
     version: 7.5.0
