@@ -351,6 +351,22 @@ class PaymentRequestsControllerTests {
   }
 
   @Test
+  fun `should return unauthorized if request has wrong api key header`() = runTest {
+    val rptId = "77777777777302000100000009424"
+    val faultBean = faultBeanWithCode("UNKNOWN_ERROR")
+    given(paymentRequestsService.getPaymentRequestInfo(rptId))
+      .willThrow(NodoErrorException(faultBean))
+    val parameters = mapOf("rpt_id" to rptId)
+    webClient
+      .get()
+      .uri("/payment-requests/{rpt_id}", parameters)
+      .header("X-Api-Key", "super-wrong-api-key")
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
+  }
+
+  @Test
   fun `warm up controller`() {
     val webClient = mock(WebClient::class.java)
     given(webClient.get()).willReturn(requestHeadersSpec)

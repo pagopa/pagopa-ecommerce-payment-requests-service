@@ -95,6 +95,24 @@ class CartsControllerTests {
   }
 
   @Test
+  fun `should return unauthorized if create carts request has wrong api key header`() = runTest {
+    val request = CartRequests.withOnePaymentNotice()
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("X-Api-Key", "the-real-wrong-api-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
+  }
+
+  @Test
   fun `post cart KO with multiple payment notices`() = runTest {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
