@@ -6,8 +6,8 @@ import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorExcepti
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.exceptions.ValidationFailedException
+import jakarta.validation.ValidationException
 import java.util.*
-import javax.validation.ValidationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
