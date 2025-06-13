@@ -111,6 +111,8 @@ microservice-chart:
     NODO_NODEFORPSP_API_KEY: nodo-nodeforpsp-api-key
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
+    SECURITY_API_KEY_PRIMARY: ecommerce-payment-requests-primary-api-key
+    SECURITY_API_KEY_SECONDARY: ecommerce-payment-requests-secondary-api-key
   keyvault:
     name: "pagopa-p-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
