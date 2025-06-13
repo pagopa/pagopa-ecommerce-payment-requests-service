@@ -67,6 +67,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("X-Api-Key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -97,6 +98,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("X-Api-Key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -118,6 +120,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("X-Api-Key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -139,6 +142,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("X-Api-Key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -160,6 +164,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("X-Api-Key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -181,6 +186,7 @@ class CartsControllerTests {
     webClient
       .post()
       .uri("/carts")
+      .header("X-Api-Key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -206,6 +212,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("X-Api-Key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -240,6 +247,7 @@ class CartsControllerTests {
     webClient
       .get()
       .uri("/carts/{idCart}", parameters)
+      .header("X-Api-Key", "primary-key")
       .exchange()
       .expectStatus()
       .isOk
@@ -271,6 +279,7 @@ class CartsControllerTests {
     webClient
       .get()
       .uri("/carts/{idCart}", parameters)
+      .header("X-Api-Key", "primary-key")
       .exchange()
       .expectStatus()
       .isOk
@@ -294,6 +303,7 @@ class CartsControllerTests {
     webClient
       .get()
       .uri("/carts/{cartId}", parameters)
+      .header("X-Api-Key", "primary-key")
       .exchange()
       .expectStatus()
       .isNotFound
@@ -332,6 +342,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("X-Api-Key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -354,6 +365,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .contentType(MediaType.APPLICATION_JSON)
+      .header("X-Api-Key", "primary-key")
       .bodyValue(request)
       .exchange()
       .expectStatus()
