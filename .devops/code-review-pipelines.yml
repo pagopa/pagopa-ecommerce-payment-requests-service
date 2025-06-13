@@ -13,7 +13,7 @@ resources:
     - repository: pagopaEcommerceLocal
       type: github
       name: pagopa/pagopa-ecommerce-local 
-      ref: main
+      ref: CHK-4181-add-api-key-validation
       endpoint: 'io-azure-devops-github-ro'
 
 stages:

@@ -24,7 +24,9 @@ with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 | PERSONAL_DATA_VAULT_API_KEY       | API Key for Personal Data Vault (PDV is used to safely encrypt PIIs, e.g. the user's email address) | string        |         |
 | PERSONAL_DATA_VAULT_API_BASE_PATH | API base path for Personal Data Vault                                                               | string        |         |
 | NODO_NODEFORPSP_API_KEY           | API Key for NODE FOR PSP WS                                                                         | string        |         |
-| NODO_NODEFORECOMMERCE_API_KEY        | API Key for Nodo checkposition API                                                                  | string        |         |
+| NODO_NODEFORECOMMERCE_API_KEY     | API Key for Nodo checkposition API                                                                  | string        |         |
+| SECURITY_API_KEY_PRIMARY          | Primary API Key used to secure payment-requests service's APIs                                      | string        |         |
+| SECURITY_API_KEY_SECONDARY        | Secondary API Key used to secure payment-requests service's APIs                                    | string        |         |
 An example configuration of these environment variables is in the `.env.example` file.
 
 ## Run the application with `Docker`
