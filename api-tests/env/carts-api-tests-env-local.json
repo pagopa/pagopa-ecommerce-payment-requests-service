@@ -1,5 +1,5 @@
 {
-	"id": "39d2801a-427a-4fd9-9c44-f940e933ce31",
+	"id": "06ad6041-fbc8-4a83-8b40-d77a864f9b46",
 	"name": "payment-request-local",
 	"values": [
 		{
@@ -7,9 +7,15 @@
 			"value": "host.docker.internal:8089",
 			"type": "default",
 			"enabled": true
+		},
+		{
+			"key": "primaryKey",
+			"value": "PRIMARY-KEY",
+			"type": "default",
+			"enabled": true
 		}
 	],
 	"_postman_variable_scope": "environment",
-	"_postman_exported_at": "2022-12-15T10:06:58.072Z",
-	"_postman_exported_using": "Postman/10.6.7"
+	"_postman_exported_at": "2025-06-13T13:12:19.973Z",
+	"_postman_exported_using": "Postman/11.48.2"
 }
