@@ -14,6 +14,15 @@ class ApiKeyFilter(
 ) : WebFilter {
   private val pathsToCheck = listOf("/carts", "/payment-requests")
 
+  /*
+     * @formatter:off
+     *
+     * Warning kotlin:S6508 - "Unit" should be used instead of "Void"
+     * Suppressed because Spring WebFilter interface use Void as return type.
+     *
+     * @formatter:on
+     */
+  @SuppressWarnings("kotlin:S6508")
   override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
     val path = exchange.request.path.toString()
     if (pathsToCheck.any { path.startsWith(it) }) {
