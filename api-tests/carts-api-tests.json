@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "873e5062-1754-4dab-9580-4ac5dba55e1a",
+		"_postman_id": "1dba9b99-f915-419b-9c92-86b2e656f766",
 		"name": "payment-request-api-tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "36392360"
+		"_exporter_id": "18021440"
 	},
 	"item": [
 		{
@@ -22,8 +22,7 @@
 							"    pm.expect(pm.response.headers.get('Location').split(\"/c/\")[1]).to.match(/^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$/)",
 							"});"
 						],
-						"type": "text/javascript",
-						"packages": {}
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -32,13 +31,7 @@
 			},
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "X-Api-Key",
-						"value": "{{primaryKey}}",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n  \"paymentNotices\": [\n    {\n      \"noticeNumber\": \"330312387654312381\",\n      \"fiscalCode\": \"77777777777\",\n      \"amount\": 10000,\n      \"companyName\": \"companyName\",\n      \"description\": \"description\"\n    }\n  ],\n  \"returnUrls\": {\n    \"returnOkUrl\": \"http://uHzTuDdzFTzRxHkpkNHWNuomFmQVaCL.ibWeaCyQdi59IoGKkDolMLOuD2QdUM8M,BI7iRU,H7sL1ROnjjWMIHCqH1.9Qaz\",\n    \"returnCancelUrl\": \"https://LcZBhQHhUXwQ.ifdqKL9c6AsCqPNHvaftfRkm\",\n    \"returnErrorUrl\": \"http://OVTKqDFgtGpoGetaGdIfDFmVUHSdch.dmJ8mcYoF,bFwp4EO7bwL22eSbn4WSZ-HzXw8zJuxtCY\"\n  },\n  \"emailNotice\": \"my_email@mail.it\",\n  \"idCart\": \"ecCartIdExample\"\n}",
@@ -76,8 +69,7 @@
 							"    pm.expect(jsonData.title).to.contain(\"Invalid payment info\");",
 							"});"
 						],
-						"type": "text/javascript",
-						"packages": {}
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -94,18 +86,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{basePath}}/carts?X-Api-Key={{primaryKey}}",
+					"raw": "{{basePath}}/carts",
 					"host": [
 						"{{basePath}}"
 					],
 					"path": [
 						"carts"
-					],
-					"query": [
-						{
-							"key": "X-Api-Key",
-							"value": "{{primaryKey}}"
-						}
 					]
 				}
 			},
