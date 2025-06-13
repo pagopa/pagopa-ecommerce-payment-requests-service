@@ -78,6 +78,23 @@ class CartsControllerTests {
   }
 
   @Test
+  fun `should return unauthorized if create carts request has not api key header`() = runTest {
+    val request = CartRequests.withOnePaymentNotice()
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
+  }
+
+  @Test
   fun `post cart KO with multiple payment notices`() = runTest {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
@@ -309,6 +326,19 @@ class CartsControllerTests {
       .isNotFound
       .expectBody<ProblemJsonDto>()
       .isEqualTo(expected)
+  }
+
+  @Test
+  fun `should return unauthorized if request has not api key header`() = runTest {
+    val cartId = UUID.randomUUID()
+
+    val parameters = mapOf("cartId" to cartId)
+    webClient
+      .get()
+      .uri("/carts/{cartId}", parameters)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
   }
 
   @Test
