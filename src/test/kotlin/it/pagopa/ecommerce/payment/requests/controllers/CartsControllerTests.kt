@@ -11,8 +11,6 @@ import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
 import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
 import java.net.URI
 import java.util.*
-import java.util.function.Function
-import java.util.function.Predicate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -22,6 +20,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.BDDMockito.*
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.reactivestreams.Publisher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -31,7 +30,6 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
-import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
@@ -362,19 +360,21 @@ class CartsControllerTests {
   @Test
   fun `warm up controller`() {
     val webClient = mock(WebClient::class.java)
+    val requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec::class.java)
+    val requestBodySpec = mock(WebClient.RequestBodySpec::class.java)
+    val requestHeadersSpec = mock(WebClient.RequestHeadersSpec::class.java)
+    val responseSpec = mock(WebClient.ResponseSpec::class.java)
+
     given(webClient.post()).willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.uri(any(), any<Array<*>>())).willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.header(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
-      .willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.body(any(), eq(CartRequestDto::class.java)))
+    given(requestBodyUriSpec.uri(any<String>())).willReturn(requestBodySpec)
+    given(requestBodySpec.body(any<Publisher<CartRequestDto>>(), eq(CartRequestDto::class.java)))
       .willReturn(requestHeadersSpec)
     given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
-    given(
-        responseSpec.onStatus(
-          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
-      .willReturn(responseSpec)
+    given(responseSpec.onStatus(any(), any())).willReturn(responseSpec)
     given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
-    CartsController(webClient).warmupPostCarts()
+
+    val controller = CartsController(webClient)
+    controller.warmupPostCarts()
     verify(webClient, times(1)).post()
   }
 
