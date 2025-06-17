@@ -1,5 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.validation
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
@@ -11,8 +13,9 @@ import reactor.core.publisher.Mono
 class ApiKeyFilter(
   @Value("\${security.apiKey.primary}") private val primaryApiKey: String,
   @Value("\${security.apiKey.secondary}") private val secondaryApiKey: String,
+  @Value("\${security.apiKey.securedPaths}") private val securedPaths: List<String>,
 ) : WebFilter {
-  private val pathsToCheck = listOf("/carts", "/payment-requests")
+  private var logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
   /*
    * @formatter:off
@@ -25,9 +28,10 @@ class ApiKeyFilter(
   @SuppressWarnings("kotlin:S6508")
   override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
     val path = exchange.request.path.toString()
-    if (pathsToCheck.any { path.startsWith(it) }) {
+    if (securedPaths.any { path.startsWith(it) }) {
       val apiKey = exchange.request.headers.getFirst("X-Api-Key")
       if (apiKey.isNullOrBlank() || (apiKey != primaryApiKey && apiKey != secondaryApiKey)) {
+        logger.error("Unauthorized request")
         exchange.response.statusCode = org.springframework.http.HttpStatus.UNAUTHORIZED
         return exchange.response.setComplete()
       }

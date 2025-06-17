@@ -109,6 +109,7 @@ microservice-chart:
     ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ECS_SERVICE_ENVIRONMENT: "dev"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.tokenizer.pdv.pagopa.it/tokenizer/v1"
+    SECURITY_API_KEY_SECURED_PATHS: ["/carts","/payment-requests"]
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-access-key
     REDIS_HOST: redis-ecommerce-hostname
