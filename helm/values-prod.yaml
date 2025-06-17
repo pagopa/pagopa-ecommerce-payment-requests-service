@@ -104,6 +104,7 @@ microservice-chart:
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"
+    SECURITY_API_KEY_SECURED_PATHS: "/carts,/payment-requests"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-access-key
     REDIS_HOST: redis-ecommerce-hostname
@@ -113,7 +114,6 @@ microservice-chart:
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
     SECURITY_API_KEY_PRIMARY: ecommerce-payment-requests-primary-api-key
     SECURITY_API_KEY_SECONDARY: ecommerce-payment-requests-secondary-api-key
-    SECURITY_API_KEY_SECURED_PATHS: "/carts,/payment-requests"
   keyvault:
     name: "pagopa-p-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
