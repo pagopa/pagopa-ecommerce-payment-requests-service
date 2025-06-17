@@ -23,11 +23,11 @@ import org.mockito.Mock
 import org.reactivestreams.Publisher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.client.WebClient
@@ -41,7 +41,7 @@ class CartsControllerTests {
 
   @Autowired lateinit var webClient: WebTestClient
 
-  @MockBean lateinit var cartService: CartService
+  @MockitoBean lateinit var cartService: CartService
 
   @Mock private lateinit var requestBodyUriSpec: WebClient.RequestBodyUriSpec
 
@@ -55,24 +55,27 @@ class CartsControllerTests {
 
   private val objectMapper = ObjectMapper()
 
-  @Test
-  fun `post cart succeeded with one payment notice`() = runTest {
-    val request = CartRequests.withOnePaymentNotice()
-    val clientId = ClientIdDto.WISP_REDIRECT
-    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
-    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
-    webClient
-      .post()
-      .uri("/carts")
-      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
-      .contentType(MediaType.APPLICATION_JSON)
-      .bodyValue(request)
-      .exchange()
-      .expectStatus()
-      .is3xxRedirection
-      .expectHeader()
-      .location(locationUrl)
-  }
+  @ParameterizedTest
+  @ValueSource(strings = ["/carts", "/carts/"])
+  fun `post cart succeeded with one payment notice ignoring trailing slash`(path: String) =
+    runTest {
+      val request = CartRequests.withOnePaymentNotice()
+      val clientId = ClientIdDto.WISP_REDIRECT
+      val locationUrl =
+        "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+      given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+      webClient
+        .post()
+        .uri(path)
+        .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(request)
+        .exchange()
+        .expectStatus()
+        .is3xxRedirection
+        .expectHeader()
+        .location(locationUrl)
+    }
 
   @Test
   fun `post cart KO with multiple payment notices`() = runTest {
