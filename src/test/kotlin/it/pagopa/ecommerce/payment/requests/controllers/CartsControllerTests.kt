@@ -68,6 +68,7 @@ class CartsControllerTests {
         .post()
         .uri(path)
         .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+        .header("X-Api-Key", "secondary-key")
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(request)
         .exchange()
