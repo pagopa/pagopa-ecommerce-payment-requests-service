@@ -70,7 +70,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isOk
@@ -87,7 +87,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -103,7 +103,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.BAD_REQUEST)
@@ -124,7 +124,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
@@ -150,7 +150,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.NOT_FOUND)
@@ -177,7 +177,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.NOT_FOUND)
@@ -203,7 +203,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.BAD_GATEWAY)
@@ -229,7 +229,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.CONFLICT)
@@ -255,7 +255,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.CONFLICT)
@@ -281,7 +281,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.CONFLICT)
@@ -307,7 +307,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.CONFLICT)
@@ -330,7 +330,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "primary-key")
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.BAD_GATEWAY)
@@ -361,7 +361,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
-      .header("X-Api-Key", "super-wrong-api-key")
+      .header("x-api-key", "super-wrong-api-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.UNAUTHORIZED)

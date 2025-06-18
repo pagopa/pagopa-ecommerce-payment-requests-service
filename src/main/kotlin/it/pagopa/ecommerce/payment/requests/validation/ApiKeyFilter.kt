@@ -30,7 +30,7 @@ class ApiKeyFilter(
   override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
     val path = exchange.request.path.toString()
     if (securedPaths.any { path.startsWith(it) }) {
-      val apiKey = exchange.request.headers.getFirst("X-Api-Key")
+      val apiKey = exchange.request.headers.getFirst("x-api-key")
       if (!isValidApiKey(apiKey)) {
         logger.error("Unauthorized request for path $path - Missing or invalid API key")
         exchange.response.statusCode = HttpStatus.UNAUTHORIZED
