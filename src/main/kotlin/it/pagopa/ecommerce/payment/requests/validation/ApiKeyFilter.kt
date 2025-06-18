@@ -36,11 +36,22 @@ class ApiKeyFilter(
         exchange.response.statusCode = HttpStatus.UNAUTHORIZED
         return exchange.response.setComplete()
       }
+      logWhichApiKey(apiKey, path)
     }
     return chain.filter(exchange)
   }
 
   private fun isValidApiKey(apiKey: String?): Boolean {
     return !apiKey.isNullOrBlank() && validApiKeys.contains(apiKey)
+  }
+
+  private fun logWhichApiKey(apiKey: String?, path: String) {
+    val apiKeyType =
+      when (apiKey) {
+        primaryApiKey -> "primary"
+        secondaryApiKey -> "secondary"
+        else -> "unknown"
+      }
+    logger.debug("API key type used for path $path: $apiKeyType")
   }
 }
