@@ -31,7 +31,7 @@ class ApiKeyFilter(
     if (securedPaths.any { path.startsWith(it) }) {
       val apiKey = exchange.request.headers.getFirst("X-Api-Key")
       if (apiKey.isNullOrBlank() || (apiKey != primaryApiKey && apiKey != secondaryApiKey)) {
-        logger.error("Unauthorized request")
+        logger.error("Unauthorized request for path $path - Missing or invalid API key")
         exchange.response.statusCode = org.springframework.http.HttpStatus.UNAUTHORIZED
         return exchange.response.setComplete()
       }
