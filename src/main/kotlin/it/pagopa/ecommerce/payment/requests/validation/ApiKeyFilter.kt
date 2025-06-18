@@ -17,7 +17,7 @@ class ApiKeyFilter(
   @Value("\${security.apiKey.securedPaths}") private val securedPaths: List<String>,
 ) : WebFilter {
   private var logger: Logger = LoggerFactory.getLogger(this.javaClass)
-
+  private val validApiKeys = setOf(primaryApiKey, secondaryApiKey)
   /*
    * @formatter:off
    *
@@ -31,12 +31,16 @@ class ApiKeyFilter(
     val path = exchange.request.path.toString()
     if (securedPaths.any { path.startsWith(it) }) {
       val apiKey = exchange.request.headers.getFirst("X-Api-Key")
-      if (apiKey.isNullOrBlank() || (apiKey != primaryApiKey && apiKey != secondaryApiKey)) {
+      if (!isValidApiKey(apiKey)) {
         logger.error("Unauthorized request for path $path - Missing or invalid API key")
         exchange.response.statusCode = HttpStatus.UNAUTHORIZED
         return exchange.response.setComplete()
       }
     }
     return chain.filter(exchange)
+  }
+
+  private fun isValidApiKey(apiKey: String?): Boolean {
+    return !apiKey.isNullOrBlank() && validApiKeys.contains(apiKey)
   }
 }
