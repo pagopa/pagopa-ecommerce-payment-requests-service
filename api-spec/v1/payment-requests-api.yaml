@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 0.0.1
+  version: 1.0.0
   title: Pagopa eCommerce payment requests service
   description: pagoPA ecommerce microservice to retrieve payment request data or to manage carts (consisting of a group of payment requests) with redirects to checkout
   contact:
