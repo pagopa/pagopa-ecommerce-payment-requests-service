@@ -1,4 +1,4 @@
-FROM openjdk:17-slim as build
+FROM openjdk:17-slim@sha256:aaa3b3cb27e3e520b8f116863d0580c438ed55ecfa0bc126b41f68c3f62f9774 as build
 WORKDIR /workspace/app
 
 COPY mvnw .
@@ -13,7 +13,7 @@ COPY eclipse-style.xml eclipse-style.xml
 RUN ./mvnw install -DskipTests # --offline
 RUN mkdir target/extracted && java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted
 
-FROM openjdk:17-slim
+FROM openjdk:17-slim@sha256:aaa3b3cb27e3e520b8f116863d0580c438ed55ecfa0bc126b41f68c3f62f9774
 
 RUN addgroup --system user && adduser --ingroup user --system user
 USER user:user
