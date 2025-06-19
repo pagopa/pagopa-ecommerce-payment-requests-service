@@ -14,6 +14,8 @@ tags:
 externalDocs:
   url: https://pagopa.atlassian.net/wiki/spaces/I/pages/492339720/pagoPA+eCommerce+Design+Review
   description: Design review
+security:
+  - ApiKeyAuth: []
 paths:
   /payment-requests/{rpt_id}:
     get:
@@ -165,6 +167,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
   schemas:
     PaymentRequestsGetResponse:
       type: object

@@ -104,6 +104,7 @@ microservice-chart:
     ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service
     ECS_SERVICE_ENVIRONMENT: "uat"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.tokenizer.pdv.pagopa.it/tokenizer/v1"
+    SECURITY_API_KEY_SECURED_PATHS: "/carts,/payment-requests"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-access-key
     REDIS_HOST: redis-ecommerce-hostname
@@ -111,6 +112,8 @@ microservice-chart:
     NODO_NODEFORPSP_API_KEY: nodo-nodeforpsp-api-key
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
+    SECURITY_API_KEY_PRIMARY: ecommerce-payment-requests-primary-api-key
+    SECURITY_API_KEY_SECONDARY: ecommerce-payment-requests-secondary-api-key
   keyvault:
     name: "pagopa-u-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"

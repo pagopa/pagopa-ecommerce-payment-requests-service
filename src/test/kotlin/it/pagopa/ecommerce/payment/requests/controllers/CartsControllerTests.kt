@@ -68,6 +68,7 @@ class CartsControllerTests {
         .post()
         .uri(path)
         .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+        .header("x-api-key", "secondary-key")
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(request)
         .exchange()
@@ -76,6 +77,41 @@ class CartsControllerTests {
         .expectHeader()
         .location(locationUrl)
     }
+
+  @Test
+  fun `should return unauthorized if create carts request has not api key header`() = runTest {
+    val request = CartRequests.withOnePaymentNotice()
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
+  }
+
+  @Test
+  fun `should return unauthorized if create carts request has wrong api key header`() = runTest {
+    val request = CartRequests.withOnePaymentNotice()
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "the-real-wrong-api-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
+  }
 
   @Test
   fun `post cart KO with multiple payment notices`() = runTest {
@@ -98,6 +134,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -119,6 +156,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -140,6 +178,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -161,6 +200,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -182,6 +222,7 @@ class CartsControllerTests {
     webClient
       .post()
       .uri("/carts")
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -207,6 +248,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -241,6 +283,7 @@ class CartsControllerTests {
     webClient
       .get()
       .uri("/carts/{idCart}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isOk
@@ -272,6 +315,7 @@ class CartsControllerTests {
     webClient
       .get()
       .uri("/carts/{idCart}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isOk
@@ -295,11 +339,25 @@ class CartsControllerTests {
     webClient
       .get()
       .uri("/carts/{cartId}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isNotFound
       .expectBody<ProblemJsonDto>()
       .isEqualTo(expected)
+  }
+
+  @Test
+  fun `should return unauthorized if request has not api key header`() = runTest {
+    val cartId = UUID.randomUUID()
+
+    val parameters = mapOf("cartId" to cartId)
+    webClient
+      .get()
+      .uri("/carts/{cartId}", parameters)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
   }
 
   @Test
@@ -335,6 +393,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -357,6 +416,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .contentType(MediaType.APPLICATION_JSON)
+      .header("x-api-key", "primary-key")
       .bodyValue(request)
       .exchange()
       .expectStatus()
