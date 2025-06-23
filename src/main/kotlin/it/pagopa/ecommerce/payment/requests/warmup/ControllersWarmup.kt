@@ -46,7 +46,8 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                 }
                 .getOrElse { exception ->
                   logger.error(
-                    "Warmup function: [$method] -> elapsed time: [${intertime}].", exception)
+                    "Warmup function: [$method] execution error! Elapsed time: [${intertime}].",
+                    exception)
                 }
             }
         }
