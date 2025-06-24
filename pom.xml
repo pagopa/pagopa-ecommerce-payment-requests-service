@@ -16,7 +16,7 @@
         group of payment requests) with redirects to checkout.
     </description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <kotlin.version>1.9.24</kotlin.version>
         <jacoco.version>0.8.8</jacoco.version>
         <kotlinx-coroutines.version>1.6.4</kotlinx-coroutines.version>

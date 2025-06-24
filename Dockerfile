@@ -1,4 +1,4 @@
-FROM openjdk:17-slim as build
+FROM openjdk:21-slim as build
 WORKDIR /workspace/app
 
 COPY mvnw .
@@ -13,7 +13,7 @@ COPY eclipse-style.xml eclipse-style.xml
 RUN ./mvnw install -DskipTests # --offline
 RUN mkdir target/extracted && java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted
 
-FROM openjdk:17-slim
+FROM openjdk:21-slim
 
 RUN addgroup --system user && adduser --ingroup user --system user
 USER user:user
