@@ -10,7 +10,7 @@
     </parent>
     <groupId>it.pagopa.ecommerce</groupId>
     <artifactId>pagopa-ecommerce-payment-requests-service</artifactId>
-    <version>2.1.0</version>
+    <version>2.1.1</version>
     <name>pagopa-ecommerce-payment-requests-service</name>
     <description>pagoPA ecommerce microservice to retrieve payment request data or to manage carts (consisting of a
         group of payment requests) with redirects to checkout.
