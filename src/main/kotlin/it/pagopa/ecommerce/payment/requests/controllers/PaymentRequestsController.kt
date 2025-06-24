@@ -9,6 +9,7 @@ import it.pagopa.ecommerce.payment.requests.warmup.utils.WarmupRequests
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -16,8 +17,10 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
 @RestController
-class PaymentRequestsController(private val webClient: WebClient = WebClient.create()) :
-  PaymentRequestsApi {
+class PaymentRequestsController(
+  private val webClient: WebClient = WebClient.create(),
+  @Value("\${security.apiKey.primary}") private val primaryApiKey: String,
+) : PaymentRequestsApi {
 
   @Autowired private lateinit var paymentRequestsService: PaymentRequestsService
 
@@ -35,6 +38,7 @@ class PaymentRequestsController(private val webClient: WebClient = WebClient.cre
       .uri(
         "http://localhost:8080/payment-requests/{rpt_id}",
         mapOf("rpt_id" to WarmupRequests.getPaymentRequest()))
+      .header("x-api-key", primaryApiKey)
       .retrieve()
       .onStatus(HttpStatusCode::isError) {
         Mono.error(WarmUpException("PaymentRequestsController", "warmupGetPaymentRequest"))

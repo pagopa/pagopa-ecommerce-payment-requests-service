@@ -30,20 +30,25 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
       runCatching {
           controllerToWarmUpKClass.declaredMemberFunctions
             .filter { it.hasAnnotation<WarmupFunction>() }
-            .forEach {
+            .forEach { method ->
               warmUpMethods++
               val result: Result<*>
               val intertime = measureTimeMillis {
                 result = runCatching {
-                  logger.info("Invoking function: [{}]", it.toString())
-                  it.call(controllerToWarmUpInstance)
+                  logger.info("Invoking function: [{}]", method.toString())
+                  method.call(controllerToWarmUpInstance)
                 }
               }
-              logger.info(
-                "Warmup function: [{}] -> elapsed time: [{}]. Is ok: [{}] ",
-                it.toString(),
-                intertime,
-                result)
+              result
+                .onSuccess { _ ->
+                  logger.info(
+                    "Warmup function: [{}] -> elapsed time: [{}].", method.toString(), intertime)
+                }
+                .getOrElse { exception ->
+                  logger.error(
+                    "Warmup function: [$method] execution error! Elapsed time: [${intertime}].",
+                    exception)
+                }
             }
         }
         .getOrElse { logger.error("Exception performing controller warm up ", it) }
