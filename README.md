@@ -5,6 +5,12 @@
 _pagoPA - eCommerce_ microservice to retrieve _payment requests_ data or manage _carts_ (a set of _payment requests_)
 with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 
+## Requirements
+
+- **Java 21** or higher
+- **Maven 3.6+**
+- **Docker** (for containerized deployment)
+
 ### Environment variables
 
 | Variable name                     | Description                                                                                         | type          | default |
