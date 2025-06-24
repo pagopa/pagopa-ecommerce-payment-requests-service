@@ -7,7 +7,7 @@ with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 
 ## Requirements
 
-- **Java 21** or higher
+- **Java 21**
 - **Maven 3.6+**
 - **Docker** (for containerized deployment)
 
