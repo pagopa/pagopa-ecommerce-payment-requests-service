@@ -13,7 +13,7 @@ COPY eclipse-style.xml eclipse-style.xml
 RUN ./mvnw install -DskipTests # --offline
 RUN mkdir target/extracted && java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted
 
-FROM eclipse-temurin:21-jdk-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 RUN addgroup --system user && adduser --ingroup user --system user
 USER user:user
