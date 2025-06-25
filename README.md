@@ -88,3 +88,11 @@ tags presence during PR analysis:
 
 For the check to be successfully passed only one of the `Application version` labels and only ones of
 the `Chart version` labels must be contemporary present for a given PR or the `skip-release` for skipping release step
+
+## Contributors 👥
+
+Made with ❤️ by PagoPA S.p.A.
+
+### Maintainers
+
+See `CODEOWNERS` file
