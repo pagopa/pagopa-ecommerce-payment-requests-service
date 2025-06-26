@@ -9,7 +9,7 @@ with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 
 - **Java 21** or higher
 - **Maven 3.6+**
-- **Docker** - for containerized deployment
+- **Docker** (for containerized deployment)
 
 ### Environment variables
 
