@@ -20,9 +20,9 @@
         <maven.compiler.release>21</maven.compiler.release>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <kotlin.version>1.9.24</kotlin.version>
+        <kotlin.version>2.2.0</kotlin.version>
         <jacoco.version>0.8.12</jacoco.version>
-        <kotlinx-coroutines.version>1.6.4</kotlinx-coroutines.version>
+        <kotlinx-coroutines.version>1.8.1</kotlinx-coroutines.version>
         <mockito-kotlin.version>4.0.0</mockito-kotlin.version>
         <sonar.coverage.exclusions>
             **/it/pagopa/generated/**/*,
