@@ -1,7 +1,7 @@
 microservice-chart:
   namespace: "ecommerce"
   nameOverride: ""
-  fullnameOverride: ""
+  fullnameOverride: "soak-pagopa-ecommerce-payment-requests-service"
   canaryDelivery:
     create: false
     ingress:
@@ -10,7 +10,7 @@ microservice-chart:
       header: true
       headerName: deployment
       headerValue: blue
-      weightPercent: 10
+      weightPercent: 0
     image:
       repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
       tag: "latest"
