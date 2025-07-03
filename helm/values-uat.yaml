@@ -4,6 +4,13 @@ microservice-chart:
   fullnameOverride: "soak-pagopa-ecommerce-payment-requests-service"
   canaryDelivery:
     create: false
+    autoscaling:
+      enable: true
+      minReplica: 3
+      maxReplica: 10
+    deployment:
+      create: true
+      replicas: 3
     ingress:
       bluegreen: false
       #set canary deployment with traffic balancing see https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#canary for more info
@@ -17,6 +24,9 @@ microservice-chart:
     envConfig:
       OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,deployment.environment=uat"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
+      NODE_FOR_PSP_URI: /ecommerce/mock/nodo/v1
+      NODO_PER_PM_URI: /ecommerce/mock/nodoPerPM/v1/checkPosition
+      PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.platform.pagopa.it/ecommerce/mock/pdv/v1"
     envSecret: {}
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
