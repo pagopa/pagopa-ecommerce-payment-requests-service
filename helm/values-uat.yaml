@@ -20,6 +20,7 @@ microservice-chart:
       NODE_FOR_PSP_URI: /ecommerce/mock/nodo/v1
       NODO_PER_PM_URI: /ecommerce/mock/nodoPerPM/v1/checkPosition
       PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.platform.pagopa.it/ecommerce/mock/pdv/v1"
+      SECURITY_API_KEY_SECURED_PATHS: ""
     envSecret: {}
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
