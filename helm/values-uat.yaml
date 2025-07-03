@@ -4,13 +4,6 @@ microservice-chart:
   fullnameOverride: "soak-pagopa-ecommerce-payment-requests-service"
   canaryDelivery:
     create: false
-    autoscaling:
-      enable: true
-      minReplica: 3
-      maxReplica: 10
-    deployment:
-      create: true
-      replicas: 3
     ingress:
       bluegreen: false
       #set canary deployment with traffic balancing see https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#canary for more info
@@ -46,9 +39,6 @@ microservice-chart:
     initialDelaySeconds: 40
     failureThreshold: 6
     periodSeconds: 10
-  deployment:
-    create: true
-    replicas: 1
   service:
     create: true
     type: ClusterIP
@@ -78,10 +68,13 @@ microservice-chart:
       cpu: "500m"
   autoscaling:
     enable: true
-    minReplica: 1
-    maxReplica: 5
+    minReplica: 3
+    maxReplica: 10
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
+  deployment:
+    create: true
+    replicas: 3
     triggers:
       - type: cpu
         metadata:
