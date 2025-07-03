@@ -72,15 +72,15 @@ microservice-chart:
     maxReplica: 10
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
-  deployment:
-    create: true
-    replicas: 3
     triggers:
       - type: cpu
         metadata:
           # Required
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "80"
+  deployment:
+    create: true
+    replicas: 3
   terminationGracePeriodSeconds: 30
   strategy:
     type: "RollingUpdate"
