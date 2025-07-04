@@ -13,7 +13,7 @@ resources:
     - repository: pagopaEcommerceLocal
       type: github
       name: pagopa/pagopa-ecommerce-local 
-      ref: CHK-4219-upgrade-java
+      ref: main
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
