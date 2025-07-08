@@ -20,7 +20,7 @@ microservice-chart:
     envSecret: {}
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "2.1.1"
+    tag: "3.0.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
