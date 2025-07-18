@@ -20,7 +20,6 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.BDDMockito.*
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.reactivestreams.Publisher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
@@ -49,7 +48,7 @@ class CartsControllerTests {
 
   @Mock private lateinit var responseSpec: WebClient.ResponseSpec
 
-  @InjectMocks val cartsController: CartsController = CartsController()
+  @InjectMocks val cartsController: CartsController = CartsController(primaryApiKey = "primaryKey")
 
   private val cartsMaxAllowedPaymentNotices = 5
 
@@ -370,13 +369,14 @@ class CartsControllerTests {
 
     given(webClient.post()).willReturn(requestBodyUriSpec)
     given(requestBodyUriSpec.uri(any<String>())).willReturn(requestBodySpec)
-    given(requestBodySpec.body(any<Publisher<CartRequestDto>>(), eq(CartRequestDto::class.java)))
+    given(requestBodySpec.header(any(), any())).willReturn(requestBodySpec)
+    given(requestBodySpec.body(any(), eq(CartRequestDto::class.java)))
       .willReturn(requestHeadersSpec)
     given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
     given(responseSpec.onStatus(any(), any())).willReturn(responseSpec)
     given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
 
-    val controller = CartsController(webClient)
+    val controller = CartsController(webClient = webClient, primaryApiKey = "primaryApiKey")
     controller.warmupPostCarts()
     verify(webClient, times(1)).post()
   }
