@@ -69,7 +69,7 @@ class PaymentRequestsServiceTests {
     val paTaxCode = "77777777777"
     val paName = "Pa Name"
     val description = "Payment request description"
-    val amount = Integer.valueOf(1000)
+    val amount = 1000L
     val isAllCCP = Random().nextBoolean()
     val paymentRequestInfo =
       PaymentRequestInfo(
@@ -104,7 +104,7 @@ class PaymentRequestsServiceTests {
   fun `should return payment request info from Nodo VerifyPaymentNotice`() = runTest {
     val rptIdAsString = "77777777777302016723749670035"
     val description = "Payment request description"
-    val amount = Integer.valueOf(1000)
+    val amount = 1000L
     val amountForNodo = BigDecimal.valueOf(amount.toLong())
 
     val verifyPaymentNotice = VerifyPaymentNoticeRes()
@@ -139,7 +139,7 @@ class PaymentRequestsServiceTests {
     runTest {
       val rptIdAsString = "77777777777302016723749670035"
       val description = "Payment request description"
-      val amount = 1000
+      val amount = 1000L
       val amountForNodo = BigDecimal.valueOf(amount.toLong())
 
       val format: DateFormat = SimpleDateFormat("yyyy-MM-dd")
@@ -176,7 +176,7 @@ class PaymentRequestsServiceTests {
     runTest {
       val rptIdAsString = "77777777777302016723749670035"
       val description = "Payment request description"
-      val amount = 1000
+      val amount = 1000L
       val amountForNodo = BigDecimal.valueOf(amount.toLong())
 
       val dueDate = DatatypeFactory.newInstance().newXMLGregorianCalendar("2022-04-24+02:00")
