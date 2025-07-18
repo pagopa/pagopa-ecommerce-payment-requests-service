@@ -4,6 +4,6 @@ class PaymentTransferInfo
 constructor(
   val paFiscalCode: String,
   val digitalStamp: Boolean,
-  val transferAmount: Int,
+  val transferAmount: Long,
   val transferCategory: String?,
 ) {}

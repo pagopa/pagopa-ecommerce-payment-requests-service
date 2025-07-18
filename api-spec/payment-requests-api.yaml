@@ -703,6 +703,7 @@ components:
         amount:
           description: Payment notice amount
           type: integer
+          format: int64
           minimum: 1
         companyName:
           description: Payment notice company name
