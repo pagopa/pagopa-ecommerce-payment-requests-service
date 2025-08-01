@@ -2,12 +2,14 @@ package it.pagopa.ecommerce.payment.requests.repositories.redistemplate
 
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
 import java.time.Duration
-import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.ReactiveRedisTemplate
 
 class PaymentRequestsRedisTemplateWrapper(
-  redisTemplate: RedisTemplate<String, PaymentRequestInfo>,
+  reactiveRedisTemplate: ReactiveRedisTemplate<String, PaymentRequestInfo>,
   ttl: Duration
-) : RedisTemplateWrapper<PaymentRequestInfo>(redisTemplate = redisTemplate, "keys", ttl) {
+) :
+  ReactiveRedisTemplateWrapper<PaymentRequestInfo>(
+    reactiveRedisTemplate = reactiveRedisTemplate, "keys", ttl) {
   override fun getKeyFromEntity(value: PaymentRequestInfo): String =
     "${value.id.fiscalCode}${value.id.noticeId}"
 }
