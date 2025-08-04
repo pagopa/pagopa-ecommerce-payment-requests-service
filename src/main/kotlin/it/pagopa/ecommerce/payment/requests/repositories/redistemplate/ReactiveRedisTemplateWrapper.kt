@@ -4,7 +4,7 @@ import java.time.Duration
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import reactor.core.publisher.Mono
 
-abstract class ReactiveRedisTemplateWrapper<V>(
+abstract class ReactiveRedisTemplateWrapper<V : Any>(
   val reactiveRedisTemplate: ReactiveRedisTemplate<String, V>,
   private val keyspace: String,
   private val ttl: Duration
