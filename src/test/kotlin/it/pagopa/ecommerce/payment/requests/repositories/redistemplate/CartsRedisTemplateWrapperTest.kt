@@ -14,15 +14,17 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.*
-import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.ValueOperations
+import org.springframework.data.redis.core.ReactiveRedisTemplate
+import org.springframework.data.redis.core.ReactiveValueOperations
+import reactor.core.publisher.Mono
+import reactor.test.StepVerifier
 
 @ExtendWith(MockitoExtension::class)
 class CartsRedisTemplateWrapperTest {
 
-  private val redisTemplate: RedisTemplate<String, CartInfo> = mock()
+  private val redisTemplate: ReactiveRedisTemplate<String, CartInfo> = mock()
 
-  private val valueOperations: ValueOperations<String, CartInfo> = mock()
+  private val valueOperations: ReactiveValueOperations<String, CartInfo> = mock()
 
   @Captor private lateinit var keyCaptor: ArgumentCaptor<String>
 
@@ -54,10 +56,13 @@ class CartsRedisTemplateWrapperTest {
           req.emailNotice)
       }
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
-    doNothing().`when`(valueOperations).set(capture(keyCaptor), eq(cartInfo), eq(duration))
+    given(valueOperations.set(capture(keyCaptor), eq(cartInfo), eq(duration)))
+      .willReturn(Mono.just(true))
 
     // test
-    cartsRedisTemplateWrapper.save(cartInfo)
+    StepVerifier.create(cartsRedisTemplateWrapper.save(cartInfo)).expectNext(true).verifyComplete()
+
+    verify(redisTemplate, times(1)).opsForValue()
     verify(valueOperations, times(1)).set("carts:$cartId", cartInfo, duration)
     assertEquals("carts:$cartId", keyCaptor.value)
   }
@@ -86,11 +91,13 @@ class CartsRedisTemplateWrapperTest {
       }
 
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
-    given(valueOperations.get("carts:$cartId")).willReturn(cartInfo)
+    given(valueOperations.get("carts:$cartId")).willReturn(Mono.just(cartInfo))
 
     // test
-    val getPaymentRequestInfo = cartsRedisTemplateWrapper.findById(cartId.toString())
-    verify(valueOperations, times(1)).get("carts:$cartId")
-    assertEquals(cartInfo, getPaymentRequestInfo)
+    StepVerifier.create(cartsRedisTemplateWrapper.findById(cartId.toString()))
+      .expectNext(cartInfo)
+      .verifyComplete()
+
+    verify(redisTemplate, times(1)).opsForValue()
   }
 }

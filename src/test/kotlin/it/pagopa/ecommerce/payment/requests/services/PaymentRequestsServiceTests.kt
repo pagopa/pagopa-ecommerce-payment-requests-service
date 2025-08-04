@@ -30,6 +30,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.willReturn
 import org.springframework.http.HttpStatus
 import reactor.core.publisher.Mono
 
@@ -87,7 +88,7 @@ class PaymentRequestsServiceTests {
         null)
     /** preconditions */
     given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString))
-      .willReturn(paymentRequestInfo)
+      .willReturn(Mono.just(paymentRequestInfo))
     /** test */
     val responseDto = paymentRequestsService.getPaymentRequestInfo(rptIdAsString)
 
@@ -118,7 +119,8 @@ class PaymentRequestsServiceTests {
 
     /** preconditions */
     given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
-    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(Mono.empty())
+    given(paymentRequestsRedisTemplateWrapper.save(any())).willReturn(Mono.just(true))
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
@@ -158,7 +160,8 @@ class PaymentRequestsServiceTests {
 
       /** preconditions */
       given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
-      given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
+      given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(Mono.empty())
+      given(paymentRequestsRedisTemplateWrapper.save(any())).willReturn(Mono.just(true))
       given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
       given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
@@ -193,7 +196,8 @@ class PaymentRequestsServiceTests {
 
       /** preconditions */
       given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
-      given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
+      given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(Mono.empty())
+      given(paymentRequestsRedisTemplateWrapper.save(any())).willReturn(Mono.just(true))
       given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
       given(nodoOperations.getEuroCentsFromNodoAmount(amountForNodo)).willReturn(amount)
 
@@ -227,7 +231,7 @@ class PaymentRequestsServiceTests {
     verifyPaymentNotice.fault.faultCode = "PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE"
 
     /** preconditions */
-    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(Mono.empty())
     given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     /** test */
@@ -251,7 +255,7 @@ class PaymentRequestsServiceTests {
     verifyPaymentNotice.outcome = StOutcome.KO
 
     /** preconditions */
-    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(null)
+    given(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)).willReturn(Mono.empty())
     given(nodoConfig.baseVerifyPaymentNoticeReq()).willReturn(VerifyPaymentNoticeReq())
     given(nodeForPspClient.verifyPaymentNotice(any())).willReturn(Mono.just(verifyPaymentNotice))
     /** test */
