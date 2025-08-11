@@ -26,14 +26,14 @@ microservice-chart:
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 40
+    initialDelaySeconds: 5
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 40
+    initialDelaySeconds: 5
     failureThreshold: 6
     periodSeconds: 10
   deployment:
@@ -61,11 +61,11 @@ microservice-chart:
     allowPrivilegeEscalation: false
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "300m"
+      memory: "128Mi"
+      cpu: "150m"
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: "128Mi"
+      cpu: "150m"
   autoscaling:
     enable: true
     minReplica: 1
