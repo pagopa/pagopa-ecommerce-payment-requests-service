@@ -31,6 +31,7 @@
         </sonar.coverage.exclusions>
         <spotless.version>2.28.0</spotless.version>
         <ecs-logging-version>1.5.0</ecs-logging-version>
+        <native.maven.plugin.version>0.11.0</native.maven.plugin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -499,4 +500,37 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native.maven.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <buildArgs>
+                                <buildArg>--initialize-at-build-time=org.slf4j.helpers.Reporter</buildArg>
+                            </buildArgs>
+                            <metadataRepository>
+                                <enabled>true</enabled>
+                                <version>0.3.16</version>
+                            </metadataRepository>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
