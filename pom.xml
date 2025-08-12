@@ -520,9 +520,6 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <buildArgs>
-                                <buildArg>--initialize-at-build-time=org.slf4j.helpers.Reporter</buildArg>
-                            </buildArgs>
                             <metadataRepository>
                                 <enabled>true</enabled>
                                 <version>0.3.16</version>
