@@ -33,4 +33,6 @@ RUN true
 COPY --from=build --chown=user ${EXTRACTED}/application/ ./ 
 RUN true
 
-ENTRYPOINT ["java", "-javaagent:opentelemetry-javaagent.jar", "org.springframework.boot.loader.launch.JarLauncher"]
+ENV OTEL_JAVA_GLOBAL_AUTOCONFIGURE_ENABLED=true
+
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
