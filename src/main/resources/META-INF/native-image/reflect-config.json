@@ -631,6 +631,36 @@
   "allDeclaredFields": true
 },
 {
+  "name":"it.pagopa.ecommerce.payment.requests.repositories.PartyConfigurationFaultDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.payment.requests.repositories.PartyConfigurationFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.payment.requests.repositories.ValidationFaultPaymentDataErrorProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.payment.requests.repositories.PaymentDuplicatedStatusFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.payment.requests.repositories.PaymentExpiredStatusFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
   "name":"it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
