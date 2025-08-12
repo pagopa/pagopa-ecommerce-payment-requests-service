@@ -126,6 +126,36 @@
   "allDeclaredFields": true
 },
 {
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PartyConfigurationFaultDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PartyConfigurationFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentDataErrorProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentDuplicatedStatusFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentExpiredStatusFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
   "name":"it.pagopa.ecommerce.generated.transactions.model.ActivatePaymentNoticeReq",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
@@ -626,36 +656,6 @@
 },
 {
   "name":"it.pagopa.ecommerce.payment.requests.repositories.PaymentTransferInfo",
-  "allDeclaredConstructors": true,
-  "allDeclaredMethods": true,
-  "allDeclaredFields": true
-},
-{
-  "name":"it.pagopa.ecommerce.payment.requests.repositories.PartyConfigurationFaultDto",
-  "allDeclaredConstructors": true,
-  "allDeclaredMethods": true,
-  "allDeclaredFields": true
-},
-{
-  "name":"it.pagopa.ecommerce.payment.requests.repositories.PartyConfigurationFaultPaymentProblemJsonDto",
-  "allDeclaredConstructors": true,
-  "allDeclaredMethods": true,
-  "allDeclaredFields": true
-},
-{
-  "name":"it.pagopa.ecommerce.payment.requests.repositories.ValidationFaultPaymentDataErrorProblemJsonDto",
-  "allDeclaredConstructors": true,
-  "allDeclaredMethods": true,
-  "allDeclaredFields": true
-},
-{
-  "name":"it.pagopa.ecommerce.payment.requests.repositories.PaymentDuplicatedStatusFaultPaymentProblemJsonDto",
-  "allDeclaredConstructors": true,
-  "allDeclaredMethods": true,
-  "allDeclaredFields": true
-},
-{
-  "name":"it.pagopa.ecommerce.payment.requests.repositories.PaymentExpiredStatusFaultPaymentProblemJsonDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
