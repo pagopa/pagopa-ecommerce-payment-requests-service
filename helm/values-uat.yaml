@@ -17,6 +17,10 @@ microservice-chart:
     envConfig:
       OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,deployment.environment=uat"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
+      NODE_FOR_PSP_URI: /ecommerce/mock/nodo/v1
+      NODO_PER_PM_URI: /ecommerce/mock/nodoPerPM/v1/checkPosition
+      PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.platform.pagopa.it/ecommerce/mock/pdv/v1"
+      SECURITY_API_KEY_SECURED_PATHS: ""
     envSecret: {}
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
@@ -38,7 +42,7 @@ microservice-chart:
     periodSeconds: 10
   deployment:
     create: true
-    replicas: 1
+    replicas: 3
   service:
     create: true
     type: ClusterIP
@@ -47,7 +51,7 @@ microservice-chart:
   ingress:
     create: true
     host: "weuuat.ecommerce.internal.uat.platform.pagopa.it"
-    path: /pagopa-ecommerce-payment-requests-service/(.*)
+    path: /beta/pagopa-ecommerce-payment-requests-service/(.*)
     servicePort: 8080
   serviceAccount:
     create: false
@@ -68,7 +72,7 @@ microservice-chart:
       cpu: "150m"
   autoscaling:
     enable: true
-    minReplica: 1
+    minReplica: 3
     maxReplica: 5
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
@@ -90,7 +94,7 @@ microservice-chart:
     CHECKOUT_URL: https://api.uat.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
     NODO_HOSTNAME: https://api.uat.platform.pagopa.it
     NODE_FOR_PSP_URI: /nodo-auth/node-for-psp/v1
-    NODO_PER_PM_URI: /nodo-auth/node-for-ecommerce/v1/checkPosition
+    NODO_PER_PM_URI: https://api.uat.platform.pagopa.it/ecommerce/mock/nodoPerPM/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
     NODO_CONNECTION_STRING: "{\"idPSP\":\"AGID_01\",\"idChannel\":\"97735020584_09\",\"idBrokerPSP\":\"97735020584\"}"
