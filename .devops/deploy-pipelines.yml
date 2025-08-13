@@ -146,6 +146,6 @@ stages:
                       ARGUMENTS: "--timeout 5m0s --values helm/valuesOverrides/overrides-jvm-uat.yaml"
                 - script: |
                     echo "##[group]Waiting max 3 minute for blue deployment to be up and running..."
-                    timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null --header "deployment:blue" -w ''%{http_code}'' https://weuuat.ecommerce.internal.uat.platform.pagopa.it/beta/pagopa-ecommerce-payment-requests-service/actuator/health)" != "200" ]]; do echo "##[debug]App not alive, sleeping"&&sleep 5; done' || exit 1
+                    timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null --header "deployment:blue" -w ''%{http_code}'' https://weuuat.ecommerce.internal.uat.platform.pagopa.it/beta-pagopa-ecommerce-payment-requests-service/actuator/health)" != "200" ]]; do echo "##[debug]App not alive, sleeping"&&sleep 5; done' || exit 1
                   displayName: 'Waiting App to be running'
 
