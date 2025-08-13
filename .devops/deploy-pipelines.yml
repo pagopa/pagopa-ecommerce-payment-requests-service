@@ -133,7 +133,7 @@ stages:
                 - template: azure-templates/helm-microservice-chart-deploy.yml
                   parameters:
                     DO_DEPLOY: true
-                    DO_BLUE_GREEN_DEPLOY: true
+                    DO_BLUE_GREEN_DEPLOY: false
                     ENV: 'UAT'
                     KUBERNETES_SERVICE_CONN: $(UAT_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: ecommerce

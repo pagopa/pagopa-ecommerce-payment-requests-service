@@ -1,7 +1,7 @@
 microservice-chart:
   namespace: "ecommerce"
   nameOverride: ""
-  fullnameOverride: ""
+  fullnameOverride: "beta-pagopa-ecommerce-payment-requests-service"
   canaryDelivery:
     create: false
     ingress:
@@ -51,7 +51,7 @@ microservice-chart:
   ingress:
     create: true
     host: "weuuat.ecommerce.internal.uat.platform.pagopa.it"
-    path: /beta/pagopa-ecommerce-payment-requests-service/(.*)
+    path: /beta-pagopa-ecommerce-payment-requests-service/(.*)
     servicePort: 8080
   serviceAccount:
     create: false
