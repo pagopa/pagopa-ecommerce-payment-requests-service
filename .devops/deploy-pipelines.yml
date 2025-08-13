@@ -133,13 +133,13 @@ stages:
                 - template: azure-templates/helm-microservice-chart-deploy.yml
                   parameters:
                     DO_DEPLOY: true
-                    DO_BLUE_GREEN_DEPLOY: true
+                    DO_BLUE_GREEN_DEPLOY: false
                     ENV: 'UAT'
                     KUBERNETES_SERVICE_CONN: $(UAT_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: ecommerce
                     APP_NAME: beta-$(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-uat.yaml"
-                    GREEN_VERSION: $(green_app_version)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
+                    GREEN_VERSION: $(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
                     BLUE_VERSION: $(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
                     #for jvm build add --values option targeting containing overrides from native helm values, such as required resources etc
                     ${{ if eq(parameters['NATIVE_COMPILATION'], False) }}:
