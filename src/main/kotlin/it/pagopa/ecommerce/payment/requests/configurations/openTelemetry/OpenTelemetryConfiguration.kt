@@ -10,7 +10,6 @@ import io.opentelemetry.instrumentation.lettuce.v5_1.LettuceTelemetry
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-
 @Configuration
 class OpenTelemetryConfiguration {
 
@@ -24,14 +23,12 @@ class OpenTelemetryConfiguration {
     return openTelemetry.getTracer("pagopa-ecommerce-payment-requests-service")
   }
 
-  //Manual configuration of Redis instrumentation
+  // Manual configuration of Redis instrumentation
   @Bean
   fun otelLettuceClientResources(openTelemetry: OpenTelemetry): ClientResources {
     val telemetry: LettuceTelemetry = LettuceTelemetry.builder(openTelemetry).build()
     val tracing: Tracing = telemetry.newTracing()
 
-    return DefaultClientResources.builder()
-      .tracing(tracing)
-      .build()
+    return DefaultClientResources.builder().tracing(tracing).build()
   }
 }
