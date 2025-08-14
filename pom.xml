@@ -518,6 +518,9 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <buildArgs>
+                                <buildArg>-O3</buildArg>
+                            </buildArgs>
                             <metadataRepository>
                                 <enabled>true</enabled>
                                 <version>0.3.16</version>
