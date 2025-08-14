@@ -173,6 +173,11 @@
             <groupId>io.opentelemetry.instrumentation</groupId>
             <artifactId>opentelemetry-spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-lettuce-5.1</artifactId>
+            <version>2.18.1-alpha</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
