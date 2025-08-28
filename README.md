@@ -5,6 +5,12 @@
 _pagoPA - eCommerce_ microservice to retrieve _payment requests_ data or manage _carts_ (a set of _payment requests_)
 with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 
+## Requirements
+
+- **Java 21** or higher
+- **Maven 3.6+**
+- **Docker** (for containerized deployment)
+
 ### Environment variables
 
 | Variable name                     | Description                                                                                         | type          | default |
@@ -23,7 +29,10 @@ with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 | CARTS_MAX_ALLOWED_PAYMENT_NOTICES | Max allowed number of payment notices to be processed for a POST carts request                      | number        |         |
 | PERSONAL_DATA_VAULT_API_KEY       | API Key for Personal Data Vault (PDV is used to safely encrypt PIIs, e.g. the user's email address) | string        |         |
 | PERSONAL_DATA_VAULT_API_BASE_PATH | API base path for Personal Data Vault                                                               | string        |         |
-
+| NODO_NODEFORPSP_API_KEY           | API Key for NODE FOR PSP WS                                                                         | string        |         |
+| NODO_NODEFORECOMMERCE_API_KEY     | API Key for Nodo checkposition API                                                                  | string        |         |
+| SECURITY_API_KEY_PRIMARY          | Primary API Key used to secure payment-requests service's APIs                                      | string        |         |
+| SECURITY_API_KEY_SECONDARY        | Secondary API Key used to secure payment-requests service's APIs                                    | string        |         |
 An example configuration of these environment variables is in the `.env.example` file.
 
 ## Run the application with `Docker`

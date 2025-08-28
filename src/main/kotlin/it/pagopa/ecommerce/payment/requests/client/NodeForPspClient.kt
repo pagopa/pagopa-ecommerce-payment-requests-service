@@ -3,11 +3,11 @@ package it.pagopa.ecommerce.payment.requests.client
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
-import javax.xml.bind.JAXBElement
+import jakarta.xml.bind.JAXBElement
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono
 class NodeForPspClient(
   @Value("\${nodo.nodeforpsp.uri}") private val nodoForPspUrl: String,
   @Autowired private val nodoWebClient: WebClient,
+  @Value("\${nodo.nodeforpsp.apikey}") private val nodoPerPspApiKey: String
 ) {
 
   private val logger = LoggerFactory.getLogger(javaClass)
@@ -30,9 +31,10 @@ class NodeForPspClient(
       .uri(nodoForPspUrl)
       .header("Content-Type", MediaType.TEXT_XML_VALUE)
       .header("SOAPAction", "verifyPaymentNotice")
+      .header("ocp-apim-subscription-key", nodoPerPspApiKey)
       .body(Mono.just(SoapEnvelope("", request)), SoapEnvelope::class.java)
       .retrieve()
-      .onStatus(HttpStatus::isError) { clientResponse ->
+      .onStatus(HttpStatusCode::isError) { clientResponse ->
         clientResponse.bodyToMono(String::class.java).flatMap { errorResponseBody: String ->
           Mono.error(ResponseStatusException(clientResponse.statusCode(), errorResponseBody))
         }

@@ -8,9 +8,6 @@ import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.services.PaymentRequestsService
 import it.pagopa.ecommerce.payment.requests.tests.utils.PaymentRequests
 import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
-import java.util.*
-import java.util.function.Function
-import java.util.function.Predicate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -26,12 +23,11 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
@@ -42,14 +38,15 @@ import reactor.core.publisher.Mono
 class PaymentRequestsControllerTests {
   @Autowired lateinit var webClient: WebTestClient
 
-  @MockBean lateinit var paymentRequestsService: PaymentRequestsService
+  @MockitoBean lateinit var paymentRequestsService: PaymentRequestsService
 
   @Mock private lateinit var requestHeadersSpec: WebClient.RequestHeadersUriSpec<*>
 
   @Mock private lateinit var responseSpec: WebClient.ResponseSpec
 
   @InjectMocks
-  private val paymentRequestController: PaymentRequestsController = PaymentRequestsController()
+  private val paymentRequestController: PaymentRequestsController =
+    PaymentRequestsController(primaryApiKey = "primaryKey")
 
   companion object {
     fun faultBeanWithCode(faultCode: String): CtFaultBean {
@@ -69,6 +66,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isOk
@@ -85,6 +83,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -100,6 +99,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.BAD_REQUEST)
@@ -120,6 +120,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
@@ -145,6 +146,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.NOT_FOUND)
@@ -171,6 +173,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.NOT_FOUND)
@@ -196,6 +199,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.BAD_GATEWAY)
@@ -221,6 +225,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.CONFLICT)
@@ -246,6 +251,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.CONFLICT)
@@ -271,6 +277,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.CONFLICT)
@@ -296,6 +303,7 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.CONFLICT)
@@ -318,9 +326,41 @@ class PaymentRequestsControllerTests {
     webClient
       .get()
       .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isEqualTo(HttpStatus.BAD_GATEWAY)
+  }
+
+  @Test
+  fun `should return unauthorized if request has not api key header`() = runTest {
+    val rptId = "77777777777302000100000009424"
+    val faultBean = faultBeanWithCode("UNKNOWN_ERROR")
+    given(paymentRequestsService.getPaymentRequestInfo(rptId))
+      .willThrow(NodoErrorException(faultBean))
+    val parameters = mapOf("rpt_id" to rptId)
+    webClient
+      .get()
+      .uri("/payment-requests/{rpt_id}", parameters)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
+  }
+
+  @Test
+  fun `should return unauthorized if request has wrong api key header`() = runTest {
+    val rptId = "77777777777302000100000009424"
+    val faultBean = faultBeanWithCode("UNKNOWN_ERROR")
+    given(paymentRequestsService.getPaymentRequestInfo(rptId))
+      .willThrow(NodoErrorException(faultBean))
+    val parameters = mapOf("rpt_id" to rptId)
+    webClient
+      .get()
+      .uri("/payment-requests/{rpt_id}", parameters)
+      .header("x-api-key", "super-wrong-api-key")
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
   }
 
   @Test
@@ -328,13 +368,12 @@ class PaymentRequestsControllerTests {
     val webClient = mock(WebClient::class.java)
     given(webClient.get()).willReturn(requestHeadersSpec)
     given(requestHeadersSpec.uri(any(), any<Map<String, String>>())).willReturn(requestHeadersSpec)
+    given(requestHeadersSpec.header(any(), any())).willReturn(requestHeadersSpec)
     given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
-    given(
-        responseSpec.onStatus(
-          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
-      .willReturn(responseSpec)
+    given(responseSpec.onStatus(any(), any())).willReturn(responseSpec)
     given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
-    PaymentRequestsController(webClient).warmupGetPaymentRequest()
+    PaymentRequestsController(webClient = webClient, primaryApiKey = "primaryKey")
+      .warmupGetPaymentRequest()
     verify(webClient, times(1)).get()
   }
 }

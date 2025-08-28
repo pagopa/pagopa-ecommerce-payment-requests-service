@@ -1,0 +1,16 @@
+# overrides from helm/values-uat.yaml.
+# all the properties defined here will take precedence against values-uat.yaml file
+microservice-chart:
+  livenessProbe:
+    initialDelaySeconds: 30
+  readinessProbe:
+    initialDelaySeconds: 30
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "300m"
+    limits:
+      memory: "512Mi"
+      cpu: "900m"
+  envConfig:
+    RUNTIME: "jvm"

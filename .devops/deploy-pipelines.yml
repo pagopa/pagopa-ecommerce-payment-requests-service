@@ -26,32 +26,8 @@ parameters:
     values:
       - False
       - True
-  - name: 'RELEASE_SEMVER'
-    displayName: 'When packing a release, define the version bump to apply (release is done automatically when deploying on UAT and skipped on DEV) '
-    type: string
-    values:
-      - major
-      - minor
-      - patch
-      - none
-    default: patch
-  - name: 'RELEASE_CHART_SEMVER'
-    displayName: 'When upgrading helm chart, define the version bump to apply'
-    type: string
-    values:
-      - major
-      - minor
-      - patch
-    default: patch
   - name: "FORCE_REPLACE_DOCKER_IMAGE"
     displayName: "Force the existing docker image to be replaced (latest tag)"
-    type: boolean
-    default: False
-    values:
-      - False
-      - True
-  - name: "SKIP_RELEASE"
-    displayName: "Skip release"
     type: boolean
     default: False
     values:
@@ -71,12 +47,32 @@ parameters:
     values:
       - False
       - True
+  - name: "NATIVE_COMPILATION"
+    displayName: "Boolean flag to use native compilation or JVM runtime for the output executable: activating this parameter native compilation will be used, jvm otherwise"
+    type: boolean
+    default: True
+    values:
+      - False
+      - True
+
+variables:
+  - ${{ if eq(parameters['NATIVE_COMPILATION'], True) }}:
+      - name: DOCKER_FILE_NAME
+        value: "Dockerfile.native"
+      - name: DOCKER_FILE_VERSION_SUFFIX
+        value: ""
+  - ${{ else }}:
+      - name: DOCKER_FILE_NAME
+        value: "Dockerfile.jvm"
+      - name: DOCKER_FILE_VERSION_SUFFIX
+        value: "-jvm"
+
 resources:
   repositories:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v2.10.1
+      ref: refs/tags/v6.14.0
       endpoint: 'io-azure-devops-github-ro'
     - repository: pagopaCheckoutTests
       type: github
@@ -102,8 +98,9 @@ stages:
               CONTAINER_REGISTRY_SERVICE_CONN: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
               CONTAINER_REGISTRY_FQDN: $(DEV_CONTAINER_NAMESPACE)
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
-              DOCKER_IMAGE_TAG: $(Build.SourceVersion)
+              DOCKER_IMAGE_TAG: $(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+              DOCKERFILE: ${{ variables.DOCKER_FILE_NAME }}
 
   - stage: 'Deploy_for_DEV'
     displayName: 'Deploy DEV'
@@ -129,7 +126,6 @@ stages:
                 - template: azure-templates/helm-microservice-chart-deploy.yml
                   parameters:
                     DO_DEPLOY: true
-                    DO_BLUE_GREEN_DEPLOY: true
                     ENV: 'DEV'
                     KUBERNETES_SERVICE_CONN: $(DEV_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: ecommerce
@@ -183,8 +179,9 @@ stages:
               CONTAINER_REGISTRY_SERVICE_CONN: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
               CONTAINER_REGISTRY_FQDN: $(UAT_CONTAINER_NAMESPACE)
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
-              DOCKER_IMAGE_TAG: $(Build.SourceVersion)
+              DOCKER_IMAGE_TAG: $(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+              DOCKERFILE: ${{ variables.DOCKER_FILE_NAME }}
           - template: azure-templates/chart-current-version.yml
 
   - stage: "Deploy_UAT_Blue"
@@ -225,10 +222,11 @@ stages:
                     ENV: 'UAT'
                     KUBERNETES_SERVICE_CONN: $(UAT_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: ecommerce
-                    APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
+                    APP_NAME: beta-$(K8S_IMAGE_REPOSITORY_NAME)
                     VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(green_app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
+
 
   - stage: "API_Blue_UAT_test"
     displayName: 'Running API test on blue app'
@@ -239,7 +237,7 @@ stages:
           - checkout: pagopaCheckoutTests
           - template: azure-templates/api-tests.yml
             parameters:
-              CHECKOUT_FOR_ECOMMERCE_COLLECTION: "api-tests/checkout-tests/pgs/checkout-for-ecommerce-api.tests.json"
+              CHECKOUT_FOR_ECOMMERCE_COLLECTION: "api-tests/checkout-tests/npg/checkout-for-ecommerce-api.tests.json"
               ENV_FILE: "api-tests/uat.payment-requests.blue.envs.json"
               TEST_FILE_PREFIX: "blue-uat"
 
@@ -261,28 +259,26 @@ stages:
               instructions: "Please approve or reject UAT blue green promotions for $(commitUrl)"
               onTimeout: 'reject'
 
-  - stage: Release
-    ${{ if eq(parameters['UAT_SKIP_BLUE_DEPLOYMENT'], True) }}:
-      dependsOn: Build_release_candidate
-    ${{ if eq(parameters['UAT_SKIP_BLUE_DEPLOYMENT'], False) }}:
-      dependsOn: Bluegreen_WaitForApproval
-      condition: succeeded()
+
+  - stage: "Get_Release_Version"
+    displayName: "Get the app version to deploy"
+    dependsOn: Build_release_candidate
+    condition: in(dependencies.Build_release_candidate.result, 'Succeeded', 'Skipped')
     jobs:
-      - job: make_release
-        displayName: Make github release
+      - job: "get_version"
         steps:
           - template: azure-templates/chart-current-version.yml
 
   - stage: "tag_docker_release"
     displayName: 'Tag Docker image to be release'
-    dependsOn: Release
+    dependsOn: Get_Release_Version
     condition:
       and(
       succeeded(),
-      ne('${{parameters.RELEASE_SEMVER}}', 'none')
+      eq(${{parameters.SKIP_BUILD}}, False)
       )
     variables:
-      app_version: perf
+      app_version: cdctest
     jobs:
       - job: "build"
         displayName: 'Build UAT service beta'
@@ -297,13 +293,13 @@ stages:
             inputs:
               targetType: "inline"
               script: |
-                docker pull $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
-                docker tag $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(app_version)
-                docker push $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(app_version)
+                docker pull $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
+                docker tag $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }} $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(app_version)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
+                docker push $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(app_version)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
 
   - stage: "Deploy_UAT_Green"
     displayName: 'UAT green deployment'
-    dependsOn: [ tag_docker_release,Release ]
+    dependsOn: [ tag_docker_release,Get_Release_Version ]
     condition: |
       and(
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
@@ -311,7 +307,7 @@ stages:
         in(dependencies.Release.result, 'Succeeded', 'Skipped')
       )
     variables:
-      app_version: perf
+      app_version: cdctest
     jobs:
       - deployment: "Green_deployment"
         displayName: "Green deployment"

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -18,7 +19,8 @@ import reactor.core.publisher.Mono
 @Component
 public class NodoPerPmClient(
   @Value("\${nodo.nodoperpm.uri}") private val nodoPerPmUrl: String,
-  @Autowired private val nodoPerPmClient: WebClient
+  @Autowired private val nodoPerPmClient: WebClient,
+  @Value("\${nodo.nodeforecommerce.apikey}") private val nodeForEcommerceApiKey: String
 ) {
 
   private val logger = LoggerFactory.getLogger(javaClass)
@@ -28,6 +30,7 @@ public class NodoPerPmClient(
       .post()
       .uri(nodoPerPmUrl)
       .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+      .header("ocp-apim-subscription-key", nodeForEcommerceApiKey)
       .body(Mono.just(request), CheckPositionDto::class.java)
       .retrieve()
       .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST)) { clientResponse ->
@@ -36,7 +39,7 @@ public class NodoPerPmClient(
           .onErrorMap { CheckPositionErrorException(clientResponse.statusCode()) }
           .flatMap { Mono.error(CheckPositionErrorException(HttpStatus.UNPROCESSABLE_ENTITY)) }
       }
-      .onStatus(HttpStatus::isError) { clientResponse ->
+      .onStatus(HttpStatusCode::isError) { clientResponse ->
         Mono.error(CheckPositionErrorException(clientResponse.statusCode()))
       }
       .bodyToMono(CheckPositionResponseDto::class.java)

@@ -11,8 +11,6 @@ import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
 import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
 import java.net.URI
 import java.util.*
-import java.util.function.Function
-import java.util.function.Predicate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -24,14 +22,13 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
-import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
@@ -43,7 +40,7 @@ class CartsControllerTests {
 
   @Autowired lateinit var webClient: WebTestClient
 
-  @MockBean lateinit var cartService: CartService
+  @MockitoBean lateinit var cartService: CartService
 
   @Mock private lateinit var requestBodyUriSpec: WebClient.RequestBodyUriSpec
 
@@ -51,14 +48,37 @@ class CartsControllerTests {
 
   @Mock private lateinit var responseSpec: WebClient.ResponseSpec
 
-  @InjectMocks val cartsController: CartsController = CartsController()
+  @InjectMocks val cartsController: CartsController = CartsController(primaryApiKey = "primaryKey")
 
   private val cartsMaxAllowedPaymentNotices = 5
 
   private val objectMapper = ObjectMapper()
 
+  @ParameterizedTest
+  @ValueSource(strings = ["/carts", "/carts/"])
+  fun `post cart succeeded with one payment notice ignoring trailing slash`(path: String) =
+    runTest {
+      val request = CartRequests.withOnePaymentNotice()
+      val clientId = ClientIdDto.WISP_REDIRECT
+      val locationUrl =
+        "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+      given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+      webClient
+        .post()
+        .uri(path)
+        .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+        .header("x-api-key", "secondary-key")
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(request)
+        .exchange()
+        .expectStatus()
+        .is3xxRedirection
+        .expectHeader()
+        .location(locationUrl)
+    }
+
   @Test
-  fun `post cart succeeded with one payment notice`() = runTest {
+  fun `should return unauthorized if create carts request has not api key header`() = runTest {
     val request = CartRequests.withOnePaymentNotice()
     val clientId = ClientIdDto.WISP_REDIRECT
     val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
@@ -71,9 +91,25 @@ class CartsControllerTests {
       .bodyValue(request)
       .exchange()
       .expectStatus()
-      .is3xxRedirection
-      .expectHeader()
-      .location(locationUrl)
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
+  }
+
+  @Test
+  fun `should return unauthorized if create carts request has wrong api key header`() = runTest {
+    val request = CartRequests.withOnePaymentNotice()
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "the-real-wrong-api-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
   }
 
   @Test
@@ -97,6 +133,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -118,6 +155,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -139,6 +177,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -160,6 +199,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -181,6 +221,7 @@ class CartsControllerTests {
     webClient
       .post()
       .uri("/carts")
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -206,6 +247,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -240,6 +282,7 @@ class CartsControllerTests {
     webClient
       .get()
       .uri("/carts/{idCart}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isOk
@@ -271,6 +314,7 @@ class CartsControllerTests {
     webClient
       .get()
       .uri("/carts/{idCart}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isOk
@@ -294,6 +338,7 @@ class CartsControllerTests {
     webClient
       .get()
       .uri("/carts/{cartId}", parameters)
+      .header("x-api-key", "primary-key")
       .exchange()
       .expectStatus()
       .isNotFound
@@ -302,21 +347,37 @@ class CartsControllerTests {
   }
 
   @Test
+  fun `should return unauthorized if request has not api key header`() = runTest {
+    val cartId = UUID.randomUUID()
+
+    val parameters = mapOf("cartId" to cartId)
+    webClient
+      .get()
+      .uri("/carts/{cartId}", parameters)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
+  }
+
+  @Test
   fun `warm up controller`() {
     val webClient = mock(WebClient::class.java)
+    val requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec::class.java)
+    val requestBodySpec = mock(WebClient.RequestBodySpec::class.java)
+    val requestHeadersSpec = mock(WebClient.RequestHeadersSpec::class.java)
+    val responseSpec = mock(WebClient.ResponseSpec::class.java)
+
     given(webClient.post()).willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.uri(any(), any<Array<*>>())).willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.header(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
-      .willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.body(any(), eq(CartRequestDto::class.java)))
+    given(requestBodyUriSpec.uri(any<String>())).willReturn(requestBodySpec)
+    given(requestBodySpec.header(any(), any())).willReturn(requestBodySpec)
+    given(requestBodySpec.body(any(), eq(CartRequestDto::class.java)))
       .willReturn(requestHeadersSpec)
     given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
-    given(
-        responseSpec.onStatus(
-          any<Predicate<HttpStatus>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
-      .willReturn(responseSpec)
+    given(responseSpec.onStatus(any(), any())).willReturn(responseSpec)
     given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
-    CartsController(webClient).warmupPostCarts()
+
+    val controller = CartsController(webClient = webClient, primaryApiKey = "primaryApiKey")
+    controller.warmupPostCarts()
     verify(webClient, times(1)).post()
   }
 
@@ -332,6 +393,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .exchange()
@@ -354,6 +416,7 @@ class CartsControllerTests {
       .post()
       .uri("/carts")
       .contentType(MediaType.APPLICATION_JSON)
+      .header("x-api-key", "primary-key")
       .bodyValue(request)
       .exchange()
       .expectStatus()

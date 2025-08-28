@@ -4,6 +4,7 @@ services:
   pagopa-ecommerce-payment-requests-service:
     container_name: pagopa-ecommerce-payment-requests-service
     build:
+      dockerfile: "${DOCKER_FILE_NAME}"
       context: .
     ports:
       - "8089:8080"

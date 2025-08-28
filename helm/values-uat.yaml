@@ -17,16 +17,7 @@ microservice-chart:
         tag: "1.4.0"
         pullPolicy: Always
     envConfig:
-      REDIS_PORT: "6380"
-      REDIS_SSL_ENABLED: "true"
-      CHECKOUT_URL: https://api.uat.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
-      CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,service.deployment.environment=uat"
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
-      OTEL_TRACES_EXPORTER: otlp
-      OTEL_METRICS_EXPORTER: otlp
-      OTEL_LOGS_EXPORTER: none
-      OTEL_TRACES_SAMPLER: "always_on"
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,deployment.environment=uat"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       ECS_SERVICE_ENVIRONMENT: "uat"
       NODO_HOSTNAME: https://api.uat.platform.pagopa.it
@@ -38,20 +29,20 @@ microservice-chart:
       PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "1.4.0"
+    tag: "3.2.1"
     pullPolicy: Always
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 40
+    initialDelaySeconds: 5
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 40
+    initialDelaySeconds: 5
     failureThreshold: 6
     periodSeconds: 10
   service:
@@ -76,8 +67,8 @@ microservice-chart:
     allowPrivilegeEscalation: false
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "300m"
+      memory: "128Mi"
+      cpu: "150m"
     limits:
       memory: "512Mi"
       cpu: "500m"
@@ -111,9 +102,11 @@ microservice-chart:
     NODO_PER_PM_URI: /ecommerce/mock/nodoPerPM/v1/checkPosition
     NODO_READ_TIMEOUT: "10000"
     NODO_CONNECTION_TIMEOUT: "10000"
+    NODO_CONNECTION_STRING: "{\"idPSP\":\"AGID_01\",\"idChannel\":\"97735020584_09\",\"idBrokerPSP\":\"97735020584\"}"
     CARTS_MAX_ALLOWED_PAYMENT_NOTICES: "5"
     OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,service.deployment.environment=uat"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
+    OTEL_EXPORTER_OTLP_PROTOCOL: grpc
     OTEL_TRACES_EXPORTER: otlp
     OTEL_METRICS_EXPORTER: otlp
     OTEL_LOGS_EXPORTER: none
@@ -121,12 +114,17 @@ microservice-chart:
     ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
     ECS_SERVICE_ENVIRONMENT: "uat"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.uat.platform.pagopa.it/ecommerce/mock/pdv/v1"
+    SECURITY_API_KEY_SECURED_PATHS: ""
+
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-access-key
     REDIS_HOST: redis-ecommerce-hostname
-    NODO_CONNECTION_STRING: nodo-connection-string
+    NODO_NODEFORECOMMERCE_API_KEY: node-for-ecommerce-api-v1-key
+    NODO_NODEFORPSP_API_KEY: nodo-nodeforpsp-api-key
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     PERSONAL_DATA_VAULT_API_KEY: personal-data-vault-api-key
+    SECURITY_API_KEY_PRIMARY: ecommerce-payment-requests-primary-api-key
+    SECURITY_API_KEY_SECONDARY: ecommerce-payment-requests-secondary-api-key
   keyvault:
     name: "pagopa-u-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
@@ -141,3 +139,5 @@ microservice-chart:
                 operator: In
                 values:
                   - user
+  azure:
+    workloadIdentityClientId: 449c5b65-f368-487a-881a-b03676420c53

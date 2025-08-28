@@ -13,7 +13,7 @@ steps:
         version=$(yq -r '.version' $CHART_FILE)
         appVersion=$(yq -r '.appVersion' $CHART_FILE)
         trimmed_repo_url=$(echo $(Build.Repository.Uri) | sed -e "s/\.git//g")
-        releaseUrl=$(echo $trimmed_repo_url/releases/tag/$appVersion)
+        releaseUrl=$(echo $trimmed_repo_url/releases/tag/$version)
         commitUrl=$(echo $trimmed_repo_url/commit/$(Build.SourceVersion))
         echo "##vso[task.setvariable variable=version;isOutput=true]$version"
         echo "##vso[task.setvariable variable=appVersion;isOutput=true]$appVersion"
