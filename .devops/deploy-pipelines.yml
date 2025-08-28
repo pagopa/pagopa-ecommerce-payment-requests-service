@@ -153,7 +153,7 @@ stages:
               CONTAINER_REGISTRY_SERVICE_CONN: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
               CONTAINER_REGISTRY_FQDN: $(UAT_CONTAINER_NAMESPACE)
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
-              DOCKER_IMAGE_TAG: $(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
+              DOCKER_IMAGE_TAG: cdctest
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
               DOCKERFILE: ${{ variables.DOCKER_FILE_NAME }}
           - template: azure-templates/chart-current-version.yml
