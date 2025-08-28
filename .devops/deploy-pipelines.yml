@@ -50,7 +50,7 @@ parameters:
   - name: "NATIVE_COMPILATION"
     displayName: "Boolean flag to use native compilation or JVM runtime for the output executable: activating this parameter native compilation will be used, jvm otherwise"
     type: boolean
-    default: True
+    default: False
     values:
       - False
       - True
@@ -86,55 +86,6 @@ pool:
 # --- START Deploy DEV --- #
 stages:
 
-  - stage: 'Build_for_DEV'
-    displayName: 'Build for DEV'
-    condition: and(succeeded(), not(${{ parameters.SKIP_BUILD }}), eq(${{parameters.DEV_DEPLOY}}, true))
-    jobs:
-      - job: Build_docker
-        displayName: Build docker with Build.SourceVersion as TAG
-        steps:
-          - template: templates/docker-release/template.yaml@pagopaCommons
-            parameters:
-              CONTAINER_REGISTRY_SERVICE_CONN: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
-              CONTAINER_REGISTRY_FQDN: $(DEV_CONTAINER_NAMESPACE)
-              DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
-              DOCKER_IMAGE_TAG: $(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
-              FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
-              DOCKERFILE: ${{ variables.DOCKER_FILE_NAME }}
-
-  - stage: 'Deploy_for_DEV'
-    displayName: 'Deploy DEV'
-    dependsOn: Build_for_DEV
-    condition: or(succeeded(), ${{ parameters.SKIP_BUILD }}, eq(${{parameters.DEV_DEPLOY}}, true) )
-    jobs:
-      - deployment: "deploy"
-        environment: 'DEV'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - checkout: self
-                  displayName: "Checkout"
-                - task: Bash@3
-                  name: update_chart_version
-                  displayName: 'Setup helm microservice chart'
-                  inputs:
-                    targetType: "inline"
-                    script: |
-                      helm repo add microservice-chart https://pagopa.github.io/aks-microservice-chart-blueprint
-                      helm dep build helm
-                - template: azure-templates/helm-microservice-chart-deploy.yml
-                  parameters:
-                    DO_DEPLOY: true
-                    ENV: 'DEV'
-                    KUBERNETES_SERVICE_CONN: $(DEV_KUBERNETES_SERVICE_CONN)
-                    NAMESPACE: ecommerce
-                    APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
-                    VALUE_FILE: "helm/values-dev.yaml"
-                    GREEN_VERSION: $(Build.SourceVersion)
-                    BLUE_VERSION: $(Build.SourceVersion)
-  # --- END Deploy DEV --- #
-
   # --- START Deploy UAT --- #
   - stage: "Build_release_candidate"
     displayName: 'Build release candidate'
@@ -153,7 +104,7 @@ stages:
               CONTAINER_REGISTRY_SERVICE_CONN: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
               CONTAINER_REGISTRY_FQDN: $(UAT_CONTAINER_NAMESPACE)
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
-              DOCKER_IMAGE_TAG: cdctest
+              DOCKER_IMAGE_TAG: testcdc
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
               DOCKERFILE: ${{ variables.DOCKER_FILE_NAME }}
           - template: azure-templates/chart-current-version.yml
@@ -162,7 +113,7 @@ stages:
     displayName: 'UAT green deployment'
     dependsOn: [ Build_release_candidate ]
     variables:
-      app_version: cdctest
+      app_version: testcdc
     jobs:
       - deployment: "Green_deployment"
         displayName: "Green deployment"
