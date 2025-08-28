@@ -156,6 +156,18 @@
   "allDeclaredFields": true
 },
 {
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentCanceledStatusFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentOngoingStatusFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
   "name":"it.pagopa.ecommerce.generated.transactions.model.ActivatePaymentNoticeReq",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
