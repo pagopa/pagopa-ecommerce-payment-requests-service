@@ -160,7 +160,7 @@ stages:
 
   - stage: "Deploy_UAT_Green"
     displayName: 'UAT green deployment'
-    dependsOn: [ tag_docker_release,Get_Release_Version ]
+    dependsOn: [ Build_release_candidate ]
     variables:
       app_version: cdctest
     jobs:
