@@ -78,6 +78,12 @@
   "allDeclaredFields": true
 },
 {
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.GatewayFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
   "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
@@ -126,6 +132,12 @@
   "allDeclaredFields": true
 },
 {
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentUnavailableProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
   "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PartyConfigurationFaultDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
@@ -133,6 +145,24 @@
 },
 {
   "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PartyConfigurationFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.GetPaymentRequestInfo404ResponseDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.GetPaymentRequestInfo409ResponseDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.GetPaymentRequestInfo502ResponseDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
