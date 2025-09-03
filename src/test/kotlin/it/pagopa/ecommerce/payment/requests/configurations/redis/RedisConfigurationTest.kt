@@ -13,97 +13,105 @@ import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import java.nio.ByteBuffer
+import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
-import java.nio.ByteBuffer
-import java.util.*
 
 class RedisConfigurationTest {
   private val redisConfiguration = RedisConfiguration()
 
   private val redisConnectionFactory: ReactiveRedisConnectionFactory = mock()
 
-    @Test
-    fun `Should build PaymentRequestInfo Redis template successfully`() {
-        val paymentRequestsRedisTemplateWrapper = redisConfiguration.paymentRequestsInfoRedisTemplate(redisConnectionFactory)
-        assertNotNull(paymentRequestsRedisTemplateWrapper)
+  @Test
+  fun `Should build PaymentRequestInfo Redis template successfully`() {
+    val paymentRequestsRedisTemplateWrapper =
+      redisConfiguration.paymentRequestsInfoRedisTemplate(redisConnectionFactory)
+    assertNotNull(paymentRequestsRedisTemplateWrapper)
 
-        val reactiveRedisTemplate = paymentRequestsRedisTemplateWrapper.reactiveRedisTemplate
-        assertNotNull(reactiveRedisTemplate)
+    val reactiveRedisTemplate = paymentRequestsRedisTemplateWrapper.reactiveRedisTemplate
+    assertNotNull(reactiveRedisTemplate)
 
-        val paymentRequestInfo = PaymentRequestInfo(
-            RptId("77777777777302016432223611415"),
-            "77777777777",
-            "companyName",
-            "Pagamento di Test",
-            12000,
-            "2021-07-31",
-            "1fb8539bdbc94123849a21be8eead8dd",
-            "2021-07-31",
-            null,
-            null,
-            null,
-            null
-        )
+    val paymentRequestInfo =
+      PaymentRequestInfo(
+        RptId("77777777777302016432223611415"),
+        "77777777777",
+        "companyName",
+        "Pagamento di Test",
+        12000,
+        "2021-07-31",
+        "1fb8539bdbc94123849a21be8eead8dd",
+        "2021-07-31",
+        null,
+        null,
+        null,
+        null)
 
-        val actual: ByteBuffer = reactiveRedisTemplate.getSerializationContext().getValueSerializationPair().getWriter()
-            .write(paymentRequestInfo)
+    val actual: ByteBuffer =
+      reactiveRedisTemplate
+        .getSerializationContext()
+        .getValueSerializationPair()
+        .getWriter()
+        .write(paymentRequestInfo)
 
-        val expected: ByteBuffer? = ByteBuffer
-            .wrap(buildJackson2RedisSerializer(PaymentRequestInfo::class.java).serialize(paymentRequestInfo))
+    val expected: ByteBuffer? =
+      ByteBuffer.wrap(
+        buildJackson2RedisSerializer(PaymentRequestInfo::class.java).serialize(paymentRequestInfo))
 
-        assertEquals(actual, expected)
-    }
+    assertEquals(actual, expected)
+  }
 
-    @Test
-    fun `Should build Carts Redis template successfully`() {
-        val cartsRedisTemplateWrapper = redisConfiguration.cartsRedisTemplate(redisConnectionFactory)
-        assertNotNull(cartsRedisTemplateWrapper)
+  @Test
+  fun `Should build Carts Redis template successfully`() {
+    val cartsRedisTemplateWrapper = redisConfiguration.cartsRedisTemplate(redisConnectionFactory)
+    assertNotNull(cartsRedisTemplateWrapper)
 
-        val reactiveRedisTemplate = cartsRedisTemplateWrapper.reactiveRedisTemplate
-        assertNotNull(reactiveRedisTemplate)
+    val reactiveRedisTemplate = cartsRedisTemplateWrapper.reactiveRedisTemplate
+    assertNotNull(reactiveRedisTemplate)
 
-        val cartInfo = CartInfo(
-            UUID.randomUUID(),
-            listOf(PaymentInfo(
-                RptId("77777777777302016432223611415"),
-                "description",
-                10000,
-                "companyName"
-            )),
-            "idCartExample",
-            ReturnUrls(
-                "www.comune.di.prova.it/pagopa/success.html",
-                "www.comune.di.prova.it/pagopa/cancel.html",
-                "www.comune.di.prova.it/pagopa/error.html",
-            ),
-            "my_email@mail.it"
-        )
+    val cartInfo =
+      CartInfo(
+        UUID.randomUUID(),
+        listOf(
+          PaymentInfo(RptId("77777777777302016432223611415"), "description", 10000, "companyName")),
+        "idCartExample",
+        ReturnUrls(
+          "www.comune.di.prova.it/pagopa/success.html",
+          "www.comune.di.prova.it/pagopa/cancel.html",
+          "www.comune.di.prova.it/pagopa/error.html",
+        ),
+        "my_email@mail.it")
 
-        val actual: ByteBuffer = reactiveRedisTemplate.getSerializationContext().getValueSerializationPair().getWriter()
-            .write(cartInfo)
+    val actual: ByteBuffer =
+      reactiveRedisTemplate
+        .getSerializationContext()
+        .getValueSerializationPair()
+        .getWriter()
+        .write(cartInfo)
 
-        val expected: ByteBuffer? = ByteBuffer
-            .wrap(buildJackson2RedisSerializer(CartInfo::class.java).serialize(cartInfo))
+    val expected: ByteBuffer? =
+      ByteBuffer.wrap(buildJackson2RedisSerializer(CartInfo::class.java).serialize(cartInfo))
 
-        assertEquals(actual, expected)
-    }
+    assertEquals(actual, expected)
+  }
 
-    private fun <T> buildJackson2RedisSerializer(clazz: Class<T>): Jackson2JsonRedisSerializer<T> {
-        val jacksonObjectMapper = jacksonObjectMapper()
-        val rptSerializationModule = SimpleModule()
-        rptSerializationModule.addSerializer(RptId::class.java, JacksonRptSerializer())
-        rptSerializationModule.addDeserializer(RptId::class.java, JacksonRptDeserializer())
-        rptSerializationModule.addSerializer(IdempotencyKey::class.java, JacksonIdempotencyKeySerializer())
-        rptSerializationModule.addDeserializer(IdempotencyKey::class.java, JacksonIdempotencyKeyDeserializer())
+  private fun <T> buildJackson2RedisSerializer(clazz: Class<T>): Jackson2JsonRedisSerializer<T> {
+    val jacksonObjectMapper = jacksonObjectMapper()
+    val rptSerializationModule = SimpleModule()
+    rptSerializationModule.addSerializer(RptId::class.java, JacksonRptSerializer())
+    rptSerializationModule.addDeserializer(RptId::class.java, JacksonRptDeserializer())
+    rptSerializationModule.addSerializer(
+      IdempotencyKey::class.java, JacksonIdempotencyKeySerializer())
+    rptSerializationModule.addDeserializer(
+      IdempotencyKey::class.java, JacksonIdempotencyKeyDeserializer())
 
-        jacksonObjectMapper.registerModule(rptSerializationModule)
-        jacksonObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    jacksonObjectMapper.registerModule(rptSerializationModule)
+    jacksonObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
-        return Jackson2JsonRedisSerializer(jacksonObjectMapper, clazz)
-    }
+    return Jackson2JsonRedisSerializer(jacksonObjectMapper, clazz)
+  }
 }
