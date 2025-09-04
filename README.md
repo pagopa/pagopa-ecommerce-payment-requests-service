@@ -94,3 +94,58 @@ tags presence during PR analysis:
 
 For the check to be successfully passed only one of the `Application version` labels and only ones of
 the `Chart version` labels must be contemporary present for a given PR or the `skip-release` for skipping release step
+
+--
+
+
+## Dependency Verification
+
+This project uses the [pagopa/depcheck](https://github.com/pagopa/depcheck) Maven plugin to verify SHA-256 hashes of all dependencies, ensuring supply chain integrity and preventing dependency tampering attacks.
+
+### How It Works
+The plugin maintains a JSON file containing SHA-256 hashes of all project dependencies. During verification, it compares the hashes of resolved artifacts against the stored values, failing the build if any mismatches are detected.
+
+### Configuration
+
+```xml
+<plugin>
+  <groupId>it.pagopa.maven</groupId>
+  <artifactId>depcheck</artifactId>
+  <version>1.3.0</version>
+  <configuration>
+    <fileName>dep-sha256.json</fileName>
+    <includePlugins>false</includePlugins>
+    <includeParent>false</includeParent>
+    <excludes>
+      <!-- Optional: Exclude specific dependencies -->
+    </excludes>
+  </configuration>
+  <executions>
+    <execution>
+      <phase>validate</phase>
+      <goals>
+        <goal>verify</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+```
+
+### Usage
+First of all, ensure your GitHub token and `settings.xml` are properly configured.
+
+1. **Generate hashes**: When adding new dependencies or updating existing ones:
+   ```sh
+   mvn depcheck:generate
+   ```
+   **NOTE**: Always commit the updated hash file to version control after adding or updating dependencies
+
+2. **Verify hashes**: This happens automatically during the `validate` phase, and so, automatically, in CI/CD pipelines.
+   You can also explicitly run:
+   ```sh
+   mvn depcheck:verify
+   ```
+
+### Important Notes
+
+- **Maven plugins** have empty SHA-256 values by default as they're not resolved as JAR files during the regular build. Right now `includePlugins=false` avoid empty hashes and plugin check.
