@@ -126,13 +126,14 @@ class CartService(
                   email = null)),
             )
         }
-        .map { validCart ->
-          logger.info("Saving cart ${validCart.id} for payments $paymentInfos")
-
-          cartsRedisTemplateWrapper.save(validCart).subscribe()
-          val retUrl = MessageFormat.format(checkoutUrl, validCart.id, xClientId.value)
+        .flatMap {
+          logger.info("Saving cart ${it.id} for payments $paymentInfos")
+          cartsRedisTemplateWrapper.save(it).thenReturn(it)
+        }
+        .map {
+          val retUrl = MessageFormat.format(checkoutUrl, it.id, xClientId.value)
           logger.info("Return URL: $retUrl")
-          return@map retUrl
+          retUrl
         }
         .awaitSingle()
     } else {
