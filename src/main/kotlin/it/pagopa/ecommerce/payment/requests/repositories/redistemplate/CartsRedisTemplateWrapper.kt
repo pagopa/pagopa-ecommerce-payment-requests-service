@@ -2,9 +2,13 @@ package it.pagopa.ecommerce.payment.requests.repositories.redistemplate
 
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import java.time.Duration
-import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.ReactiveRedisTemplate
 
-class CartsRedisTemplateWrapper(redisTemplate: RedisTemplate<String, CartInfo>, ttl: Duration) :
-  RedisTemplateWrapper<CartInfo>(redisTemplate = redisTemplate, "carts", ttl) {
+class CartsRedisTemplateWrapper(
+  reactiveRedisTemplate: ReactiveRedisTemplate<String, CartInfo>,
+  ttl: Duration
+) :
+  ReactiveRedisTemplateWrapper<CartInfo>(
+    reactiveRedisTemplate = reactiveRedisTemplate, "carts", ttl) {
   override fun getKeyFromEntity(value: CartInfo): String = value.id.toString()
 }
