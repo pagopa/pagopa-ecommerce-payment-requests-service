@@ -116,9 +116,11 @@ stages:
                 echo "[INFO] the parameter FORCE_REPLACE_DOCKER_IMAGE is set to true, start build and push"
                 echo "[INFO] Image version: $(Build.SourceVersion)"
                 docker build -t $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) \
+                  --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
                   -f ${{ variables.DOCKER_FILE_NAME }} \
                   .
                 docker build -t $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest \
+                  --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
                   -f ${{ variables.DOCKER_FILE_NAME }} \
                   .
                 docker push $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
@@ -139,9 +141,11 @@ stages:
                 else
                   echo "[INFO] docker image does not exist in the registry, start build and push"
                   docker build -t $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) \
+                    --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
                     -f ${{ variables.DOCKER_FILE_NAME }} \
                     .
                   docker build -t $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest \
+                    --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
                     -f ${{ variables.DOCKER_FILE_NAME }} \
                     .
                   docker push $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
@@ -242,9 +246,11 @@ stages:
                 echo "[INFO] the parameter FORCE_REPLACE_DOCKER_IMAGE is set to true, start build and push"
                 echo "[INFO] Image version: $(Build.SourceVersion)"
                 docker build -t $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) \
+                  --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
                   -f ${{ variables.DOCKER_FILE_NAME }} \
                   .
                 docker build -t $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest \
+                  --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
                   -f ${{ variables.DOCKER_FILE_NAME }} \
                   .
                 docker push $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
@@ -265,9 +271,11 @@ stages:
                 else
                   echo "[INFO] docker image does not exist in the registry, start build and push"
                   docker build -t $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) \
+                    --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
                     -f ${{ variables.DOCKER_FILE_NAME }} \
                     .
                   docker build -t $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest \
+                    --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
                     -f ${{ variables.DOCKER_FILE_NAME }} \
                     .
                   docker push $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
