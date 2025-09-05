@@ -65,7 +65,7 @@ class PaymentRequestsService(
                   rptId,
                 )
               }
-              .doOnSuccess { paymentRequestInfoRepository.save(it).subscribe() }
+              .flatMap { paymentRequestInfoRepository.save(it).thenReturn(it) }
           })
         .map { paymentInfo ->
           PaymentRequestsGetResponseDto(
@@ -86,10 +86,8 @@ class PaymentRequestsService(
       .findById(rptId.value)
       .doOnNext { logger.info("PaymentRequestInfo cache hit for {}", rptId) }
       .switchIfEmpty {
-        Mono.defer {
-          logger.info("PaymentRequestInfo cache miss for {}", rptId)
-          Mono.empty()
-        }
+        logger.info("PaymentRequestInfo cache miss for {}", rptId)
+        Mono.empty()
       }
   }
 
