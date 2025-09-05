@@ -1,12 +1,13 @@
-FROM eclipse-temurin:21-jdk-alpine@sha256:2f2f553ce09d25e2d2f0f521ab94cd73f70c9b21327a29149c23a2b63b8e29a0 as build
+FROM eclipse-temurin:21-jdk-alpine@sha256:2f2f553ce09d25e2d2f0f521ab94cd73f70c9b21327a29149c23a2b63b8e29a0 AS build
 WORKDIR /workspace/app
 
-RUN apk add --no-cache git gettext
+RUN apk add --no-cache gettext
 
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 COPY settings.xml.template /tmp/
+COPY dep-sha256.json .
 
 RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
     mkdir -p ~/.m2 && \
