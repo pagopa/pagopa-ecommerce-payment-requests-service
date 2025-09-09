@@ -39,7 +39,7 @@ An example configuration of these environment variables is in the `.env.example`
 ## Run the application with `Docker`
 
 ### Prerequisites
-Set up GitHub authentication for packages (required for pagopa-ecommerce-commons dependency):
+Set up GitHub authentication for packages:
 
 1. Configure Maven settings file:
 - **If you don't have ~/.m2/settings.xml:**
