@@ -1,7 +1,7 @@
 FROM ghcr.io/graalvm/native-image-community:21.0.2@sha256:faed0fd6809b138254bdd6c7046e56894f4d9566ecbc7b0952aab43e65e16e0e AS builder
 WORKDIR /workspace/app
 
-RUN microdnf install -y findutils
+RUN microdnf install -y findutils gettext
 
 COPY mvnw .
 COPY .mvn .mvn
@@ -10,12 +10,17 @@ COPY pom.xml .
 COPY eclipse-style.xml eclipse-style.xml
 COPY src src
 COPY api-spec api-spec
+COPY settings.xml.template /tmp/
+COPY dep-sha256.json .
 
 # Make the Maven Wrapper executable
 RUN chmod +x ./mvnw
 
 # Run the native compilation using the 'native' profile
-RUN ./mvnw package -Pnative
+RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
+    mkdir -p ~/.m2 && \
+    envsubst < /tmp/settings.xml.template > ~/.m2/settings.xml && \
+    ./mvnw package -Pnative
 
 FROM debian:stable-20240701-slim@sha256:f8bbfa052db81e5b8ac12e4a1d8310a85d1509d4d0d5579148059c0e8b717d4e
 WORKDIR /app/
