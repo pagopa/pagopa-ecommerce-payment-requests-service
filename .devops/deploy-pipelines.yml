@@ -101,7 +101,6 @@ stages:
         steps:
           - task: Bash@3
             displayName: "write github token file"
-            condition: and(succeeded(), eq(${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}, True))
             inputs:
               targetType: "inline"
               script: |
