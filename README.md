@@ -33,7 +33,7 @@ with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 | NODO_NODEFORECOMMERCE_API_KEY     | API Key for Nodo checkposition API                                                                  | string        |         |
 | SECURITY_API_KEY_PRIMARY          | Primary API Key used to secure payment-requests service's APIs                                      | string        |         |
 | SECURITY_API_KEY_SECONDARY        | Secondary API Key used to secure payment-requests service's APIs                                    | string        |         |
-| GITHUB_TOKEN                      | GitHub Personal Access Token with packages:read permission for dependencies verification            | string        |         |
+
 An example configuration of these environment variables is in the `.env.example` file.
 
 ## Run the application with `Docker`
