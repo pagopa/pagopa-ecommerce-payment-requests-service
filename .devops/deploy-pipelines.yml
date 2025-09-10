@@ -99,58 +99,21 @@ stages:
       - job: Build_docker
         displayName: Build docker with Build.SourceVersion as TAG
         steps:
-          - task: Docker@2
-            displayName: "docker login"
-            inputs:
-              containerRegistry: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
-              command: "login"
-
           - task: Bash@3
-            displayName: "docker build and push (force)"
-            condition: and(succeeded(), eq(${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}, True))
-            env:
-              GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
+            displayName: "Write GitHub token file"
             inputs:
               targetType: "inline"
               script: |
-                echo "[INFO] the parameter FORCE_REPLACE_DOCKER_IMAGE is set to true, start build and push"
-                echo "[INFO] Image version: $(Build.SourceVersion)"
-                docker build -t $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) \
-                  --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
-                  -f ${{ variables.DOCKER_FILE_NAME }} \
-                  .
-                docker build -t $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest \
-                  --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
-                  -f ${{ variables.DOCKER_FILE_NAME }} \
-                  .
-                docker push $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
-                docker push $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest
-          - task: Bash@3
-            displayName: "docker build and push"
-            condition: and(succeeded(), eq(${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}, False))
-            env:
-              GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
-            inputs:
-              targetType: "inline"
-              script: |
-                # docker will return 0 on success or 1 on failure.
-                echo "[INFO] Image version: $(Build.SourceVersion)"
-                docker manifest inspect $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) > /dev/null
-                if [ $? -eq 0 ]; then
-                  echo "[INFO] docker image already exists in the registry, skip build and push"
-                else
-                  echo "[INFO] docker image does not exist in the registry, start build and push"
-                  docker build -t $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) \
-                    --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
-                    -f ${{ variables.DOCKER_FILE_NAME }} \
-                    .
-                  docker build -t $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest \
-                    --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
-                    -f ${{ variables.DOCKER_FILE_NAME }} \
-                    .
-                  docker push $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
-                  docker push $(DEV_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest
-                fi
+                echo "$(GITHUB_RO_TOKEN)" > ./github_ro_token
+          - template: templates/docker-release/template.yaml@pagopaCommons
+            parameters:
+              CONTAINER_REGISTRY_SERVICE_CONN: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
+              CONTAINER_REGISTRY_FQDN: $(DEV_CONTAINER_NAMESPACE)
+              DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
+              DOCKER_IMAGE_TAG: $(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
+              FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+              DOCKERFILE: ${{ variables.DOCKER_FILE_NAME }}
+              DOCKER_BUILD_ARGS: --secret id=GITHUB_TOKEN,src=./github_ro_token
 
   - stage: 'Deploy_for_DEV'
     displayName: 'Deploy DEV'
@@ -229,58 +192,21 @@ stages:
       - job: "build"
         displayName: 'Build release candidate docker image'
         steps:
-          - task: Docker@2
-            displayName: "docker login"
-            inputs:
-              containerRegistry: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
-              command: "login"
-
           - task: Bash@3
-            displayName: "docker build and push (force)"
-            condition: and(succeeded(), eq(${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}, True))
-            env:
-              GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
+            displayName: "Write GitHub token file"
             inputs:
               targetType: "inline"
               script: |
-                echo "[INFO] the parameter FORCE_REPLACE_DOCKER_IMAGE is set to true, start build and push"
-                echo "[INFO] Image version: $(Build.SourceVersion)"
-                docker build -t $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) \
-                  --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
-                  -f ${{ variables.DOCKER_FILE_NAME }} \
-                  .
-                docker build -t $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest \
-                  --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
-                  -f ${{ variables.DOCKER_FILE_NAME }} \
-                  .
-                docker push $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
-                docker push $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest
-          - task: Bash@3
-            displayName: "docker build and push"
-            condition: and(succeeded(), eq(${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}, False))
-            env:
-              GITHUB_TOKEN: $(GITHUB_RO_TOKEN)
-            inputs:
-              targetType: "inline"
-              script: |
-                # docker will return 0 on success or 1 on failure.
-                echo "[INFO] Image version: $(Build.SourceVersion)"
-                docker manifest inspect $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) > /dev/null
-                if [ $? -eq 0 ]; then
-                  echo "[INFO] docker image already exists in the registry, skip build and push"
-                else
-                  echo "[INFO] docker image does not exist in the registry, start build and push"
-                  docker build -t $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion) \
-                    --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
-                    -f ${{ variables.DOCKER_FILE_NAME }} \
-                    .
-                  docker build -t $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest \
-                    --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
-                    -f ${{ variables.DOCKER_FILE_NAME }} \
-                    .
-                  docker push $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):$(Build.SourceVersion)
-                  docker push $(UAT_CONTAINER_NAMESPACE)/$(K8S_IMAGE_REPOSITORY_NAME):latest
-                fi
+                echo "$(GITHUB_RO_TOKEN)" > ./github_ro_token
+          - template: templates/docker-release/template.yaml@pagopaCommons
+            parameters:
+              CONTAINER_REGISTRY_SERVICE_CONN: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+              CONTAINER_REGISTRY_FQDN: $(UAT_CONTAINER_NAMESPACE)
+              DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
+              DOCKER_IMAGE_TAG: $(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
+              FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+              DOCKERFILE: ${{ variables.DOCKER_FILE_NAME }}
+              DOCKER_BUILD_ARGS: --secret id=GITHUB_TOKEN,src=./github_ro_token
           - template: azure-templates/chart-current-version.yml
 
   - stage: "Deploy_UAT_Blue"
