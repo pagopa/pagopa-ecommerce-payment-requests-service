@@ -10,15 +10,17 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.*
-import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.ValueOperations
+import org.springframework.data.redis.core.ReactiveRedisTemplate
+import org.springframework.data.redis.core.ReactiveValueOperations
+import reactor.core.publisher.Mono
+import reactor.test.StepVerifier
 
 @ExtendWith(MockitoExtension::class)
 class PaymentRequestsRedisTemplateWrapperTest {
 
-  private val redisTemplate: RedisTemplate<String, PaymentRequestInfo> = mock()
+  private val redisTemplate: ReactiveRedisTemplate<String, PaymentRequestInfo> = mock()
 
-  private val valueOperations: ValueOperations<String, PaymentRequestInfo> = mock()
+  private val valueOperations: ReactiveValueOperations<String, PaymentRequestInfo> = mock()
 
   @Captor private lateinit var keyCaptor: ArgumentCaptor<String>
 
@@ -51,12 +53,15 @@ class PaymentRequestsRedisTemplateWrapperTest {
         null,
         null)
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
-    doNothing()
-      .`when`(valueOperations)
-      .set(capture(keyCaptor), eq(paymentRequestInfo), eq(duration))
+    given(valueOperations.set(capture(keyCaptor), eq(paymentRequestInfo), eq(duration)))
+      .willReturn(Mono.just(true))
 
     // test
-    paymentRequestsRedisTemplateWrapper.save(paymentRequestInfo)
+    StepVerifier.create(paymentRequestsRedisTemplateWrapper.save(paymentRequestInfo))
+      .expectNext(true)
+      .verifyComplete()
+
+    verify(redisTemplate, times(1)).opsForValue()
     verify(valueOperations, times(1)).set("keys:$rptIdAsString", paymentRequestInfo, duration)
     assertEquals("keys:$rptIdAsString", keyCaptor.value)
   }
@@ -85,11 +90,13 @@ class PaymentRequestsRedisTemplateWrapperTest {
         null,
         null)
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
-    given(valueOperations.get("keys:$rptIdAsString")).willReturn(paymentRequestInfo)
+    given(valueOperations.get("keys:$rptIdAsString")).willReturn(Mono.just(paymentRequestInfo))
 
     // test
-    val getPaymentRequestInfo = paymentRequestsRedisTemplateWrapper.findById(rptIdAsString)
-    assertEquals(paymentRequestInfo, getPaymentRequestInfo)
-    verify(valueOperations, times(1)).get("keys:$rptIdAsString")
+    StepVerifier.create(paymentRequestsRedisTemplateWrapper.findById(rptIdAsString))
+      .expectNext(paymentRequestInfo)
+      .verifyComplete()
+
+    verify(redisTemplate, times(1)).opsForValue()
   }
 }
