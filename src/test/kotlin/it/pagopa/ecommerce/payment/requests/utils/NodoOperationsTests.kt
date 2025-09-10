@@ -10,7 +10,7 @@ class NodoOperationsTests {
   fun `should return euro cents amount`() {
     val nodoOperations = NodoOperations()
     val amount = BigDecimal.valueOf(100.50)
-    val euroCentAmount = amount.multiply(BigDecimal(100)).toInt()
+    val euroCentAmount = amount.multiply(BigDecimal(100)).toLong()
     assertEquals(euroCentAmount, nodoOperations.getEuroCentsFromNodoAmount(amount))
   }
 }

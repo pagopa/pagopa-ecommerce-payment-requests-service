@@ -200,8 +200,9 @@ components:
         amount:
           description: Payment notice amount
           type: integer
+          format: int64
           minimum: 0
-          maximum: 99999999
+          maximum: 99999999999
         paymentContextCode:
           description: Payment context code
           type: string
@@ -702,6 +703,7 @@ components:
         amount:
           description: Payment notice amount
           type: integer
+          format: int64
           minimum: 1
         companyName:
           description: Payment notice company name

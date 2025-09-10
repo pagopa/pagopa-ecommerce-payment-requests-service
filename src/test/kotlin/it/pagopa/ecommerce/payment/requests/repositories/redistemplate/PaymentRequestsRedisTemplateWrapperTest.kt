@@ -37,7 +37,7 @@ class PaymentRequestsRedisTemplateWrapperTest {
     val paTaxCode = "77777777777"
     val paName = "Pa Name"
     val description = "Payment request description"
-    val amount = Integer.valueOf(1000)
+    val amount = 1000L
     val paymentRequestInfo =
       PaymentRequestInfo(
         rptIdAsObject,
@@ -74,7 +74,7 @@ class PaymentRequestsRedisTemplateWrapperTest {
     val paTaxCode = "77777777777"
     val paName = "Pa Name"
     val description = "Payment request description"
-    val amount = Integer.valueOf(1000)
+    val amount = 1000L
     val paymentRequestInfo =
       PaymentRequestInfo(
         rptIdAsObject,
