@@ -59,6 +59,7 @@ class CartsServiceTests {
       val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}?clientId=${clientId.value}"
       given(tokenizerMailUtils.toConfidential(Email(request.emailNotice)))
         .willReturn(Mono.just(Confidential<Email>(tokenizedEmail.toString())))
+      given(cartRedisTemplateWrapper.save(any())).willReturn(Mono.just(true))
       assertEquals(locationUrl, cartService.processCart(clientId, request))
       verify(cartRedisTemplateWrapper, times(1)).save(any())
     }
@@ -72,6 +73,7 @@ class CartsServiceTests {
       given(nodoPerPmClient.checkPosition(any()))
         .willReturn(
           Mono.just(CheckPositionResponseDto().outcome(CheckPositionResponseDto.OutcomeEnum.OK)))
+      given(cartRedisTemplateWrapper.save(any())).willReturn(Mono.just(true))
       val request = CartRequests.withOnePaymentNotice(null)
       val clientId = ClientIdDto.WISP_REDIRECT
       val locationUrl = "${TEST_CHECKOUT_URL}/c/${cartId}?clientId=${clientId.value}"
@@ -143,22 +145,23 @@ class CartsServiceTests {
 
     given(cartRedisTemplateWrapper.findById(cartId.toString()))
       .willReturn(
-        cart.let { req ->
-          CartInfo(
-            cartId,
-            req.paymentNotices.map {
-              PaymentInfo(
-                RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
-            },
-            req.idCart,
-            req.returnUrls.let {
-              ReturnUrls(
-                returnSuccessUrl = it.returnOkUrl.toString(),
-                returnErrorUrl = it.returnErrorUrl.toString(),
-                returnCancelUrl = it.returnCancelUrl.toString())
-            },
-            req.emailNotice)
-        })
+        Mono.just(
+          cart.let { req ->
+            CartInfo(
+              cartId,
+              req.paymentNotices.map {
+                PaymentInfo(
+                  RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
+              },
+              req.idCart,
+              req.returnUrls.let {
+                ReturnUrls(
+                  returnSuccessUrl = it.returnOkUrl.toString(),
+                  returnErrorUrl = it.returnErrorUrl.toString(),
+                  returnCancelUrl = it.returnCancelUrl.toString())
+              },
+              req.emailNotice)
+          }))
 
     assertEquals(expectedCart, cartService.getCart(cartId))
   }
@@ -174,22 +177,23 @@ class CartsServiceTests {
 
     given(cartRedisTemplateWrapper.findById(cartId.toString()))
       .willReturn(
-        cart.let { req ->
-          CartInfo(
-            cartId,
-            req.paymentNotices.map {
-              PaymentInfo(
-                RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
-            },
-            req.idCart,
-            req.returnUrls.let {
-              ReturnUrls(
-                returnSuccessUrl = it.returnOkUrl.toString(),
-                returnErrorUrl = it.returnErrorUrl.toString(),
-                returnCancelUrl = it.returnCancelUrl.toString())
-            },
-            null)
-        })
+        Mono.just(
+          cart.let { req ->
+            CartInfo(
+              cartId,
+              req.paymentNotices.map {
+                PaymentInfo(
+                  RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
+              },
+              req.idCart,
+              req.returnUrls.let {
+                ReturnUrls(
+                  returnSuccessUrl = it.returnOkUrl.toString(),
+                  returnErrorUrl = it.returnErrorUrl.toString(),
+                  returnCancelUrl = it.returnCancelUrl.toString())
+              },
+              null)
+          }))
 
     assertEquals(expectedCart, cartService.getCart(cartId))
     verify(tokenizerMailUtils, times(0)).toEmail(any())
@@ -199,7 +203,7 @@ class CartsServiceTests {
   fun `non-existing id throws CartNotFoundException`() = runTest {
     val cartId = UUID.randomUUID()
     Mockito.mockStatic(UUID::class.java).use {
-      given(cartRedisTemplateWrapper.findById(cartId.toString())).willReturn(null)
+      given(cartRedisTemplateWrapper.findById(cartId.toString())).willReturn(Mono.empty())
       assertThrows<CartNotFoundException> { cartService.getCart(cartId) }
     }
   }
