@@ -104,7 +104,7 @@ stages:
             inputs:
               targetType: "inline"
               script: |
-                echo "$(GITHUB_RO_TOKEN)" >> ./github_ro_token
+                echo "$(GITHUB_RO_TOKEN)" > ./github_ro_token
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
               CONTAINER_REGISTRY_SERVICE_CONN: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
@@ -197,7 +197,7 @@ stages:
             inputs:
               targetType: "inline"
               script: |
-                echo "$(GITHUB_RO_TOKEN)" >> ./github_ro_token
+                echo "$(GITHUB_RO_TOKEN)" > ./github_ro_token
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
               CONTAINER_REGISTRY_SERVICE_CONN: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
