@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 
 private const val VERIFY_PAYMENT_NOTICE_NODO_ERROR_SPAN_NAME =
   "VerifyPaymentNotice nodo error: [%s]"
@@ -64,7 +65,7 @@ class PaymentRequestsService(
                   rptId,
                 )
               }
-              .doOnSuccess { paymentRequestInfoRepository.save(it) }
+              .flatMap { paymentRequestInfoRepository.save(it).thenReturn(it) }
           })
         .map { paymentInfo ->
           PaymentRequestsGetResponseDto(
@@ -81,14 +82,13 @@ class PaymentRequestsService(
   }
 
   suspend fun getPaymentInfoFromCache(rptId: RptId): Mono<PaymentRequestInfo> {
-    val paymentRequestInfoOptional: Optional<PaymentRequestInfo> =
-      Optional.ofNullable(paymentRequestInfoRepository.findById(rptId.value))
-    logger.info(
-      "PaymentRequestInfo cache hit for {}: {}", rptId, paymentRequestInfoOptional.isPresent)
-    return paymentRequestInfoOptional
-      .filter { it.amount != null }
-      .map { Mono.just(it) }
-      .orElseGet { Mono.empty() }
+    return paymentRequestInfoRepository
+      .findById(rptId.value)
+      .doOnNext { logger.info("PaymentRequestInfo cache hit for {}", rptId) }
+      .switchIfEmpty {
+        logger.info("PaymentRequestInfo cache miss for {}", rptId)
+        Mono.empty()
+      }
   }
 
   fun getPaymentInfoFromNodo(rptId: RptId, paymentContextCode: String): Mono<PaymentRequestInfo> =

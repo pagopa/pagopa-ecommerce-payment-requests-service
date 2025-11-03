@@ -12,6 +12,7 @@ parameters:
     values:
       - False
       - True
+
   - name: 'UAT_PROD_DEPLOY'
     displayName: 'Deploy on UAT environment with PROD promotion'
     type: boolean
@@ -19,6 +20,7 @@ parameters:
     values:
       - False
       - True
+
   - name: 'SKIP_BUILD'
     displayName: 'Check this flag to skip build and proceed to deploy a docker image previously built'
     type: boolean
@@ -26,6 +28,7 @@ parameters:
     values:
       - False
       - True
+
   - name: "FORCE_REPLACE_DOCKER_IMAGE"
     displayName: "Force the existing docker image to be replaced (latest tag)"
     type: boolean
@@ -33,6 +36,7 @@ parameters:
     values:
       - False
       - True
+
   - name: "UAT_SKIP_BLUE_DEPLOYMENT"
     displayName: "Skip blue/green UAT deployment strategy: activating this parameter no blue version will be created and the pipeline proceed building and deploy artifact green version"
     type: boolean
@@ -40,6 +44,7 @@ parameters:
     values:
       - False
       - True
+
   - name: "PROD_SKIP_BLUE_DEPLOYMENT"
     displayName: "Skip blue/green PROD deployment strategy: activating this parameter no blue version will be created and the pipeline proceed building and deploy artifact green version"
     type: boolean
@@ -47,6 +52,7 @@ parameters:
     values:
       - False
       - True
+
   - name: "NATIVE_COMPILATION"
     displayName: "Boolean flag to use native compilation or JVM runtime for the output executable: activating this parameter native compilation will be used, jvm otherwise"
     type: boolean
@@ -99,6 +105,12 @@ stages:
       - job: "build"
         displayName: 'Build release candidate docker image'
         steps:
+          - task: Bash@3
+            displayName: "Write GitHub token file"
+            inputs:
+              targetType: "inline"
+              script: |
+                echo "$(GITHUB_RO_TOKEN)" > ./github_ro_token
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
               CONTAINER_REGISTRY_SERVICE_CONN: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
@@ -107,6 +119,7 @@ stages:
               DOCKER_IMAGE_TAG: testcdc
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
               DOCKERFILE: ${{ variables.DOCKER_FILE_NAME }}
+              DOCKER_BUILD_ARGS: --secret id=GITHUB_TOKEN,src=./github_ro_token
           - template: azure-templates/chart-current-version.yml
 
   - stage: "Deploy_UAT_Green"

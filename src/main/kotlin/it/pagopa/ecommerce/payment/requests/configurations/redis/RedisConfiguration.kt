@@ -16,9 +16,10 @@ import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.PaymentRe
 import java.time.Duration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.redis.connection.RedisConnectionFactory
-import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory
+import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
+import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
@@ -26,32 +27,41 @@ class RedisConfiguration {
 
   @Bean
   fun paymentRequestsInfoRedisTemplate(
-    redisConnectionFactory: RedisConnectionFactory
+    reactiveRedisConnectionFactory: ReactiveRedisConnectionFactory
   ): PaymentRequestsRedisTemplateWrapper {
-    val paymentRequestInfoTemplate = RedisTemplate<String, PaymentRequestInfo>()
-    paymentRequestInfoTemplate.setConnectionFactory(redisConnectionFactory)
-    val jackson2JsonRedisSerializer = buildJackson2RedisSerializer(PaymentRequestInfo::class.java)
-    paymentRequestInfoTemplate.valueSerializer = jackson2JsonRedisSerializer
-    paymentRequestInfoTemplate.keySerializer = StringRedisSerializer()
-    paymentRequestInfoTemplate.afterPropertiesSet()
+    val keySerializer = StringRedisSerializer()
+    val valueSerializer = buildJackson2RedisSerializer(PaymentRequestInfo::class.java)
+
+    val serializationContext =
+      RedisSerializationContext.newSerializationContext<String, PaymentRequestInfo>(keySerializer)
+        .value(valueSerializer)
+        .build()
+
+    val paymentRequestInfoTemplate =
+      ReactiveRedisTemplate(reactiveRedisConnectionFactory, serializationContext)
+
     return PaymentRequestsRedisTemplateWrapper(paymentRequestInfoTemplate, Duration.ofMinutes(15))
   }
 
   @Bean
   fun cartsRedisTemplate(
-    redisConnectionFactory: RedisConnectionFactory
+    reactiveRedisConnectionFactory: ReactiveRedisConnectionFactory
   ): CartsRedisTemplateWrapper {
-    val cartTemplate = RedisTemplate<String, CartInfo>()
-    cartTemplate.setConnectionFactory(redisConnectionFactory)
-    val jackson2JsonRedisSerializer = buildJackson2RedisSerializer(CartInfo::class.java)
-    cartTemplate.valueSerializer = jackson2JsonRedisSerializer
-    cartTemplate.keySerializer = StringRedisSerializer()
-    cartTemplate.afterPropertiesSet()
-    return CartsRedisTemplateWrapper(cartTemplate, Duration.ofMinutes(10))
+    val keySerializer = StringRedisSerializer()
+    val valueSerializer = buildJackson2RedisSerializer(CartInfo::class.java)
+
+    val serializationContext =
+      RedisSerializationContext.newSerializationContext<String, CartInfo>(keySerializer)
+        .value(valueSerializer)
+        .build()
+
+    val cartInfoTemplate =
+      ReactiveRedisTemplate(reactiveRedisConnectionFactory, serializationContext)
+
+    return CartsRedisTemplateWrapper(cartInfoTemplate, Duration.ofMinutes(10))
   }
 
   private fun <T> buildJackson2RedisSerializer(clazz: Class<T>): Jackson2JsonRedisSerializer<T> {
-    val jackson2JsonRedisSerializer = Jackson2JsonRedisSerializer(clazz)
     val jacksonObjectMapper = jacksonObjectMapper()
     val rptSerializationModule = SimpleModule()
     rptSerializationModule.addSerializer(RptId::class.java, JacksonRptSerializer())
@@ -63,7 +73,7 @@ class RedisConfiguration {
 
     jacksonObjectMapper.registerModule(rptSerializationModule)
     jacksonObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    jackson2JsonRedisSerializer.setObjectMapper(jacksonObjectMapper)
-    return jackson2JsonRedisSerializer
+
+    return Jackson2JsonRedisSerializer(jacksonObjectMapper, clazz)
   }
 }
