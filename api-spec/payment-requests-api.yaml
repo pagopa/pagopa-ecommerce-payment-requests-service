@@ -156,12 +156,6 @@ paths:
               schema:
                 type: string
                 format: uri
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/RateLimitLimit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimitRemaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/RateLimitReset'
         '400':
           description: Formally invalid input
           headers:
@@ -206,6 +200,13 @@ paths:
       responses:
         '200':
           description: Cart data
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
