@@ -1,0 +1,34 @@
+name: OpenAPI Quality Check
+
+# this action runs only when OpenAPI spec files are modified
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'api-spec/**/*.yaml'
+      - 'api-spec/**/*.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  openapi_quality:
+    runs-on: ubuntu-latest
+    name: OpenAPI Quality Check
+    strategy:
+      matrix:
+        spec:
+          - path: 'api-spec/payment-requests-api.yaml'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Rate My OpenAPI - ${{ matrix.spec.version }}
+        uses: zuplo/rmoa-action@c4a74a8823496c6061cd6fb586d80db8c2fd7e34  # v1
+        with:
+          filepath: ${{ matrix.spec.path }}
+          apikey: ${{ secrets.RATEMYOPENAPI_API_KEY }}
+          minimum-score: 80
+          max-warnings: 30
+          max-errors: 5
