@@ -73,6 +73,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
         '404':
           description: Node cannot find the services needed to process this request in its configuration. This error is most likely to occur when submitting a non-existing RPT id.
           headers:
@@ -105,7 +118,6 @@ paths:
                   - $ref: '#/components/schemas/PaymentExpiredStatusFaultPaymentProblemJson'
                   - $ref: '#/components/schemas/PaymentCanceledStatusFaultPaymentProblemJson'
                   - $ref: '#/components/schemas/PaymentDuplicatedStatusFaultPaymentProblemJson'
-
         '502':
           description: PagoPA services are not available or request is rejected by PagoPa
           content:
@@ -169,6 +181,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
         '422':
           description: More than one payment notice present into request
           headers:
@@ -178,6 +203,12 @@ paths:
               $ref: '#/components/headers/RateLimitRemaining'
             X-RateLimit-Reset:
               $ref: '#/components/headers/RateLimitReset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -213,6 +244,19 @@ paths:
                 $ref: '#/components/schemas/CartRequest'
         '400':
           description: Formally invalid input
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
           headers:
             X-RateLimit-Limit:
               $ref: '#/components/headers/RateLimitLimit'
