@@ -5,6 +5,20 @@ info:
   description: pagoPA ecommerce microservice to retrieve payment request data or to manage carts (consisting of a group of payment requests) with redirects to checkout
   contact:
     name: pagoPA - Touchpoints team
+    url: https://www.pagopa.it/
+    email: info@pagopa.it
+  license:
+    name: EUPL-1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+servers:
+  - url: https://${host}
+    variables:
+      host:
+          description: The hostname of the API server
+          default: api.dev.platform.pagopa.it
+          enum:
+            - api.dev.platform.pagopa.it
+            - api.uat.platform.pagopa.it
 tags:
   - name: payment-requests
     description: Api's for performing verification on payment notices
