@@ -49,18 +49,39 @@ paths:
       responses:
         '200':
           description: Payment request retrieved
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaymentRequestsGetResponse'
         '400':
           description: Formally invalid input
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
         '404':
           description: Node cannot find the services needed to process this request in its configuration. This error is most likely to occur when submitting a non-existing RPT id.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
@@ -69,6 +90,13 @@ paths:
                   - $ref: '#/components/schemas/ValidationFaultPaymentUnknownProblemJson'
         '409':
           description: Conflict on payment status
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
@@ -123,6 +151,13 @@ paths:
         '302':
           description: Redirect
           headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
+          headers:
             Location:
               description: CheckOut Url
               schema:
@@ -130,12 +165,26 @@ paths:
                 format: uri
         '400':
           description: Formally invalid input
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
         '422':
           description: More than one payment notice present into request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
@@ -164,12 +213,26 @@ paths:
                 $ref: '#/components/schemas/CartRequest'
         '400':
           description: Formally invalid input
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
         '404':
           description: Cart not found
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
@@ -732,3 +795,20 @@ components:
         - WISP_REDIRECT
         - CHECKOUT
         - CHECKOUT_CART
+  headers:
+    RateLimitLimit:
+      description: The maximum number of requests allowed in the current time window.
+      schema:
+        type: integer
+    RateLimitRemaining:
+      description: The number of requests remaining in the current time window.
+      schema:
+        type: integer
+    RateLimitReset:
+      description: Seconds until the rate limit resets.
+      schema:
+        type: integer
+    RateLimitRetryAfter:
+      description: Seconds to wait before retrying after being rate limited.
+      schema:
+        type: integer
