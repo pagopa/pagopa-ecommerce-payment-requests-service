@@ -151,18 +151,17 @@ paths:
         '302':
           description: Redirect
           headers:
+            Location:
+              description: CheckOut Url
+              schema:
+                type: string
+                format: uri
             X-RateLimit-Limit:
               $ref: '#/components/headers/RateLimitLimit'
             X-RateLimit-Remaining:
               $ref: '#/components/headers/RateLimitRemaining'
             X-RateLimit-Reset:
               $ref: '#/components/headers/RateLimitReset'
-          headers:
-            Location:
-              description: CheckOut Url
-              schema:
-                type: string
-                format: uri
         '400':
           description: Formally invalid input
           headers:
