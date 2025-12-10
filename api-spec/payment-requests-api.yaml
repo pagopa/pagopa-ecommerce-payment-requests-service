@@ -489,30 +489,6 @@ components:
       maximum: 600
       exclusiveMaximum: true
       example: 200
-    FaultCategory:
-      description: |-
-        Fault code categorization for the PagoPA Verifica and Attiva operations.
-        Possible categories are:
-        - `PAYMENT_DUPLICATED`
-        - `PAYMENT_ONGOING`
-        - `PAYMENT_EXPIRED`
-        - `PAYMENT_UNAVAILABLE`
-        - `PAYMENT_UNKNOWN`
-        - `DOMAIN_UNKNOWN`
-        - `PAYMENT_CANCELED`
-        - `GENERIC_ERROR`
-        - `PAYMENT_DATA_ERROR`
-      type: string
-      enum:
-        - PAYMENT_DUPLICATED
-        - PAYMENT_ONGOING
-        - PAYMENT_EXPIRED
-        - PAYMENT_UNAVAILABLE
-        - PAYMENT_UNKNOWN
-        - DOMAIN_UNKNOWN
-        - PAYMENT_CANCELED
-        - GENERIC_ERROR
-        - PAYMENT_DATA_ERROR
     PaymentOngoingStatusFault:
       description: |-
         Fault codes for errors related to payment attempts that cause conflict with the current payment status,
