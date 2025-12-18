@@ -5,6 +5,20 @@ info:
   description: pagoPA ecommerce microservice to retrieve payment request data or to manage carts (consisting of a group of payment requests) with redirects to checkout
   contact:
     name: pagoPA - Touchpoints team
+    url: https://www.pagopa.it/
+  license:
+    name: EUPL-1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+servers:
+  - url: https://${host}
+    variables:
+      host:
+          description: The hostname of the API server
+          default: weuprod.ecommerce.internal.platform.pagopa.it
+          enum:
+            - weudev.ecommerce.internal.dev.platform.pagopa.it
+            - weuuat.ecommerce.internal.uat.platform.pagopa.it
+            - weuprod.ecommerce.internal.platform.pagopa.it
 tags:
   - name: payment-requests
     description: Api's for performing verification on payment notices
@@ -45,6 +59,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
         '404':
           description: Node cannot find the services needed to process this request in its configuration. This error is most likely to occur when submitting a non-existing RPT id.
           content:
@@ -63,7 +83,12 @@ paths:
                   - $ref: '#/components/schemas/PaymentExpiredStatusFaultPaymentProblemJson'
                   - $ref: '#/components/schemas/PaymentCanceledStatusFaultPaymentProblemJson'
                   - $ref: '#/components/schemas/PaymentDuplicatedStatusFaultPaymentProblemJson'
-
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
         '502':
           description: PagoPA services are not available or request is rejected by PagoPa
           content:
@@ -120,8 +145,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
         '422':
           description: More than one payment notice present into request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -150,6 +187,12 @@ paths:
                 $ref: '#/components/schemas/CartRequest'
         '400':
           description: Formally invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -446,30 +489,6 @@ components:
       maximum: 600
       exclusiveMaximum: true
       example: 200
-    FaultCategory:
-      description: |-
-        Fault code categorization for the PagoPA Verifica and Attiva operations.
-        Possible categories are:
-        - `PAYMENT_DUPLICATED`
-        - `PAYMENT_ONGOING`
-        - `PAYMENT_EXPIRED`
-        - `PAYMENT_UNAVAILABLE`
-        - `PAYMENT_UNKNOWN`
-        - `DOMAIN_UNKNOWN`
-        - `PAYMENT_CANCELED`
-        - `GENERIC_ERROR`
-        - `PAYMENT_DATA_ERROR`
-      type: string
-      enum:
-        - PAYMENT_DUPLICATED
-        - PAYMENT_ONGOING
-        - PAYMENT_EXPIRED
-        - PAYMENT_UNAVAILABLE
-        - PAYMENT_UNKNOWN
-        - DOMAIN_UNKNOWN
-        - PAYMENT_CANCELED
-        - GENERIC_ERROR
-        - PAYMENT_DATA_ERROR
     PaymentOngoingStatusFault:
       description: |-
         Fault codes for errors related to payment attempts that cause conflict with the current payment status,
