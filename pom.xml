@@ -347,6 +347,38 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>payment-requests-api-v2</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Path al nuovo OpenAPI v2 -->
+                            <inputSpec>${project.basedir}/api-spec/payment-requests-api-v2.yaml</inputSpec>
+                            <generatorName>kotlin-spring</generatorName>
+                            <library>spring-boot</library>
+                            <modelNameSuffix>Dto</modelNameSuffix>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <configOptions>
+                                <basePackage>it.pagopa.ecommerce.generated.payment.requests.server.v2</basePackage>
+                                <modelPackage>it.pagopa.ecommerce.generated.payment.requests.server.v2.model</modelPackage>
+                                <apiPackage>it.pagopa.ecommerce.generated.payment.requests.server.v2.api</apiPackage>
+                                <configPackage>it.pagopa.ecommerce.generated.payment.requests.server.v2.config</configPackage>
+                                <interfaceOnly>true</interfaceOnly>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <useBeanValidation>true</useBeanValidation>
+                                <useSwaggerUI>false</useSwaggerUI>
+                                <reactive>true</reactive>
+                                <enumPropertyNaming>UPPERCASE</enumPropertyNaming>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useTags>true</useTags>
+                                <apiNameSuffix>V2</apiNameSuffix>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>nodo-per-pm</id>
                         <goals>
                             <goal>generate</goal>
