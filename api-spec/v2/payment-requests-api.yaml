@@ -29,8 +29,8 @@ paths:
   /v2/carts:
     post:
       tags:
-        - CartsApiV2
-      operationId: PostCartsV2
+        - Carts
+      operationId: PostCarts
       summary: Create a cart (v2)
       description: >
         Create a cart of payment notices. In v2 the `returnWaitingUrl` field is mandatory in returnUrls.
@@ -47,7 +47,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CartRequestV2'
+              $ref: '#/components/schemas/CartRequest'
       responses:
         '302':
           description: Redirect to Checkout URL
@@ -88,7 +88,7 @@ components:
       in: header
       name: x-api-key
   schemas:
-    CartRequestV2:
+    CartRequest:
       description: Cart request body (v2)
       type: object
       required:

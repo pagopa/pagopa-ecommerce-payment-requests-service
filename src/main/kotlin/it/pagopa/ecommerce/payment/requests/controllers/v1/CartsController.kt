@@ -1,15 +1,16 @@
-package it.pagopa.ecommerce.payment.requests.controllers
+package it.pagopa.ecommerce.payment.requests.controllers.v1
 
-import it.pagopa.ecommerce.generated.payment.requests.server.api.CartsApi
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto
-import it.pagopa.ecommerce.payment.requests.services.CartService
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.api.CartsApi
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDto
+import it.pagopa.ecommerce.payment.requests.services.v1.CartService
 import it.pagopa.ecommerce.payment.requests.warmup.annotations.WarmupFunction
 import it.pagopa.ecommerce.payment.requests.warmup.exceptions.WarmUpException
 import it.pagopa.ecommerce.payment.requests.warmup.utils.WarmupRequests
 import java.net.URI
 import java.time.Duration
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -42,7 +43,7 @@ class CartsController(
       .build()
   }
 
-  override suspend fun getCarts(idCart: java.util.UUID): ResponseEntity<CartRequestDto> {
+  override suspend fun getCarts(idCart: UUID): ResponseEntity<CartRequestDto> {
     return ResponseEntity.ok(cartService.getCart(idCart))
   }
 

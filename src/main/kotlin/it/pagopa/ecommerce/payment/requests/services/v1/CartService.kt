@@ -1,30 +1,27 @@
-package it.pagopa.ecommerce.payment.requests.services
+package it.pagopa.ecommerce.payment.requests.services.v1
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
-import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestV2Dto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestReturnUrlsDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentNoticeDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
-import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
-import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapperV2
-import it.pagopa.ecommerce.payment.requests.repositories.v2.CartInfoV2
-import it.pagopa.ecommerce.payment.requests.repositories.v2.ReturnUrlsV2
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
+import it.pagopa.ecommerce.payment.requests.repositories.v1.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
 import java.net.URI
 import java.text.MessageFormat
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactor.awaitSingle
@@ -41,7 +38,6 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 class CartService(
   @Value("\${checkout.url}") private val checkoutUrl: String,
   @Autowired private val cartsRedisTemplateWrapper: CartsRedisTemplateWrapper,
-  @Autowired private val cartsRedisTemplateWrapperV2: CartsRedisTemplateWrapperV2,
   @Autowired private val nodoPerPmClient: NodoPerPmClient,
   @Autowired private val tokenizerMailUtils: TokenizerEmailUtils,
   @Value("\${carts.max_allowed_payment_notices}") private val maxAllowedPaymentNotices: Int,
@@ -113,7 +109,8 @@ class CartService(
                     ReturnUrls(
                       returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
                       returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
-                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString(),),
+                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString(),
+                    ),
                   email = tokenizedEmail.opaqueData)
               }
             }
@@ -134,100 +131,6 @@ class CartService(
         .flatMap {
           logger.info("Saving cart ${it.id} for payments $paymentInfos")
           cartsRedisTemplateWrapper.save(it).thenReturn(it)
-        }
-        .map {
-          val retUrl = MessageFormat.format(checkoutUrl, it.id, xClientId.value)
-          logger.info("Return URL: $retUrl")
-          retUrl
-        }
-        .awaitSingle()
-    } else {
-      logger.error("Too many payment notices, expected only one")
-      throw RestApiException(
-        httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-        title = "Multiple payment notices not processable",
-        description = "Too many payment notices, expected max $maxAllowedPaymentNotices")
-    }
-  }
-
-  suspend fun processCartV2(xClientId: it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto, cartRequestV2Dto: CartRequestV2Dto): String {
-    val paymentsNotices = cartRequestV2Dto.paymentNotices
-    val receivedNotices = paymentsNotices.size
-    logger.info("Received [$receivedNotices] payment notices")
-
-    return if (receivedNotices <= maxAllowedPaymentNotices) {
-      val paymentInfos =
-        paymentsNotices.map {
-          PaymentInfo(
-            RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
-        }
-
-      if (receivedNotices != paymentInfos.map { it.rptId }.toSet().size) {
-        logger.error("Duplicate payment notice values found for paymentNotices: $paymentsNotices")
-        throw RestApiException(
-          httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-          title = "Invalid payment info",
-          description = "Duplicate payment notice values found.")
-      }
-
-      val checkPositionDto =
-        CheckPositionDto()
-          .positionslist(
-            paymentInfos
-              .stream()
-              .map {
-                ListelementRequestDto()
-                  .fiscalCode(it.rptId.fiscalCode)
-                  .noticeNumber(it.rptId.noticeId)
-              }
-              .toList())
-
-      return nodoPerPmClient
-        .checkPosition(checkPositionDto)
-        .filter { response -> response.outcome == CheckPositionResponseDto.OutcomeEnum.OK }
-        .switchIfEmpty {
-          throw RestApiException(
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            title = "Invalid payment info",
-            description = "Invalid payment notice data")
-        }
-        .flatMap {
-          val id = UUID.randomUUID()
-          Optional.ofNullable(cartRequestV2Dto.emailNotice)
-            .map {
-              tokenizerMailUtils.toConfidential(Email(cartRequestV2Dto.emailNotice)).map {
-                  tokenizedEmail ->
-                CartInfoV2(
-                  id = id,
-                  payments = paymentInfos,
-                  idCart = cartRequestV2Dto.idCart,
-                  returnUrls =
-                    ReturnUrlsV2(
-                      returnSuccessUrl = cartRequestV2Dto.returnUrls.returnOkUrl.toString(),
-                      returnErrorUrl = cartRequestV2Dto.returnUrls.returnErrorUrl.toString(),
-                      returnCancelUrl = cartRequestV2Dto.returnUrls.returnCancelUrl.toString(),
-                      returnWaitingUrl = cartRequestV2Dto.returnUrls.returnWaitingUrl.toString()),
-                  email = tokenizedEmail.opaqueData)
-              }
-            }
-            .orElse(
-              Mono.just(
-                CartInfoV2(
-                  id = id,
-                  payments = paymentInfos,
-                  idCart = cartRequestV2Dto.idCart,
-                  returnUrls =
-                    ReturnUrlsV2(
-                      returnSuccessUrl = cartRequestV2Dto.returnUrls.returnOkUrl.toString(),
-                      returnErrorUrl = cartRequestV2Dto.returnUrls.returnErrorUrl.toString(),
-                      returnCancelUrl = cartRequestV2Dto.returnUrls.returnCancelUrl.toString(),
-                      returnWaitingUrl = cartRequestV2Dto.returnUrls.returnWaitingUrl.toString()),
-                  email = null)),
-            )
-        }
-        .flatMap {
-          logger.info("Saving cart ${it.id} for payments $paymentInfos")
-          cartsRedisTemplateWrapperV2.save(it).thenReturn(it)
         }
         .map {
           val retUrl = MessageFormat.format(checkoutUrl, it.id, xClientId.value)

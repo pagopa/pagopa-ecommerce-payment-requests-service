@@ -1,8 +1,8 @@
 package it.pagopa.ecommerce.payment.requests.warmup.utils
 
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestReturnUrlsDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentNoticeDto
 import java.net.URI
 
 object WarmupRequests {

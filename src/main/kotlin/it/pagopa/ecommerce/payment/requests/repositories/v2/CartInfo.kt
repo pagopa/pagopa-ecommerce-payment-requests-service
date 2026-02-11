@@ -7,16 +7,21 @@ import org.springframework.data.annotation.PersistenceCreator
 import org.springframework.data.redis.core.RedisHash
 
 @RedisHash("carts", timeToLive = 10 * 60L)
-data class CartInfoV2
+data class CartInfo
 @PersistenceCreator
 constructor(
-    @Id val id: UUID,
-    val payments: List<PaymentInfo>,
-    val idCart: String?,
-    val returnUrls: ReturnUrlsV2,
-    val email: String?
+  @Id val id: UUID,
+  val payments: List<PaymentInfo>,
+  val idCart: String?,
+  val returnUrls: ReturnUrls,
+  val email: String?
 )
 
-data class ReturnUrlsV2
+data class ReturnUrls
 @PersistenceCreator
-constructor(val returnSuccessUrl: String, val returnErrorUrl: String, val returnCancelUrl: String, val returnWaitingUrl: String)
+constructor(
+  val returnSuccessUrl: String,
+  val returnErrorUrl: String,
+  val returnCancelUrl: String,
+  val returnWaitingUrl: String
+)

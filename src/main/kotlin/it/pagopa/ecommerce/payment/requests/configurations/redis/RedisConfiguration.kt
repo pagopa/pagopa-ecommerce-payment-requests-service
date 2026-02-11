@@ -9,10 +9,10 @@ import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.Jack
 import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.JacksonRptSerializer
 import it.pagopa.ecommerce.payment.requests.domain.IdempotencyKey
 import it.pagopa.ecommerce.payment.requests.domain.RptId
-import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.PaymentRequestsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
 import java.time.Duration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

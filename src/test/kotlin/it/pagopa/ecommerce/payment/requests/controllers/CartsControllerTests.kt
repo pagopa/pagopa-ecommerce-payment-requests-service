@@ -2,11 +2,12 @@ package it.pagopa.ecommerce.payment.requests.controllers
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import it.pagopa.ecommerce.generated.payment.requests.server.model.*
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.*
+import it.pagopa.ecommerce.payment.requests.controllers.v1.CartsController
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
-import it.pagopa.ecommerce.payment.requests.services.CartService
+import it.pagopa.ecommerce.payment.requests.services.v1.CartService
 import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
 import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
 import java.net.URI

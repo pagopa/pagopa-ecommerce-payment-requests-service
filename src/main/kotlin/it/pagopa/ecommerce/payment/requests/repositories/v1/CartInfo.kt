@@ -1,5 +1,6 @@
-package it.pagopa.ecommerce.payment.requests.repositories
+package it.pagopa.ecommerce.payment.requests.repositories.v1
 
+import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import java.util.*
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.PersistenceCreator

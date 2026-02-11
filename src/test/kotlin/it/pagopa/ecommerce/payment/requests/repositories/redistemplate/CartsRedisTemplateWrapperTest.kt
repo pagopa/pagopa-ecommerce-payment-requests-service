@@ -1,9 +1,10 @@
 package it.pagopa.ecommerce.payment.requests.repositories.redistemplate
 
 import it.pagopa.ecommerce.payment.requests.domain.RptId
-import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
-import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
+import it.pagopa.ecommerce.payment.requests.repositories.v1.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
 import java.time.Duration
 import java.util.*
