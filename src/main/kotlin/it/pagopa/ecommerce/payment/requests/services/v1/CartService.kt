@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 
-@Service
+@Service("CartServiceV1")
 class CartService(
   @Value("\${checkout.url}") private val checkoutUrl: String,
   @Autowired private val cartsRedisTemplateWrapper: CartsRedisTemplateWrapper,

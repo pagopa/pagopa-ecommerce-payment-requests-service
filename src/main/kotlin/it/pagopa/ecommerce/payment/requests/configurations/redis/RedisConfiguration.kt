@@ -60,6 +60,27 @@ class RedisConfiguration {
 
     return CartsRedisTemplateWrapper(cartInfoTemplate, Duration.ofMinutes(10))
   }
+  @Bean
+  fun cartsRedisTemplateV2(
+    reactiveRedisConnectionFactory: ReactiveRedisConnectionFactory
+  ): it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v2.CartsRedisTemplateWrapper {
+
+    val keySerializer = StringRedisSerializer()
+    val valueSerializer = buildJackson2RedisSerializer(it.pagopa.ecommerce.payment.requests.repositories.v2.CartInfo::class.java)
+
+    val serializationContext =
+      RedisSerializationContext.newSerializationContext<String, it.pagopa.ecommerce.payment.requests.repositories.v2.CartInfo>(keySerializer)
+        .value(valueSerializer)
+        .build()
+
+    val cartInfoTemplate =
+      ReactiveRedisTemplate(reactiveRedisConnectionFactory, serializationContext)
+
+    return it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v2.CartsRedisTemplateWrapper(
+      cartInfoTemplate,
+      Duration.ofMinutes(10)
+    )
+  }
 
   private fun <T> buildJackson2RedisSerializer(clazz: Class<T>): Jackson2JsonRedisSerializer<T> {
     val jacksonObjectMapper = jacksonObjectMapper()

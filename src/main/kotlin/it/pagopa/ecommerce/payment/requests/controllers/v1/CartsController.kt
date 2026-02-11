@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
-@RestController
+@RestController("cartsControllerV1")
 class CartsController(
   private val webClient: WebClient = WebClient.create(),
   @Value("\${security.apiKey.primary}") private val primaryApiKey: String,
