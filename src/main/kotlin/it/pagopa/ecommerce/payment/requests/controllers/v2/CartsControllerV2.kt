@@ -1,15 +1,15 @@
-package it.pagopa.ecommerce.payment.requests.controllers.v1
+package it.pagopa.ecommerce.payment.requests.controllers.v2
 
-import it.pagopa.ecommerce.generated.payment.requests.server.v1.api.CartsApi
-import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDto
-import it.pagopa.ecommerce.payment.requests.services.v1.CartService
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.api.CartsApi
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto
+import it.pagopa.ecommerce.payment.requests.services.v2.CartService
 import it.pagopa.ecommerce.payment.requests.warmup.annotations.WarmupFunction
 import it.pagopa.ecommerce.payment.requests.warmup.exceptions.WarmUpException
+import it.pagopa.ecommerce.payment.requests.warmup.utils.v2.WarmupRequests
 import java.net.URI
 import java.time.Duration
 import java.time.temporal.ChronoUnit
-import java.util.UUID
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -21,16 +21,16 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
-@RestController("cartsControllerV1")
-class CartsController(
+@RestController("cartsControllerV2")
+class CartsControllerV2(
   private val webClient: WebClient = WebClient.create(),
-  @Value("\${security.apiKey.primary}") private val primaryApiKey: String,
+  @Value("\${security.apiKey.primary}") private val primaryApiKey: String
 ) : CartsApi {
   @Autowired private lateinit var cartService: CartService
 
   @RequestMapping(
     method = [RequestMethod.POST],
-    value = ["/carts", "/carts/"],
+    value = ["/v2/carts", "/v2/carts/"],
     produces = ["application/json"],
     consumes = ["application/json"])
   override suspend fun postCarts(
@@ -42,19 +42,14 @@ class CartsController(
       .build()
   }
 
-  override suspend fun getCarts(idCart: UUID): ResponseEntity<CartRequestDto> {
-    return ResponseEntity.ok(cartService.getCart(idCart))
-  }
-
-  /** Controller warm up function, used to send a POST carts request */
   @WarmupFunction
   fun warmupPostCarts() {
     webClient
       .post()
-      .uri("http://localhost:8080/carts")
+      .uri("http://localhost:8080/v2/carts")
       .header("x-api-key", primaryApiKey)
       .header("x-client-id", "CHECKOUT")
-      .body(Mono.just(WarmupRequests.postCartsReq()), CartRequestDto::class.java)
+      .body(Mono.just(WarmupRequests.postCartsReq()), it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto::class.java)
       .retrieve()
       .onStatus(HttpStatusCode::isError) {
         Mono.error(WarmUpException("CartsController", "warmupPostCarts"))

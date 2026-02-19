@@ -1,4 +1,4 @@
-package it.pagopa.ecommerce.payment.requests.warmup.utils
+package it.pagopa.ecommerce.payment.requests.warmup.utils.v1
 
 import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestReturnUrlsDto
