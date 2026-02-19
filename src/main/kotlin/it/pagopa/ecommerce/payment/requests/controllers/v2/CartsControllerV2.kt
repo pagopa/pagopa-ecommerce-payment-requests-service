@@ -49,7 +49,9 @@ class CartsControllerV2(
       .uri("http://localhost:8080/v2/carts")
       .header("x-api-key", primaryApiKey)
       .header("x-client-id", "CHECKOUT")
-      .body(Mono.just(WarmupRequests.postCartsReq()), it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto::class.java)
+      .body(
+        Mono.just(WarmupRequests.postCartsReq()),
+        it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto::class.java)
       .retrieve()
       .onStatus(HttpStatusCode::isError) {
         Mono.error(WarmUpException("CartsController", "warmupPostCarts"))
