@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDt
 import it.pagopa.ecommerce.payment.requests.services.v1.CartService
 import it.pagopa.ecommerce.payment.requests.warmup.annotations.WarmupFunction
 import it.pagopa.ecommerce.payment.requests.warmup.exceptions.WarmUpException
+import it.pagopa.ecommerce.payment.requests.warmup.utils.v1.WarmupRequests
 import java.net.URI
 import java.time.Duration
 import java.time.temporal.ChronoUnit
