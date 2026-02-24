@@ -9,10 +9,10 @@ import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.Jack
 import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.JacksonRptSerializer
 import it.pagopa.ecommerce.payment.requests.domain.IdempotencyKey
 import it.pagopa.ecommerce.payment.requests.domain.RptId
+import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.PaymentRequestsRedisTemplateWrapper
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1.CartsRedisTemplateWrapper
-import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
 import java.time.Duration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -59,28 +59,6 @@ class RedisConfiguration {
       ReactiveRedisTemplate(reactiveRedisConnectionFactory, serializationContext)
 
     return CartsRedisTemplateWrapper(cartInfoTemplate, Duration.ofMinutes(10))
-  }
-  @Bean
-  fun cartsRedisTemplateV2(
-    reactiveRedisConnectionFactory: ReactiveRedisConnectionFactory
-  ): it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v2.CartsRedisTemplateWrapper {
-
-    val keySerializer = StringRedisSerializer()
-    val valueSerializer =
-      buildJackson2RedisSerializer(
-        it.pagopa.ecommerce.payment.requests.repositories.v2.CartInfo::class.java)
-
-    val serializationContext =
-      RedisSerializationContext.newSerializationContext<
-          String, it.pagopa.ecommerce.payment.requests.repositories.v2.CartInfo>(keySerializer)
-        .value(valueSerializer)
-        .build()
-
-    val cartInfoTemplate =
-      ReactiveRedisTemplate(reactiveRedisConnectionFactory, serializationContext)
-
-    return it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v2
-      .CartsRedisTemplateWrapper(cartInfoTemplate, Duration.ofMinutes(10))
   }
 
   private fun <T> buildJackson2RedisSerializer(clazz: Class<T>): Jackson2JsonRedisSerializer<T> {

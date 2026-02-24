@@ -11,10 +11,10 @@ import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1.CartsRedisTemplateWrapper
-import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
-import it.pagopa.ecommerce.payment.requests.repositories.v1.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
@@ -166,7 +166,8 @@ class CartService(
             CartRequestReturnUrlsDto(
               returnOkUrl = URI(it.returnSuccessUrl),
               returnCancelUrl = URI(it.returnCancelUrl),
-              returnErrorUrl = URI(it.returnErrorUrl))
+              returnErrorUrl = URI(it.returnErrorUrl),
+              returnWaitingUrl = it.returnWaitingUrl?.let { url -> URI(url) })
           }
 
         val idCart = cartWithTokenizedEmail.idCart

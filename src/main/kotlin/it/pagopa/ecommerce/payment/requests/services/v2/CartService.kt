@@ -8,10 +8,10 @@ import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDt
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v2.CartsRedisTemplateWrapper
-import it.pagopa.ecommerce.payment.requests.repositories.v2.CartInfo
-import it.pagopa.ecommerce.payment.requests.repositories.v2.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
 import java.text.MessageFormat

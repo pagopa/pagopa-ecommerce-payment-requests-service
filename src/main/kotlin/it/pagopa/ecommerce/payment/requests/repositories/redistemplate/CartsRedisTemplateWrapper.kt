@@ -1,7 +1,6 @@
-package it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1
+package it.pagopa.ecommerce.payment.requests.repositories.redistemplate
 
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.ReactiveRedisTemplateWrapper
-import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
+import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import java.time.Duration
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 
