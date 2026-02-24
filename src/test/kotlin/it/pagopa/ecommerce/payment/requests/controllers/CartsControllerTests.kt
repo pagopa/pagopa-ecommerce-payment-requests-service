@@ -425,4 +425,42 @@ class CartsControllerTests {
       .expectBody<ProblemJsonDto>()
       .isEqualTo(errorResponse)
   }
+
+  @Test
+  fun `get cart by id with waiting url`() = runTest {
+    val cartId = UUID.randomUUID()
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+
+    val response =
+      CartRequestDto(
+        paymentNotices =
+          listOf(
+            PaymentNoticeDto(
+              noticeNumber = "",
+              fiscalCode = "",
+              amount = 10000,
+              companyName = "companyName",
+              description = "description")),
+        returnUrls =
+          CartRequestReturnUrlsDto(
+            returnErrorUrl = URI.create("https://returnErrorUrl"),
+            returnOkUrl = URI.create("https://returnOkUrl"),
+            returnCancelUrl = URI.create("https://returnCancelUrl"),
+            returnWaitingUrl = URI.create("https://returnWaitingUrl")),
+        emailNotice = "test@test.it")
+
+    given(cartService.getCart(cartId)).willReturn(response)
+
+    val parameters = mapOf("idCart" to cartId)
+
+    webClient
+      .get()
+      .uri("/carts/{idCart}", parameters)
+      .header("x-api-key", "primary-key")
+      .exchange()
+      .expectStatus()
+      .isOk
+      .expectBody()
+      .json(objectMapper.writeValueAsString(response))
+  }
 }

@@ -22,5 +22,5 @@ constructor(
   val returnSuccessUrl: String,
   val returnErrorUrl: String,
   val returnCancelUrl: String,
-  val returnWaitingUrl: String? = null
+  val returnWaitingUrl: String?
 )

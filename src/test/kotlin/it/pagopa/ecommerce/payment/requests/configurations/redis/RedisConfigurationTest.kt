@@ -83,7 +83,7 @@ class RedisConfigurationTest {
           "www.comune.di.prova.it/pagopa/success.html",
           "www.comune.di.prova.it/pagopa/cancel.html",
           "www.comune.di.prova.it/pagopa/error.html",
-        ),
+          null),
         "my_email@mail.it")
 
     val actual: ByteBuffer =

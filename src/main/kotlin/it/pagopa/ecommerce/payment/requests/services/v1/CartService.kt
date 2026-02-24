@@ -110,7 +110,7 @@ class CartService(
                       returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
                       returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
                       returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString(),
-                    ),
+                      null),
                   email = tokenizedEmail.opaqueData)
               }
             }
@@ -124,7 +124,8 @@ class CartService(
                     ReturnUrls(
                       returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
                       returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
-                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
+                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString(),
+                      null),
                   email = null)),
             )
         }
@@ -167,7 +168,7 @@ class CartService(
               returnOkUrl = URI(it.returnSuccessUrl),
               returnCancelUrl = URI(it.returnCancelUrl),
               returnErrorUrl = URI(it.returnErrorUrl),
-              returnWaitingUrl = it.returnWaitingUrl?.let { url -> URI(url) })
+              returnWaitingUrl = it.returnWaitingUrl?.let(::URI))
           }
 
         val idCart = cartWithTokenizedEmail.idCart

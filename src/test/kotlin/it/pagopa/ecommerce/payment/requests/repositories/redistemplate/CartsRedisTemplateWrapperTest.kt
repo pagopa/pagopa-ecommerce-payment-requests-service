@@ -51,7 +51,8 @@ class CartsRedisTemplateWrapperTest {
             ReturnUrls(
               returnSuccessUrl = it.returnOkUrl.toString(),
               returnErrorUrl = it.returnErrorUrl.toString(),
-              returnCancelUrl = it.returnCancelUrl.toString())
+              returnCancelUrl = it.returnCancelUrl.toString(),
+              null)
           },
           req.emailNotice)
       }
@@ -85,7 +86,8 @@ class CartsRedisTemplateWrapperTest {
             ReturnUrls(
               returnSuccessUrl = it.returnOkUrl.toString(),
               returnErrorUrl = it.returnErrorUrl.toString(),
-              returnCancelUrl = it.returnCancelUrl.toString())
+              returnCancelUrl = it.returnCancelUrl.toString(),
+              null)
           },
           req.emailNotice)
       }
@@ -99,5 +101,70 @@ class CartsRedisTemplateWrapperTest {
       .verifyComplete()
 
     verify(redisTemplate, times(1)).opsForValue()
+  }
+
+  @Test
+  fun `Should save entity with waitingUrl successfully`() {
+    val cartId = UUID.randomUUID()
+    val cartRequest =
+      CartRequests.withMultiplePaymentNotices(3, "www.comune.di.prova.it/pagopa/waiting.html")
+
+    val cartInfo =
+      cartRequest.let { req ->
+        CartInfo(
+          cartId,
+          req.paymentNotices.map {
+            PaymentInfo(
+              RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
+          },
+          req.idCart,
+          req.returnUrls.let {
+            ReturnUrls(
+              returnSuccessUrl = it.returnOkUrl.toString(),
+              returnErrorUrl = it.returnErrorUrl.toString(),
+              returnCancelUrl = it.returnCancelUrl.toString(),
+              returnWaitingUrl = it.returnWaitingUrl?.toString())
+          },
+          req.emailNotice)
+      }
+
+    given(redisTemplate.opsForValue()).willReturn(valueOperations)
+    given(valueOperations.set(any(), eq(cartInfo), eq(duration))).willReturn(Mono.just(true))
+
+    StepVerifier.create(cartsRedisTemplateWrapper.save(cartInfo)).expectNext(true).verifyComplete()
+  }
+
+  @Test
+  fun `Should get entity with waitingUrl successfully`() {
+    val cartId = UUID.randomUUID()
+
+    val cartRequest =
+      CartRequests.withMultiplePaymentNotices(3, "www.comune.di.prova.it/pagopa/waiting.html")
+
+    val cartInfo =
+      cartRequest.let { req ->
+        CartInfo(
+          cartId,
+          req.paymentNotices.map {
+            PaymentInfo(
+              RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
+          },
+          req.idCart,
+          req.returnUrls.let {
+            ReturnUrls(
+              returnSuccessUrl = it.returnOkUrl.toString(),
+              returnErrorUrl = it.returnErrorUrl.toString(),
+              returnCancelUrl = it.returnCancelUrl.toString(),
+              returnWaitingUrl = it.returnWaitingUrl?.toString())
+          },
+          req.emailNotice)
+      }
+
+    given(redisTemplate.opsForValue()).willReturn(valueOperations)
+    given(valueOperations.get("carts:$cartId")).willReturn(Mono.just(cartInfo))
+
+    StepVerifier.create(cartsRedisTemplateWrapper.findById(cartId.toString()))
+      .expectNext(cartInfo)
+      .verifyComplete()
   }
 }
