@@ -707,7 +707,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, {"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","int","kotlin.jvm.internal.DefaultConstructorMarker"] }, {"name":"getReturnCancelUrl","parameterTypes":[] }, {"name":"getReturnErrorUrl","parameterTypes":[] }, {"name":"getReturnSuccessUrl","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String"] }, {"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","int","kotlin.jvm.internal.DefaultConstructorMarker"] }, {"name":"getReturnCancelUrl","parameterTypes":[] }, {"name":"getReturnErrorUrl","parameterTypes":[] }, {"name":"getReturnSuccessUrl","parameterTypes":[] },{"name":"getReturnWaitingUrl","parameterTypes":[] }]
 },
 {
   "name":"it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper",

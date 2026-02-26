@@ -1,6 +1,5 @@
-package it.pagopa.ecommerce.payment.requests.repositories.v1
+package it.pagopa.ecommerce.payment.requests.repositories
 
-import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import java.util.*
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.PersistenceCreator
@@ -19,4 +18,9 @@ constructor(
 
 data class ReturnUrls
 @PersistenceCreator
-constructor(val returnSuccessUrl: String, val returnErrorUrl: String, val returnCancelUrl: String)
+constructor(
+  val returnSuccessUrl: String,
+  val returnErrorUrl: String,
+  val returnCancelUrl: String,
+  val returnWaitingUrl: String?
+)

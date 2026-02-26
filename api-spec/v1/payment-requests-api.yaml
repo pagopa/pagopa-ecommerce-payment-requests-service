@@ -690,6 +690,12 @@ components:
               type: string
               format: uri
               example: "https://www.comune.di.prova.it/pagopa/error.html"
+            returnWaitingUrl:
+              description: Return URL in case payment is still processing (waiting)
+              type: string
+              format: uri
+              example: "https://www.comune.di.prova.it/pagopa/waiting.html"
+
         idCart:
           type: string
           example: "id_cart"

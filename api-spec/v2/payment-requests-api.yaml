@@ -113,7 +113,7 @@ components:
             - returnOkUrl
             - returnCancelUrl
             - returnErrorUrl
-            - returnWaitingUrl   # nuova proprietà obbligatoria in v2
+            - returnWaitingUrl
           properties:
             returnOkUrl:
               type: string

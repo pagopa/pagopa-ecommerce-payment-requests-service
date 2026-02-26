@@ -7,10 +7,10 @@ import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1.CartsRedisTemplateWrapper
-import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
-import it.pagopa.ecommerce.payment.requests.repositories.v1.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.services.v1.CartService
 import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
@@ -159,7 +159,8 @@ class CartsServiceTests {
                 ReturnUrls(
                   returnSuccessUrl = it.returnOkUrl.toString(),
                   returnErrorUrl = it.returnErrorUrl.toString(),
-                  returnCancelUrl = it.returnCancelUrl.toString())
+                  returnCancelUrl = it.returnCancelUrl.toString(),
+                  null)
               },
               req.emailNotice)
           }))
@@ -191,7 +192,8 @@ class CartsServiceTests {
                 ReturnUrls(
                   returnSuccessUrl = it.returnOkUrl.toString(),
                   returnErrorUrl = it.returnErrorUrl.toString(),
-                  returnCancelUrl = it.returnCancelUrl.toString())
+                  returnCancelUrl = it.returnCancelUrl.toString(),
+                  null)
               },
               null)
           }))
@@ -207,5 +209,47 @@ class CartsServiceTests {
       given(cartRedisTemplateWrapper.findById(cartId.toString())).willReturn(Mono.empty())
       assertThrows<CartNotFoundException> { cartService.getCart(cartId) }
     }
+  }
+
+  @Test
+  fun `get cart by id with waiting url`() = runTest {
+    val cartId = UUID.randomUUID()
+    val clearEmail = "test@test.it"
+
+    val cart =
+      CartRequests.withOnePaymentNotice(clearEmail, "www.comune.di.prova.it/pagopa/waiting.html")
+
+    val expectedCart =
+      CartRequestDto(
+        paymentNotices = cart.paymentNotices,
+        returnUrls = cart.returnUrls,
+        emailNotice = clearEmail,
+        idCart = cart.idCart)
+
+    given(tokenizerMailUtils.toEmail(Confidential(cart.emailNotice)))
+      .willReturn(Mono.just(Email(clearEmail)))
+
+    given(cartRedisTemplateWrapper.findById(cartId.toString()))
+      .willReturn(
+        Mono.just(
+          cart.let { req ->
+            CartInfo(
+              cartId,
+              req.paymentNotices.map {
+                PaymentInfo(
+                  RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
+              },
+              req.idCart,
+              req.returnUrls.let {
+                ReturnUrls(
+                  returnSuccessUrl = it.returnOkUrl.toString(),
+                  returnErrorUrl = it.returnErrorUrl.toString(),
+                  returnCancelUrl = it.returnCancelUrl.toString(),
+                  returnWaitingUrl = it.returnWaitingUrl.toString())
+              },
+              req.emailNotice)
+          }))
+
+    assertEquals(expectedCart, cartService.getCart(cartId))
   }
 }

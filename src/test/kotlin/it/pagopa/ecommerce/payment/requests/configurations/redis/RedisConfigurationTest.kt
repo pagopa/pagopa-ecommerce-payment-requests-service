@@ -9,10 +9,10 @@ import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.Jack
 import it.pagopa.ecommerce.payment.requests.configurations.redis.converters.JacksonRptSerializer
 import it.pagopa.ecommerce.payment.requests.domain.IdempotencyKey
 import it.pagopa.ecommerce.payment.requests.domain.RptId
+import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
-import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
-import it.pagopa.ecommerce.payment.requests.repositories.v1.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import java.nio.ByteBuffer
 import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -83,7 +83,7 @@ class RedisConfigurationTest {
           "www.comune.di.prova.it/pagopa/success.html",
           "www.comune.di.prova.it/pagopa/cancel.html",
           "www.comune.di.prova.it/pagopa/error.html",
-        ),
+          null),
         "my_email@mail.it")
 
     val actual: ByteBuffer =
