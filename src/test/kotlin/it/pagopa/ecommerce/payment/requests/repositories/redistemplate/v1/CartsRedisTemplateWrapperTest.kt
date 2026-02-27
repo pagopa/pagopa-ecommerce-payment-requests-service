@@ -1,20 +1,24 @@
-package it.pagopa.ecommerce.payment.requests.repositories.redistemplate
+package it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1
 
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.v1.ReturnUrls
-import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
+import it.pagopa.ecommerce.payment.requests.tests.utils.v1.CartRequests
 import java.time.Duration
-import java.util.*
-import org.junit.jupiter.api.Assertions.assertEquals
+import java.util.UUID
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.*
+import org.mockito.kotlin.capture
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.given
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.ReactiveValueOperations
 import reactor.core.publisher.Mono
@@ -65,7 +69,7 @@ class CartsRedisTemplateWrapperTest {
 
     verify(redisTemplate, times(1)).opsForValue()
     verify(valueOperations, times(1)).set("carts:$cartId", cartInfo, duration)
-    assertEquals("carts:$cartId", keyCaptor.value)
+    Assertions.assertEquals("carts:$cartId", keyCaptor.value)
   }
 
   @Test
