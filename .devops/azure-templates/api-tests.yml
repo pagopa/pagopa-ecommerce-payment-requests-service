@@ -43,3 +43,25 @@ steps:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/*-TEST.xml'
       searchFolder: '$(System.DefaultWorkingDirectory)'
+
+  - script: |
+      newman run api-tests/cart-tests/cart-api-dev-v2.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/cart-api-dev-v2-tests-TEST.xml
+    displayName: 'Run api test api cart test - DEV v2'
+    condition: eq(contains('${{parameters.ENV_FILE}}', 'dev'), True)
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/*-TEST.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+
+  - script: |
+      newman run api-tests/cart-tests/cart-api-uat-v2.tests.json -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/cart-api-${{ parameters.TEST_FILE_PREFIX }}-v2-tests-TEST.xml
+    displayName: 'Run api test api cart test - UAT v2'
+    condition: eq(contains('${{parameters.ENV_FILE}}', 'uat'), True)
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/*-TEST.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
