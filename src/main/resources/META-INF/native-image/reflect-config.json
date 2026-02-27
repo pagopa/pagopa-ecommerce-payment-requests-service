@@ -36,163 +36,205 @@
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.api.CartsApi",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.api.CartsApi",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.api.CartsApi$DefaultImpls",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.api.CartsApi$DefaultImpls",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.api.PaymentRequestsApi",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v2.api.CartsApi",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.api.PaymentRequestsApi$DefaultImpls",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v2.api.CartsApi$DefaultImpls",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.api.PaymentRequestsApi",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.api.PaymentRequestsApi$DefaultImpls",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.GatewayFaultPaymentProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestReturnUrlsDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestReturnUrlsDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentUnknownDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentUnknownDto$Companion",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.GatewayFaultPaymentProblemJsonDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentUnknownProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentNoticeDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentUnknownProblemJsonDto$FaultCodeCategory",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v2.model.PaymentNoticeDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentUnknownProblemJsonDto$FaultCodeCategory$Companion",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentRequestsGetResponseDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentUnavailableProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ProblemJsonDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PartyConfigurationFaultDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ProblemJsonDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PartyConfigurationFaultPaymentProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentUnknownDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.GetPaymentRequestInfo404ResponseDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentUnknownDto$Companion",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.GetPaymentRequestInfo409ResponseDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentUnknownProblemJsonDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.GetPaymentRequestInfo502ResponseDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentUnknownProblemJsonDto$FaultCodeCategory",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentDataErrorProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentUnknownProblemJsonDto$FaultCodeCategory$Companion",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentDuplicatedStatusFaultPaymentProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentUnavailableProblemJsonDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentExpiredStatusFaultPaymentProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PartyConfigurationFaultDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentCanceledStatusFaultPaymentProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PartyConfigurationFaultPaymentProblemJsonDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentOngoingStatusFaultPaymentProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.GetPaymentRequestInfo404ResponseDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.GetPaymentRequestInfo409ResponseDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.GetPaymentRequestInfo502ResponseDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentDataErrorProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentDuplicatedStatusFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentExpiredStatusFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentCanceledStatusFaultPaymentProblemJsonDto",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentOngoingStatusFaultPaymentProblemJsonDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
@@ -630,14 +672,26 @@
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
 },
 {
-  "name":"it.pagopa.ecommerce.payment.requests.controllers.CartsController",
+  "name":"it.pagopa.ecommerce.payment.requests.controllers.v1.CartsController",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.springframework.web.reactive.function.client.WebClient","java.lang.String"] }, {"name":"getCarts","parameterTypes":["java.util.UUID","kotlin.coroutines.Continuation"] }, {"name":"postCarts","parameterTypes":["it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto","it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto","kotlin.coroutines.Continuation"] }, {"name":"postCarts$default","parameterTypes":["it.pagopa.ecommerce.payment.requests.controllers.CartsController","it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto","it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto","kotlin.coroutines.Continuation","int","java.lang.Object"] }, {"name":"warmupPostCarts","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.web.reactive.function.client.WebClient","java.lang.String"] }, {"name":"getCarts","parameterTypes":["java.util.UUID","kotlin.coroutines.Continuation"] }, {"name":"postCarts","parameterTypes":["it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDto","it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto","kotlin.coroutines.Continuation"] }, {"name":"postCarts$default","parameterTypes":["it.pagopa.ecommerce.payment.requests.controllers.v1.CartsController","it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDto","it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto","kotlin.coroutines.Continuation","int","java.lang.Object"] }, {"name":"warmupPostCarts","parameterTypes":[] }]
 },
 {
-  "name":"it.pagopa.ecommerce.payment.requests.controllers.CartsController$$SpringCGLIB$$0",
+  "name":"it.pagopa.ecommerce.payment.requests.controllers.v1.CartsController$$SpringCGLIB$$0",
+  "fields":[{"name":"CGLIB$CALLBACK_FILTER"}, {"name":"CGLIB$FACTORY_DATA"}],
+  "methods":[{"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }]
+},
+{
+  "name":"it.pagopa.ecommerce.payment.requests.controllers.v2.CartsControllerV2",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.web.reactive.function.client.WebClient","java.lang.String"] }, {"name":"getCarts","parameterTypes":["java.util.UUID","kotlin.coroutines.Continuation"] }, {"name":"postCarts","parameterTypes":["it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto","it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto","kotlin.coroutines.Continuation"] }, {"name":"postCarts$default","parameterTypes":["it.pagopa.ecommerce.payment.requests.controllers.v2.CartsControllerV2","it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto","it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto","kotlin.coroutines.Continuation","int","java.lang.Object"] }, {"name":"warmupPostCarts","parameterTypes":[] }]
+},
+{
+  "name":"it.pagopa.ecommerce.payment.requests.controllers.v2.CartsControllerV2$$SpringCGLIB$$0",
   "fields":[{"name":"CGLIB$CALLBACK_FILTER"}, {"name":"CGLIB$FACTORY_DATA"}],
   "methods":[{"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }]
 },
