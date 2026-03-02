@@ -21,7 +21,7 @@ services:
           memory: 512M
   redis:
     container_name: pagopa-ecommerce-redis
-    image: redis
+    image: redis@sha256:1c054d54ecd1597bba52f4304bca5afbc5565ebe614c5b3d7dc5b7f8a0cd768d
     command: [ "sh", "-c", 'exec redis-server --requirepass "$$REDIS_PASSWORD"' ]
     ports:
       - "6379:6379"
@@ -29,7 +29,7 @@ services:
       - pagopa-ecommerce-net
 
   redis-insight:
-    image: redislabs/redisinsight
+    image: redislabs/redisinsight@sha256:55542a762210bb1cd681410282642bac0970f780f39bc134565394a81b1f1fd9
     ports:
       - "8001:8001"
     networks:
