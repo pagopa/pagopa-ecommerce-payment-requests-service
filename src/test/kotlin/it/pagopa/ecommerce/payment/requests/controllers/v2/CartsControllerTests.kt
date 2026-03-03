@@ -1,26 +1,26 @@
-package it.pagopa.ecommerce.payment.requests.controllers
+package it.pagopa.ecommerce.payment.requests.controllers.v2
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.*
-import it.pagopa.ecommerce.payment.requests.controllers.v1.CartsController
-import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ProblemJsonDto
 import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
-import it.pagopa.ecommerce.payment.requests.services.v1.CartService
-import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
+import it.pagopa.ecommerce.payment.requests.services.v2.CartService
+import it.pagopa.ecommerce.payment.requests.tests.utils.v2.CartRequests
 import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
-import java.net.URI
-import java.util.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.NullSource
 import org.junit.jupiter.params.provider.ValueSource
-import org.mockito.BDDMockito.*
+import org.mockito.ArgumentMatchers
+import org.mockito.BDDMockito
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
@@ -34,7 +34,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@WebFluxTest(CartsController::class)
+@WebFluxTest(CartsControllerV2::class)
 @Import(BeanValidationConfiguration::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
 class CartsControllerTests {
@@ -49,21 +49,22 @@ class CartsControllerTests {
 
   @Mock private lateinit var responseSpec: WebClient.ResponseSpec
 
-  @InjectMocks val cartsController: CartsController = CartsController(primaryApiKey = "primaryKey")
+  @InjectMocks
+  val cartsController: CartsControllerV2 = CartsControllerV2(primaryApiKey = "primaryKey")
 
   private val cartsMaxAllowedPaymentNotices = 5
 
   private val objectMapper = ObjectMapper()
 
   @ParameterizedTest
-  @ValueSource(strings = ["/carts", "/carts/"])
+  @ValueSource(strings = ["/v2/carts", "/v2/carts/"])
   fun `post cart succeeded with one payment notice ignoring trailing slash`(path: String) =
     runTest {
       val request = CartRequests.withOnePaymentNotice()
       val clientId = ClientIdDto.WISP_REDIRECT
       val locationUrl =
         "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
-      given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+      BDDMockito.given(cartService.processCart(clientId, request)).willReturn(locationUrl)
       webClient
         .post()
         .uri(path)
@@ -83,7 +84,7 @@ class CartsControllerTests {
     val request = CartRequests.withOnePaymentNotice()
     val clientId = ClientIdDto.WISP_REDIRECT
     val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
-    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    BDDMockito.given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
       .uri("/carts")
@@ -100,10 +101,10 @@ class CartsControllerTests {
     val request = CartRequests.withOnePaymentNotice()
     val clientId = ClientIdDto.WISP_REDIRECT
     val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
-    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    BDDMockito.given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
-      .uri("/carts")
+      .uri("/v2/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .header("x-api-key", "the-real-wrong-api-key")
       .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +119,7 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     val clientId = ClientIdDto.WISP_REDIRECT
-    given(cartService.processCart(clientId, request))
+    BDDMockito.given(cartService.processCart(clientId, request))
       .willThrow(
         RestApiException(
           httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
@@ -132,7 +133,7 @@ class CartsControllerTests {
 
     webClient
       .post()
-      .uri("/carts")
+      .uri("/v2/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
@@ -149,12 +150,12 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     val clientId = ClientIdDto.WISP_REDIRECT
-    given(cartService.processCart(clientId, request))
+    BDDMockito.given(cartService.processCart(clientId, request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR))
     val errorResponse = ProblemJsonDto(status = 502, title = "Bad gateway")
     webClient
       .post()
-      .uri("/carts")
+      .uri("/v2/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
@@ -171,12 +172,12 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     val clientId = ClientIdDto.WISP_REDIRECT
-    given(cartService.processCart(clientId, request))
+    BDDMockito.given(cartService.processCart(clientId, request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.NOT_FOUND))
     val errorResponse = ProblemJsonDto(status = 500, title = "Internal server error")
     webClient
       .post()
-      .uri("/carts")
+      .uri("/v2/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
@@ -193,12 +194,12 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     val clientId = ClientIdDto.WISP_REDIRECT
-    given(cartService.processCart(clientId, request))
+    BDDMockito.given(cartService.processCart(clientId, request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.UNPROCESSABLE_ENTITY))
     val errorResponse = ProblemJsonDto(status = 422, title = "Invalid payment info")
     webClient
       .post()
-      .uri("/carts")
+      .uri("/v2/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
@@ -218,10 +219,10 @@ class CartsControllerTests {
     val errorResponse =
       ProblemJsonDto(
         status = 400, title = "Request validation error", detail = "The input request is invalid")
-    given(cartService.processCart(clientId, request)).willReturn("")
+    BDDMockito.given(cartService.processCart(clientId, request)).willReturn("")
     webClient
       .post()
-      .uri("/carts")
+      .uri("/v2/carts")
       .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
@@ -242,11 +243,11 @@ class CartsControllerTests {
         title = "Error processing the request",
         detail = "An internal error occurred processing the request",
         status = 500)
-    given(cartService.processCart(clientId, request))
+    BDDMockito.given(cartService.processCart(clientId, request))
       .willThrow(RuntimeException("Test unmanaged exception"))
     webClient
       .post()
-      .uri("/carts")
+      .uri("/v2/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
@@ -259,127 +260,30 @@ class CartsControllerTests {
   }
 
   @Test
-  fun `get cart by id`() = runTest {
-    val cartId = UUID.randomUUID()
-    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    val response =
-      CartRequestDto(
-        paymentNotices =
-          listOf(
-            PaymentNoticeDto(
-              noticeNumber = "",
-              fiscalCode = "",
-              amount = 10000,
-              companyName = "companyName",
-              description = "description")),
-        returnUrls =
-          CartRequestReturnUrlsDto(
-            returnErrorUrl = URI.create("https://returnErrorUrl"),
-            returnOkUrl = URI.create("https://returnOkUrl"),
-            returnCancelUrl = URI.create("https://returnCancelUrl")),
-        emailNotice = "test@test.it")
-    given(cartService.getCart(cartId)).willReturn(response)
-    val parameters = mapOf("idCart" to cartId)
-    webClient
-      .get()
-      .uri("/carts/{idCart}", parameters)
-      .header("x-api-key", "primary-key")
-      .exchange()
-      .expectStatus()
-      .isOk
-      .expectBody()
-      .json(objectMapper.writeValueAsString(response))
-  }
-
-  @Test
-  fun `get cart by id without mail`() = runTest {
-    val cartId = UUID.randomUUID()
-    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    val response =
-      CartRequestDto(
-        paymentNotices =
-          listOf(
-            PaymentNoticeDto(
-              noticeNumber = "",
-              fiscalCode = "",
-              amount = 10000,
-              companyName = "companyName",
-              description = "description")),
-        returnUrls =
-          CartRequestReturnUrlsDto(
-            returnErrorUrl = URI.create("https://returnErrorUrl"),
-            returnOkUrl = URI.create("https://returnOkUrl"),
-            returnCancelUrl = URI.create("https://returnCancelUrl")))
-    given(cartService.getCart(cartId)).willReturn(response)
-    val parameters = mapOf("idCart" to cartId)
-    webClient
-      .get()
-      .uri("/carts/{idCart}", parameters)
-      .header("x-api-key", "primary-key")
-      .exchange()
-      .expectStatus()
-      .isOk
-      .expectBody()
-      .json(objectMapper.writeValueAsString(response))
-  }
-
-  @Test
-  fun `get cart by id with non-existing cart returns 404`() = runTest {
-    val cartId = UUID.randomUUID()
-    val exception = CartNotFoundException(cartId.toString())
-    val expected =
-      ProblemJsonDto(
-        title = "Cart not found",
-        detail = exception.message ?: "",
-        status = HttpStatus.NOT_FOUND.value())
-
-    given(cartService.getCart(cartId)).willThrow(exception)
-
-    val parameters = mapOf("cartId" to cartId)
-    webClient
-      .get()
-      .uri("/carts/{cartId}", parameters)
-      .header("x-api-key", "primary-key")
-      .exchange()
-      .expectStatus()
-      .isNotFound
-      .expectBody<ProblemJsonDto>()
-      .isEqualTo(expected)
-  }
-
-  @Test
-  fun `should return unauthorized if request has not api key header`() = runTest {
-    val cartId = UUID.randomUUID()
-
-    val parameters = mapOf("cartId" to cartId)
-    webClient
-      .get()
-      .uri("/carts/{cartId}", parameters)
-      .exchange()
-      .expectStatus()
-      .isEqualTo(HttpStatus.UNAUTHORIZED)
-  }
-
-  @Test
   fun `warm up controller`() {
-    val webClient = mock(WebClient::class.java)
-    val requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec::class.java)
-    val requestBodySpec = mock(WebClient.RequestBodySpec::class.java)
-    val requestHeadersSpec = mock(WebClient.RequestHeadersSpec::class.java)
-    val responseSpec = mock(WebClient.ResponseSpec::class.java)
+    val webClient = Mockito.mock(WebClient::class.java)
+    val requestBodyUriSpec = Mockito.mock(WebClient.RequestBodyUriSpec::class.java)
+    val requestBodySpec = Mockito.mock(WebClient.RequestBodySpec::class.java)
+    val requestHeadersSpec = Mockito.mock(WebClient.RequestHeadersSpec::class.java)
+    val responseSpec = Mockito.mock(WebClient.ResponseSpec::class.java)
 
-    given(webClient.post()).willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.uri(any<String>())).willReturn(requestBodySpec)
-    given(requestBodySpec.header(any(), any())).willReturn(requestBodySpec)
-    given(requestBodySpec.body(any(), eq(CartRequestDto::class.java)))
+    BDDMockito.given(webClient.post()).willReturn(requestBodyUriSpec)
+    BDDMockito.given(requestBodyUriSpec.uri(ArgumentMatchers.any<String>()))
+      .willReturn(requestBodySpec)
+    BDDMockito.given(requestBodySpec.header(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .willReturn(requestBodySpec)
+    BDDMockito.given(
+        requestBodySpec.body(
+          ArgumentMatchers.any(), ArgumentMatchers.eq(CartRequestDto::class.java)))
       .willReturn(requestHeadersSpec)
-    given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
-    given(responseSpec.onStatus(any(), any())).willReturn(responseSpec)
-    given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
+    BDDMockito.given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+    BDDMockito.given(responseSpec.onStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .willReturn(responseSpec)
+    BDDMockito.given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
 
-    val controller = CartsController(webClient = webClient, primaryApiKey = "primaryApiKey")
+    val controller = CartsControllerV2(webClient = webClient, primaryApiKey = "primaryApiKey")
     controller.warmupPostCarts()
-    verify(webClient, times(1)).post()
+    Mockito.verify(webClient, Mockito.times(1)).post()
   }
 
   @ParameterizedTest
@@ -389,10 +293,10 @@ class CartsControllerTests {
     val request = CartRequests.withOnePaymentNotice(email)
     val clientId = ClientIdDto.WISP_REDIRECT
     val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
-    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    BDDMockito.given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
-      .uri("/carts")
+      .uri("/v2/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .header("x-api-key", "primary-key")
       .contentType(MediaType.APPLICATION_JSON)
@@ -412,10 +316,10 @@ class CartsControllerTests {
     val errorResponse =
       ProblemJsonDto(
         title = "Request validation error", detail = "The input request is invalid", status = 400)
-    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    BDDMockito.given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
-      .uri("/carts")
+      .uri("/v2/carts")
       .contentType(MediaType.APPLICATION_JSON)
       .header("x-api-key", "primary-key")
       .bodyValue(request)
@@ -424,43 +328,5 @@ class CartsControllerTests {
       .isBadRequest
       .expectBody<ProblemJsonDto>()
       .isEqualTo(errorResponse)
-  }
-
-  @Test
-  fun `get cart by id with waiting url`() = runTest {
-    val cartId = UUID.randomUUID()
-    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-
-    val response =
-      CartRequestDto(
-        paymentNotices =
-          listOf(
-            PaymentNoticeDto(
-              noticeNumber = "",
-              fiscalCode = "",
-              amount = 10000,
-              companyName = "companyName",
-              description = "description")),
-        returnUrls =
-          CartRequestReturnUrlsDto(
-            returnErrorUrl = URI.create("https://returnErrorUrl"),
-            returnOkUrl = URI.create("https://returnOkUrl"),
-            returnCancelUrl = URI.create("https://returnCancelUrl"),
-            returnWaitingUrl = URI.create("https://returnWaitingUrl")),
-        emailNotice = "test@test.it")
-
-    given(cartService.getCart(cartId)).willReturn(response)
-
-    val parameters = mapOf("idCart" to cartId)
-
-    webClient
-      .get()
-      .uri("/carts/{idCart}", parameters)
-      .header("x-api-key", "primary-key")
-      .exchange()
-      .expectStatus()
-      .isOk
-      .expectBody()
-      .json(objectMapper.writeValueAsString(response))
   }
 }
