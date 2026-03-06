@@ -1,24 +1,19 @@
-package it.pagopa.ecommerce.payment.requests.services
+package it.pagopa.ecommerce.payment.requests.services.v2
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
-import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
-import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
-import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v2.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.v2.CartInfo
+import it.pagopa.ecommerce.payment.requests.repositories.v2.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
-import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
-import java.net.URI
 import java.text.MessageFormat
 import java.util.*
 import kotlinx.coroutines.CoroutineDispatcher
@@ -33,7 +28,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 
-@Service
+@Service("CartServiceV2")
 class CartService(
   @Value("\${checkout.url}") private val checkoutUrl: String,
   @Autowired private val cartsRedisTemplateWrapper: CartsRedisTemplateWrapper,
@@ -48,11 +43,6 @@ class CartService(
    */
   var logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
-  /*
-   * Process input cartRequestDto:
-   * - 1 payment notice is present -> redirect response is given to the checkout location
-   * - 2 or more payment notices are present -> error response
-   */
   suspend fun processCart(xClientId: ClientIdDto, cartRequestDto: CartRequestDto): String {
     val paymentsNotices = cartRequestDto.paymentNotices
     val receivedNotices = paymentsNotices.size
@@ -85,7 +75,7 @@ class CartService(
               }
               .toList())
 
-      return nodoPerPmClient
+      nodoPerPmClient
         .checkPosition(checkPositionDto)
         .filter { response -> response.outcome == CheckPositionResponseDto.OutcomeEnum.OK }
         .switchIfEmpty {
@@ -108,7 +98,8 @@ class CartService(
                     ReturnUrls(
                       returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
                       returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
-                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
+                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString(),
+                      returnWaitingUrl = cartRequestDto.returnUrls.returnWaitingUrl.toString()),
                   email = tokenizedEmail.opaqueData)
               }
             }
@@ -122,7 +113,8 @@ class CartService(
                     ReturnUrls(
                       returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
                       returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
-                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString()),
+                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString(),
+                      returnWaitingUrl = cartRequestDto.returnUrls.returnWaitingUrl.toString()),
                   email = null)),
             )
         }
@@ -143,49 +135,5 @@ class CartService(
         title = "Multiple payment notices not processable",
         description = "Too many payment notices, expected max $maxAllowedPaymentNotices")
     }
-  }
-
-  /*
-   * Fetch the cart with the input cart id
-   */
-  suspend fun getCart(cartId: UUID): CartRequestDto {
-    return cartsRedisTemplateWrapper
-      .findById(cartId.toString())
-      .switchIfEmpty { throw CartNotFoundException(cartId.toString()) }
-      .flatMap { cartWithTokenizedEmail ->
-        val paymentNotices =
-          cartWithTokenizedEmail.payments.map {
-            PaymentNoticeDto(
-              it.rptId.noticeId, it.rptId.fiscalCode, it.amount, it.companyName, it.description)
-          }
-
-        val returnUrls =
-          cartWithTokenizedEmail.returnUrls.let {
-            CartRequestReturnUrlsDto(
-              returnOkUrl = URI(it.returnSuccessUrl),
-              returnCancelUrl = URI(it.returnCancelUrl),
-              returnErrorUrl = URI(it.returnErrorUrl))
-          }
-
-        val idCart = cartWithTokenizedEmail.idCart
-
-        Mono.justOrEmpty(cartWithTokenizedEmail.email)
-          .flatMap { tokenizedMail ->
-            tokenizerMailUtils.toEmail(Confidential(tokenizedMail)).map { clearMail ->
-              CartRequestDto(
-                paymentNotices = paymentNotices,
-                returnUrls = returnUrls,
-                emailNotice = clearMail.value,
-                idCart = idCart)
-            }
-          }
-          .defaultIfEmpty(
-            CartRequestDto(
-              paymentNotices = paymentNotices,
-              returnUrls = returnUrls,
-              emailNotice = null,
-              idCart = idCart))
-      }
-      .awaitSingle()
   }
 }

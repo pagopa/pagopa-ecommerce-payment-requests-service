@@ -1,16 +1,17 @@
 package it.pagopa.ecommerce.payment.requests.services
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.ClientIdDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
-import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
-import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
+import it.pagopa.ecommerce.payment.requests.repositories.v1.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.services.v1.CartService
 import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
