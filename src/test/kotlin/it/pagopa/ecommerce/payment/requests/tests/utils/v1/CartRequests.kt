@@ -6,7 +6,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentNot
 import java.net.URI
 
 object CartRequests {
-  fun withOnePaymentNotice() = CartRequests.withOnePaymentNotice("my_email@mail.it")
+  fun withOnePaymentNotice() = withOnePaymentNotice("my_email@mail.it")
 
   fun withOnePaymentNotice(email: String?): CartRequestDto {
     return CartRequestDto(
