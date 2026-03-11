@@ -1,18 +1,11 @@
-package it.pagopa.ecommerce.payment.requests.services
+package it.pagopa.ecommerce.payment.requests.services.v2
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
-import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
-import it.pagopa.ecommerce.payment.requests.domain.RptId
-import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
-import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1.CartsRedisTemplateWrapper
-import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
-import it.pagopa.ecommerce.payment.requests.repositories.v1.ReturnUrls
-import it.pagopa.ecommerce.payment.requests.services.v1.CartService
-import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v2.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.tests.utils.v2.CartRequests
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
@@ -46,7 +39,7 @@ class CartsServiceTests {
       cartsMaxAllowedPaymentNotices)
 
   @Test
-  fun `post cart succeeded with one payment notice`() = runTest {
+  fun `v2 post cart succeeded with one payment notice`() = runTest {
     val cartId = UUID.randomUUID()
     val tokenizedEmail = UUID.randomUUID()
     val clientId = ClientIdDto.WISP_REDIRECT
@@ -85,7 +78,7 @@ class CartsServiceTests {
   }
 
   @Test
-  fun `post cart failed with checkValidity KO`() = runTest {
+  fun `v2 post cart failed with checkValidity KO`() = runTest {
     val cartId = UUID.randomUUID()
     val tokenizedEmail = UUID.randomUUID()
 
@@ -104,7 +97,7 @@ class CartsServiceTests {
   }
 
   @Test
-  fun `post cart failed with duplicate payments`() = runTest {
+  fun `v2 post cart failed with duplicate payments`() = runTest {
     val cartId = UUID.randomUUID()
     val clientId = ClientIdDto.WISP_REDIRECT
 
@@ -121,91 +114,10 @@ class CartsServiceTests {
   }
 
   @Test
-  fun `post cart ko with multiple payment notices`() = runTest {
+  fun `v2 post cart ko with multiple payment notices`() = runTest {
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices + 1)
     val clientId = ClientIdDto.WISP_REDIRECT
 
     assertThrows<RestApiException> { cartService.processCart(clientId, request) }
-  }
-
-  @Test
-  fun `get cart by id`() = runTest {
-    val cartId = UUID.randomUUID()
-    val clearEmail = "test@test.it"
-
-    val cart = CartRequests.withOnePaymentNotice()
-    val expectedCart =
-      CartRequestDto(
-        paymentNotices = cart.paymentNotices,
-        returnUrls = cart.returnUrls,
-        emailNotice = clearEmail,
-        idCart = cart.idCart)
-
-    given(tokenizerMailUtils.toEmail(Confidential(cart.emailNotice)))
-      .willReturn(Mono.just(Email(clearEmail)))
-
-    given(cartRedisTemplateWrapper.findById(cartId.toString()))
-      .willReturn(
-        Mono.just(
-          cart.let { req ->
-            CartInfo(
-              cartId,
-              req.paymentNotices.map {
-                PaymentInfo(
-                  RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
-              },
-              req.idCart,
-              req.returnUrls.let {
-                ReturnUrls(
-                  returnSuccessUrl = it.returnOkUrl.toString(),
-                  returnErrorUrl = it.returnErrorUrl.toString(),
-                  returnCancelUrl = it.returnCancelUrl.toString())
-              },
-              req.emailNotice)
-          }))
-
-    assertEquals(expectedCart, cartService.getCart(cartId))
-  }
-
-  @Test
-  fun `get cart by id without mail`() = runTest {
-    val cartId = UUID.randomUUID()
-
-    val cart = CartRequests.withOnePaymentNotice()
-    val expectedCart =
-      CartRequestDto(
-        paymentNotices = cart.paymentNotices, returnUrls = cart.returnUrls, idCart = cart.idCart)
-
-    given(cartRedisTemplateWrapper.findById(cartId.toString()))
-      .willReturn(
-        Mono.just(
-          cart.let { req ->
-            CartInfo(
-              cartId,
-              req.paymentNotices.map {
-                PaymentInfo(
-                  RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
-              },
-              req.idCart,
-              req.returnUrls.let {
-                ReturnUrls(
-                  returnSuccessUrl = it.returnOkUrl.toString(),
-                  returnErrorUrl = it.returnErrorUrl.toString(),
-                  returnCancelUrl = it.returnCancelUrl.toString())
-              },
-              null)
-          }))
-
-    assertEquals(expectedCart, cartService.getCart(cartId))
-    verify(tokenizerMailUtils, times(0)).toEmail(any())
-  }
-
-  @Test
-  fun `non-existing id throws CartNotFoundException`() = runTest {
-    val cartId = UUID.randomUUID()
-    Mockito.mockStatic(UUID::class.java).use {
-      given(cartRedisTemplateWrapper.findById(cartId.toString())).willReturn(Mono.empty())
-      assertThrows<CartNotFoundException> { cartService.getCart(cartId) }
-    }
   }
 }
