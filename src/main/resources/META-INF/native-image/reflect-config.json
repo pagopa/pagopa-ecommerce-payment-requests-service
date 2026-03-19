@@ -181,31 +181,31 @@
 },
 {
 
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentDataErrorProblemJsonDto$FaultCodeCategory",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentDataErrorProblemJsonDto$FaultCodeCategory",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentDataErrorProblemJsonDto$FaultCodeCategory$Companion",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentDataErrorProblemJsonDto$FaultCodeCategory$Companion",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentDataErrorDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentDataErrorDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.ValidationFaultPaymentDataErrorDto$Companion",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ValidationFaultPaymentDataErrorDto$Companion",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
 },
 {
-  "name":"it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentDuplicatedStatusFaultPaymentProblemJsonDto",
+  "name":"it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentDuplicatedStatusFaultPaymentProblemJsonDto",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allDeclaredFields": true
