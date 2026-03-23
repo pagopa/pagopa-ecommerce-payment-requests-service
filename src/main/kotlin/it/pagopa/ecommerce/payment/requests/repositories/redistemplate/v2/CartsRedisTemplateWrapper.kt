@@ -10,6 +10,6 @@ class CartsRedisTemplateWrapper(
   ttl: Duration
 ) :
   ReactiveRedisTemplateWrapper<CartInfo>(
-    reactiveRedisTemplate = reactiveRedisTemplate, "carts", ttl) {
+    reactiveRedisTemplate = reactiveRedisTemplate, "carts-v2", ttl) {
   override fun getKeyFromEntity(value: CartInfo): String = value.id.toString()
 }
