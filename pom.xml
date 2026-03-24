@@ -352,7 +352,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <!-- Path al nuovo OpenAPI v2 -->
+                            <!-- Path to the new OpenAPI v2 -->
                             <inputSpec>${project.basedir}/api-spec/v2/payment-requests-api.yaml</inputSpec>
                             <generatorName>kotlin-spring</generatorName>
                             <library>spring-boot</library>

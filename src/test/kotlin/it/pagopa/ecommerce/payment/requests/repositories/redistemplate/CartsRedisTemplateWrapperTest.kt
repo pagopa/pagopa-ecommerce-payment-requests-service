@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.repositories.redistemplate
 
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
@@ -33,29 +34,40 @@ class CartsRedisTemplateWrapperTest {
   private val cartsRedisTemplateWrapper: CartsRedisTemplateWrapper =
     CartsRedisTemplateWrapper(redisTemplate, duration)
 
+  private fun buildCartInfo(
+    cartId: UUID,
+    cartRequest: CartRequestDto
+  ): CartInfo =
+    cartRequest.let { req ->
+      CartInfo(
+        cartId,
+        req.paymentNotices.map {
+          PaymentInfo(
+            RptId(it.fiscalCode + it.noticeNumber),
+            it.description,
+            it.amount,
+            it.companyName
+          )
+        },
+        req.idCart,
+        req.returnUrls.let {
+          ReturnUrls(
+            returnSuccessUrl = it.returnOkUrl.toString(),
+            returnErrorUrl = it.returnErrorUrl.toString(),
+            returnCancelUrl = it.returnCancelUrl.toString(),
+            returnWaitingUrl = it.returnWaitingUrl?.toString()
+          )
+        },
+        req.emailNotice
+      )
+    }
+
   @Test
   fun `Should save entity successfully`() {
     // pre-requisites
     val cartId = UUID.randomUUID()
     val cartRequest = CartRequests.withMultiplePaymentNotices(5)
-    val cartInfo =
-      cartRequest.let { req ->
-        CartInfo(
-          cartId,
-          req.paymentNotices.map {
-            PaymentInfo(
-              RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
-          },
-          req.idCart,
-          req.returnUrls.let {
-            ReturnUrls(
-              returnSuccessUrl = it.returnOkUrl.toString(),
-              returnErrorUrl = it.returnErrorUrl.toString(),
-              returnCancelUrl = it.returnCancelUrl.toString(),
-              null)
-          },
-          req.emailNotice)
-      }
+    val cartInfo = buildCartInfo(cartId, cartRequest)
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
     given(valueOperations.set(capture(keyCaptor), eq(cartInfo), eq(duration)))
       .willReturn(Mono.just(true))
@@ -73,25 +85,7 @@ class CartsRedisTemplateWrapperTest {
     // pre-requisites
     val cartId = UUID.randomUUID()
     val cartRequest = CartRequests.withMultiplePaymentNotices(5)
-    val cartInfo =
-      cartRequest.let { req ->
-        CartInfo(
-          cartId,
-          req.paymentNotices.map {
-            PaymentInfo(
-              RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
-          },
-          req.idCart,
-          req.returnUrls.let {
-            ReturnUrls(
-              returnSuccessUrl = it.returnOkUrl.toString(),
-              returnErrorUrl = it.returnErrorUrl.toString(),
-              returnCancelUrl = it.returnCancelUrl.toString(),
-              null)
-          },
-          req.emailNotice)
-      }
-
+    val cartInfo = buildCartInfo(cartId, cartRequest)
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
     given(valueOperations.get("carts:$cartId")).willReturn(Mono.just(cartInfo))
 
@@ -109,24 +103,7 @@ class CartsRedisTemplateWrapperTest {
     val cartRequest =
       CartRequests.withMultiplePaymentNotices(3, "www.comune.di.prova.it/pagopa/waiting.html")
 
-    val cartInfo =
-      cartRequest.let { req ->
-        CartInfo(
-          cartId,
-          req.paymentNotices.map {
-            PaymentInfo(
-              RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
-          },
-          req.idCart,
-          req.returnUrls.let {
-            ReturnUrls(
-              returnSuccessUrl = it.returnOkUrl.toString(),
-              returnErrorUrl = it.returnErrorUrl.toString(),
-              returnCancelUrl = it.returnCancelUrl.toString(),
-              returnWaitingUrl = it.returnWaitingUrl?.toString())
-          },
-          req.emailNotice)
-      }
+    val cartInfo = buildCartInfo(cartId, cartRequest)
 
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
     given(valueOperations.set(any(), eq(cartInfo), eq(duration))).willReturn(Mono.just(true))
@@ -141,25 +118,7 @@ class CartsRedisTemplateWrapperTest {
     val cartRequest =
       CartRequests.withMultiplePaymentNotices(3, "www.comune.di.prova.it/pagopa/waiting.html")
 
-    val cartInfo =
-      cartRequest.let { req ->
-        CartInfo(
-          cartId,
-          req.paymentNotices.map {
-            PaymentInfo(
-              RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
-          },
-          req.idCart,
-          req.returnUrls.let {
-            ReturnUrls(
-              returnSuccessUrl = it.returnOkUrl.toString(),
-              returnErrorUrl = it.returnErrorUrl.toString(),
-              returnCancelUrl = it.returnCancelUrl.toString(),
-              returnWaitingUrl = it.returnWaitingUrl?.toString())
-          },
-          req.emailNotice)
-      }
-
+    val cartInfo = buildCartInfo(cartId, cartRequest)
     given(redisTemplate.opsForValue()).willReturn(valueOperations)
     given(valueOperations.get("carts:$cartId")).willReturn(Mono.just(cartInfo))
 

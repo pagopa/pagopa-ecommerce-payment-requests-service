@@ -67,6 +67,7 @@ object CartRequests {
           returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
         ))
   }
+
   fun withOnePaymentNotice(email: String?, waitingUrl: String? = null): CartRequestDto {
     return CartRequestDto(
       paymentNotices =
