@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.payment.requests.services.v2
 import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
+import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.services.BaseCartService
 import it.pagopa.ecommerce.payment.requests.services.CartRequest
@@ -30,6 +31,14 @@ class CartService(
     nodoPerPmClient,
     tokenizerMailUtils,
     maxAllowedPaymentNotices) {
+
+  override fun buildReturnUrls(request: CartRequest): ReturnUrls =
+    ReturnUrls(
+      returnSuccessUrl = request.returnOkUrl,
+      returnErrorUrl = request.returnErrorUrl,
+      returnCancelUrl = request.returnCancelUrl,
+      returnWaitingUrl = request.returnWaitingUrl
+    )
 
   suspend fun processCart(xClientId: ClientIdDto, dto: CartRequestDto): String =
     processCartInternal(

@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDt
 import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentNoticeDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
+import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.services.BaseCartService
 import it.pagopa.ecommerce.payment.requests.services.CartRequest
@@ -39,6 +40,13 @@ class CartService(
     tokenizerMailUtils,
     maxAllowedPaymentNotices) {
 
+  override fun buildReturnUrls(request: CartRequest): ReturnUrls =
+    ReturnUrls(
+      returnSuccessUrl = request.returnOkUrl,
+      returnErrorUrl = request.returnErrorUrl,
+      returnCancelUrl = request.returnCancelUrl,
+      returnWaitingUrl = null
+    )
   /*
    * Process input cartRequestDto:
    * - 1 payment notice is present -> redirect response is given to the checkout location
@@ -61,7 +69,7 @@ class CartService(
           returnOkUrl = dto.returnUrls.returnOkUrl.toString(),
           returnErrorUrl = dto.returnUrls.returnErrorUrl.toString(),
           returnCancelUrl = dto.returnUrls.returnCancelUrl.toString(),
-          returnWaitingUrl = null, // v1 non ha returnWaitingUrl
+          returnWaitingUrl = null,
           emailNotice = dto.emailNotice,
           idCart = dto.idCart))
   /*

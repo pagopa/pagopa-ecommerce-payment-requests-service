@@ -1,4 +1,3 @@
-// it.pagopa.ecommerce.payment.requests.services.BaseCartService.kt
 package it.pagopa.ecommerce.payment.requests.services
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.*
@@ -18,13 +17,12 @@ import org.springframework.http.HttpStatus
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 
-// Struttura dati comune indipendente dai DTO versionati
 data class CartRequest(
   val paymentNotices: List<PaymentNoticeData>,
   val returnOkUrl: String,
   val returnErrorUrl: String,
   val returnCancelUrl: String,
-  val returnWaitingUrl: String?, // null in v1, valorizzato in v2
+  val returnWaitingUrl: String?,
   val emailNotice: String?,
   val idCart: String?
 )
@@ -47,7 +45,8 @@ abstract class BaseCartService(
 
   protected val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
-  // Logica comune estratta — riceve e restituisce tipi interni
+  protected abstract fun buildReturnUrls(request: CartRequest): ReturnUrls
+
   protected suspend fun processCartInternal(clientIdValue: String, request: CartRequest): String {
     val receivedNotices = request.paymentNotices.size
     logger.info("Received [$receivedNotices] payment notices")
@@ -97,13 +96,7 @@ abstract class BaseCartService(
       }
       .flatMap {
         val id = UUID.randomUUID()
-        val returnUrls =
-          ReturnUrls(
-            returnSuccessUrl = request.returnOkUrl,
-            returnErrorUrl = request.returnErrorUrl,
-            returnCancelUrl = request.returnCancelUrl,
-            returnWaitingUrl = request.returnWaitingUrl // null in v1, stringa in v2
-            )
+        val returnUrls =  buildReturnUrls(request)
 
         Optional.ofNullable(request.emailNotice)
           .map {
