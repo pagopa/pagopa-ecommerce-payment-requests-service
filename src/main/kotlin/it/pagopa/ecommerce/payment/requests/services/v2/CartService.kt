@@ -37,8 +37,7 @@ class CartService(
       returnSuccessUrl = request.returnOkUrl,
       returnErrorUrl = request.returnErrorUrl,
       returnCancelUrl = request.returnCancelUrl,
-      returnWaitingUrl = request.returnWaitingUrl
-    )
+      returnWaitingUrl = request.returnWaitingUrl)
 
   suspend fun processCart(xClientId: ClientIdDto, dto: CartRequestDto): String =
     processCartInternal(

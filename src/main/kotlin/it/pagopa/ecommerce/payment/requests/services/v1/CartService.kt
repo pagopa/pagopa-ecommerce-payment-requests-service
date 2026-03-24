@@ -45,8 +45,7 @@ class CartService(
       returnSuccessUrl = request.returnOkUrl,
       returnErrorUrl = request.returnErrorUrl,
       returnCancelUrl = request.returnCancelUrl,
-      returnWaitingUrl = null
-    )
+      returnWaitingUrl = null)
   /*
    * Process input cartRequestDto:
    * - 1 payment notice is present -> redirect response is given to the checkout location

@@ -96,7 +96,7 @@ abstract class BaseCartService(
       }
       .flatMap {
         val id = UUID.randomUUID()
-        val returnUrls =  buildReturnUrls(request)
+        val returnUrls = buildReturnUrls(request)
 
         Optional.ofNullable(request.emailNotice)
           .map {
