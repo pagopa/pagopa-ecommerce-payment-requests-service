@@ -34,20 +34,13 @@ class CartsRedisTemplateWrapperTest {
   private val cartsRedisTemplateWrapper: CartsRedisTemplateWrapper =
     CartsRedisTemplateWrapper(redisTemplate, duration)
 
-  private fun buildCartInfo(
-    cartId: UUID,
-    cartRequest: CartRequestDto
-  ): CartInfo =
+  private fun buildCartInfo(cartId: UUID, cartRequest: CartRequestDto): CartInfo =
     cartRequest.let { req ->
       CartInfo(
         cartId,
         req.paymentNotices.map {
           PaymentInfo(
-            RptId(it.fiscalCode + it.noticeNumber),
-            it.description,
-            it.amount,
-            it.companyName
-          )
+            RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
         },
         req.idCart,
         req.returnUrls.let {
@@ -55,11 +48,9 @@ class CartsRedisTemplateWrapperTest {
             returnSuccessUrl = it.returnOkUrl.toString(),
             returnErrorUrl = it.returnErrorUrl.toString(),
             returnCancelUrl = it.returnCancelUrl.toString(),
-            returnWaitingUrl = it.returnWaitingUrl?.toString()
-          )
+            returnWaitingUrl = it.returnWaitingUrl?.toString())
         },
-        req.emailNotice
-      )
+        req.emailNotice)
     }
 
   @Test
