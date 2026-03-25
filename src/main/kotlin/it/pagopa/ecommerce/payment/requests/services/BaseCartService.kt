@@ -43,6 +43,24 @@ abstract class BaseCartService(
   protected val maxAllowedPaymentNotices: Int
 ) {
 
+  protected fun buildCartRequest(
+    paymentNotices: List<PaymentNoticeData>,
+    returnOkUrl: String,
+    returnErrorUrl: String,
+    returnCancelUrl: String,
+    returnWaitingUrl: String?,
+    emailNotice: String?,
+    idCart: String?
+  ): CartRequest =
+    CartRequest(
+      paymentNotices = paymentNotices,
+      returnOkUrl = returnOkUrl,
+      returnErrorUrl = returnErrorUrl,
+      returnCancelUrl = returnCancelUrl,
+      returnWaitingUrl = returnWaitingUrl,
+      emailNotice = emailNotice,
+      idCart = idCart)
+
   protected val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
   protected abstract fun buildReturnUrls(request: CartRequest): ReturnUrls
