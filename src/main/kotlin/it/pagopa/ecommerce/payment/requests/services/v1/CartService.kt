@@ -55,7 +55,7 @@ class CartService(
     processCartInternal(
       clientIdValue = xClientId.value,
       request =
-        CartRequest(
+        buildCartRequest(
           paymentNotices =
             dto.paymentNotices.map {
               PaymentNoticeData(
