@@ -1,21 +1,16 @@
 package it.pagopa.ecommerce.payment.requests.services.v2
 
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
-import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.ListelementRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto
 import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
-import it.pagopa.ecommerce.payment.requests.domain.RptId
-import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v2.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.repositories.v2.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.v2.ReturnUrls
+import it.pagopa.ecommerce.payment.requests.services.CartServiceHelper
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
-import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
-import java.text.MessageFormat
-import java.util.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactor.awaitSingle
@@ -23,10 +18,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service("CartServiceV2")
 class CartService(
@@ -43,97 +35,47 @@ class CartService(
    */
   var logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
-  suspend fun processCart(xClientId: ClientIdDto, cartRequestDto: CartRequestDto): String {
-    val paymentsNotices = cartRequestDto.paymentNotices
-    val receivedNotices = paymentsNotices.size
-    logger.info("Received [$receivedNotices] payment notices")
-
-    return if (receivedNotices <= maxAllowedPaymentNotices) {
-      val paymentInfos =
-        paymentsNotices.map {
+  suspend fun processCart(clientId: ClientIdDto, cartRequestDto: CartRequestDto): String {
+    return CartServiceHelper.processCart(
+      xClientId = clientId,
+      cartRequestDto = cartRequestDto,
+      maxAllowedPaymentNotices = maxAllowedPaymentNotices,
+      checkoutUrl = checkoutUrl,
+      tokenizerMailUtils = tokenizerMailUtils,
+      saveCart = { cartsRedisTemplateWrapper.save(it).thenReturn(it).awaitSingle() },
+      mapToCartInfo = { id, payments, idCart, returnUrls, email ->
+        CartInfo(id, payments, idCart, returnUrls, email)
+      },
+      extractPaymentNotices = { dto ->
+        dto.paymentNotices.map { p ->
           PaymentInfo(
-            RptId(it.fiscalCode + it.noticeNumber), it.description, it.amount, it.companyName)
+            it.pagopa.ecommerce.payment.requests.domain.RptId(p.fiscalCode + p.noticeNumber),
+            p.description,
+            p.amount,
+            p.companyName)
         }
-
-      if (receivedNotices != paymentInfos.map { it.rptId }.toSet().size) {
-        logger.error("Duplicate payment notice values found for paymentNotices: $paymentsNotices")
-        throw RestApiException(
-          httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-          title = "Invalid payment info",
-          description = "Duplicate payment notice values found.")
-      }
-
-      val checkPositionDto =
-        CheckPositionDto()
-          .positionslist(
-            paymentInfos
-              .stream()
-              .map {
+      },
+      extractReturnUrls = { dto ->
+        ReturnUrls(
+          returnSuccessUrl = dto.returnUrls.returnOkUrl.toString(),
+          returnErrorUrl = dto.returnUrls.returnErrorUrl.toString(),
+          returnCancelUrl = dto.returnUrls.returnCancelUrl.toString(),
+          returnWaitingUrl = dto.returnUrls.returnWaitingUrl.toString())
+      },
+      extractEmail = { it.emailNotice },
+      extractIdCart = { it.idCart },
+      extractSavedCartId = { it.id },
+      getClientIdValue = { it.value },
+      checkPosition = { payments ->
+        val dto =
+          CheckPositionDto()
+            .positionslist(
+              payments.map {
                 ListelementRequestDto()
                   .fiscalCode(it.rptId.fiscalCode)
                   .noticeNumber(it.rptId.noticeId)
-              }
-              .toList())
-
-      nodoPerPmClient
-        .checkPosition(checkPositionDto)
-        .filter { response -> response.outcome == CheckPositionResponseDto.OutcomeEnum.OK }
-        .switchIfEmpty {
-          throw RestApiException(
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            title = "Invalid payment info",
-            description = "Invalid payment notice data")
-        }
-        .flatMap {
-          val id = UUID.randomUUID()
-          Optional.ofNullable(cartRequestDto.emailNotice)
-            .map {
-              tokenizerMailUtils.toConfidential(Email(cartRequestDto.emailNotice)).map {
-                tokenizedEmail ->
-                CartInfo(
-                  id = id,
-                  payments = paymentInfos,
-                  idCart = cartRequestDto.idCart,
-                  returnUrls =
-                    ReturnUrls(
-                      returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
-                      returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
-                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString(),
-                      returnWaitingUrl = cartRequestDto.returnUrls.returnWaitingUrl.toString()),
-                  email = tokenizedEmail.opaqueData)
-              }
-            }
-            .orElse(
-              Mono.just(
-                CartInfo(
-                  id = id,
-                  payments = paymentInfos,
-                  idCart = cartRequestDto.idCart,
-                  returnUrls =
-                    ReturnUrls(
-                      returnSuccessUrl = cartRequestDto.returnUrls.returnOkUrl.toString(),
-                      returnErrorUrl = cartRequestDto.returnUrls.returnErrorUrl.toString(),
-                      returnCancelUrl = cartRequestDto.returnUrls.returnCancelUrl.toString(),
-                      returnWaitingUrl = cartRequestDto.returnUrls.returnWaitingUrl.toString()),
-                  email = null)),
-            )
-        }
-        .flatMap {
-          logger.info("Saving cart ${it.id} for payments $paymentInfos")
-          cartsRedisTemplateWrapper.save(it).thenReturn(it)
-        }
-        .map {
-          val retUrl = MessageFormat.format(checkoutUrl, it.id, xClientId.value)
-          logger.info("Return URL: $retUrl")
-          retUrl
-        }
-        .awaitSingle()
-    } else {
-      logger.error("Too many payment notices, expected only one")
-      throw RestApiException(
-        httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-        title = "Multiple payment notices not processable",
-        description = "Too many payment notices, expected max $maxAllowedPaymentNotices")
-    }
+              })
+        nodoPerPmClient.checkPosition(dto).awaitSingle()
+      })
   }
 }
