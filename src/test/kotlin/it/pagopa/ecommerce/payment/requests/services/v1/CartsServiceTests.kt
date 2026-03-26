@@ -7,10 +7,10 @@ import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
-import it.pagopa.ecommerce.payment.requests.repositories.CartInfo
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentInfo
-import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
-import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.v1.CartsRedisTemplateWrapper
+import it.pagopa.ecommerce.payment.requests.repositories.v1.CartInfo
+import it.pagopa.ecommerce.payment.requests.repositories.v1.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.tests.utils.v1.CartRequests
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
@@ -162,8 +162,7 @@ class CartsServiceTests {
                 ReturnUrls(
                   returnSuccessUrl = it.returnOkUrl.toString(),
                   returnErrorUrl = it.returnErrorUrl.toString(),
-                  returnCancelUrl = it.returnCancelUrl.toString(),
-                  null)
+                  returnCancelUrl = it.returnCancelUrl.toString())
               },
               req.emailNotice)
           }))
@@ -195,8 +194,7 @@ class CartsServiceTests {
                 ReturnUrls(
                   returnSuccessUrl = it.returnOkUrl.toString(),
                   returnErrorUrl = it.returnErrorUrl.toString(),
-                  returnCancelUrl = it.returnCancelUrl.toString(),
-                  null)
+                  returnCancelUrl = it.returnCancelUrl.toString())
               },
               null)
           }))
