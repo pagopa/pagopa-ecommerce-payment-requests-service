@@ -104,7 +104,8 @@ stages:
           - checkout: pagopaEcommerceLocal
           - script: |
               echo "##[debug] Change placeholder for ecommerce-payment-request-service set branch: $(BRANCH_NAME)"
-              sed -i "s/^ECOMMERCE_PAYMENT_REQUESTS_COMMIT_SHA=.*$/ECOMMERCE_PAYMENT_REQUESTS_COMMIT_SHA=$(BRANCH_NAME)/" .env
+              branch_escaped=$(printf '%s\n' "$BRANCH_NAME" | sed 's/[&|]/\\&/g')
+              sed -i "s|^ECOMMERCE_PAYMENT_REQUESTS_COMMIT_SHA=.*$|ECOMMERCE_PAYMENT_REQUESTS_COMMIT_SHA=$branch_escaped|" .env
             displayName: 'Change payment-request branch name ecommerce-local .env'
           - script: docker compose up pagopa-ecommerce-payment-requests-service redis pagopa-node-mock pagopa-pdv-mock  -d
             displayName: 'Run app with docker-compose'
