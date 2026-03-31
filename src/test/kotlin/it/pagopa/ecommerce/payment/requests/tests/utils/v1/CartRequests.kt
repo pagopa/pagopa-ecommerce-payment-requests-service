@@ -6,27 +6,6 @@ import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentNot
 import java.net.URI
 
 object CartRequests {
-  fun withOnePaymentNotice() = withOnePaymentNotice("my_email@mail.it")
-
-  fun withOnePaymentNotice(email: String?): CartRequestDto {
-    return CartRequestDto(
-      paymentNotices =
-        listOf(
-          PaymentNoticeDto(
-            noticeNumber = "302000100440009424",
-            fiscalCode = "77777777777",
-            amount = 10000,
-            companyName = "companyName",
-            description = "description")),
-      returnUrls =
-        CartRequestReturnUrlsDto(
-          returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
-          returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
-          returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
-        ),
-      idCart = "idCartExample",
-      emailNotice = email)
-  }
 
   fun withMultiplePaymentNotices(paymentNoticesNumber: Int): CartRequestDto {
     val paymentNotices = ArrayList<PaymentNoticeDto>()
@@ -68,7 +47,10 @@ object CartRequests {
         ))
   }
 
-  fun withOnePaymentNotice(email: String?, waitingUrl: String? = null): CartRequestDto {
+  fun withOnePaymentNotice(
+    email: String? = "my_email@mail.it",
+    waitingUrl: String? = null
+  ): CartRequestDto {
     return CartRequestDto(
       paymentNotices =
         listOf(

@@ -15,8 +15,6 @@ import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import java.net.URI
 import java.util.UUID
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -30,8 +28,7 @@ class CartService(
   @Autowired cartsRedisTemplateWrapper: CartsRedisTemplateWrapper,
   @Autowired nodoPerPmClient: NodoPerPmClient,
   @Autowired tokenizerMailUtils: TokenizerEmailUtils,
-  @Value("\${carts.max_allowed_payment_notices}") maxAllowedPaymentNotices: Int,
-  private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+  @Value("\${carts.max_allowed_payment_notices}") maxAllowedPaymentNotices: Int
 ) :
   BaseCartService(
     checkoutUrl,

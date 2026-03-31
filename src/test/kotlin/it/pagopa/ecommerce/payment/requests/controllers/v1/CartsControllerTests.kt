@@ -22,10 +22,10 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.NullSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.ArgumentMatchers
-import org.mockito.BDDMockito
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.kotlin.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
@@ -68,7 +68,7 @@ class CartsControllerTests {
       val clientId = ClientIdDto.WISP_REDIRECT
       val locationUrl =
         "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
-      BDDMockito.given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+      given(cartService.processCart(clientId, request)).willReturn(locationUrl)
       webClient
         .post()
         .uri(path)
@@ -88,7 +88,7 @@ class CartsControllerTests {
     val request = CartRequests.withOnePaymentNotice()
     val clientId = ClientIdDto.WISP_REDIRECT
     val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
-    BDDMockito.given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
       .uri("/carts")
@@ -105,7 +105,7 @@ class CartsControllerTests {
     val request = CartRequests.withOnePaymentNotice()
     val clientId = ClientIdDto.WISP_REDIRECT
     val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
-    BDDMockito.given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
       .uri("/carts")
@@ -123,7 +123,7 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     val clientId = ClientIdDto.WISP_REDIRECT
-    BDDMockito.given(cartService.processCart(clientId, request))
+    given(cartService.processCart(clientId, request))
       .willThrow(
         RestApiException(
           httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
@@ -154,7 +154,7 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     val clientId = ClientIdDto.WISP_REDIRECT
-    BDDMockito.given(cartService.processCart(clientId, request))
+    given(cartService.processCart(clientId, request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR))
     val errorResponse = ProblemJsonDto(status = 502, title = "Bad gateway")
     webClient
@@ -176,7 +176,7 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     val clientId = ClientIdDto.WISP_REDIRECT
-    BDDMockito.given(cartService.processCart(clientId, request))
+    given(cartService.processCart(clientId, request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.NOT_FOUND))
     val errorResponse = ProblemJsonDto(status = 500, title = "Internal server error")
     webClient
@@ -198,7 +198,7 @@ class CartsControllerTests {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
     val clientId = ClientIdDto.WISP_REDIRECT
-    BDDMockito.given(cartService.processCart(clientId, request))
+    given(cartService.processCart(clientId, request))
       .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.UNPROCESSABLE_ENTITY))
     val errorResponse = ProblemJsonDto(status = 422, title = "Invalid payment info")
     webClient
@@ -223,7 +223,7 @@ class CartsControllerTests {
     val errorResponse =
       ProblemJsonDto(
         status = 400, title = "Request validation error", detail = "The input request is invalid")
-    BDDMockito.given(cartService.processCart(clientId, request)).willReturn("")
+    given(cartService.processCart(clientId, request)).willReturn("")
     webClient
       .post()
       .uri("/carts")
@@ -247,7 +247,7 @@ class CartsControllerTests {
         title = "Error processing the request",
         detail = "An internal error occurred processing the request",
         status = 500)
-    BDDMockito.given(cartService.processCart(clientId, request))
+    given(cartService.processCart(clientId, request))
       .willThrow(RuntimeException("Test unmanaged exception"))
     webClient
       .post()
@@ -283,7 +283,7 @@ class CartsControllerTests {
             returnOkUrl = URI.create("https://returnOkUrl"),
             returnCancelUrl = URI.create("https://returnCancelUrl")),
         emailNotice = "test@test.it")
-    BDDMockito.given(cartService.getCart(cartId)).willReturn(response)
+    given(cartService.getCart(cartId)).willReturn(response)
     val parameters = mapOf("idCart" to cartId)
     webClient
       .get()
@@ -315,7 +315,7 @@ class CartsControllerTests {
             returnErrorUrl = URI.create("https://returnErrorUrl"),
             returnOkUrl = URI.create("https://returnOkUrl"),
             returnCancelUrl = URI.create("https://returnCancelUrl")))
-    BDDMockito.given(cartService.getCart(cartId)).willReturn(response)
+    given(cartService.getCart(cartId)).willReturn(response)
     val parameters = mapOf("idCart" to cartId)
     webClient
       .get()
@@ -338,7 +338,7 @@ class CartsControllerTests {
         detail = exception.message ?: "",
         status = HttpStatus.NOT_FOUND.value())
 
-    BDDMockito.given(cartService.getCart(cartId)).willThrow(exception)
+    given(cartService.getCart(cartId)).willThrow(exception)
 
     val parameters = mapOf("cartId" to cartId)
     webClient
@@ -373,19 +373,18 @@ class CartsControllerTests {
     val requestHeadersSpec = Mockito.mock(WebClient.RequestHeadersSpec::class.java)
     val responseSpec = Mockito.mock(WebClient.ResponseSpec::class.java)
 
-    BDDMockito.given(webClient.post()).willReturn(requestBodyUriSpec)
-    BDDMockito.given(requestBodyUriSpec.uri(ArgumentMatchers.any<String>()))
+    given(webClient.post()).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.uri(ArgumentMatchers.any<String>())).willReturn(requestBodySpec)
+    given(requestBodySpec.header(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .willReturn(requestBodySpec)
-    BDDMockito.given(requestBodySpec.header(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .willReturn(requestBodySpec)
-    BDDMockito.given(
+    given(
         requestBodySpec.body(
           ArgumentMatchers.any(), ArgumentMatchers.eq(CartRequestDto::class.java)))
       .willReturn(requestHeadersSpec)
-    BDDMockito.given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
-    BDDMockito.given(responseSpec.onStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+    given(responseSpec.onStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .willReturn(responseSpec)
-    BDDMockito.given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
+    given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
 
     val controller = CartsController(webClient = webClient, primaryApiKey = "primaryApiKey")
     controller.warmupPostCarts()
@@ -399,7 +398,7 @@ class CartsControllerTests {
     val request = CartRequests.withOnePaymentNotice(email)
     val clientId = ClientIdDto.WISP_REDIRECT
     val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
-    BDDMockito.given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
       .uri("/carts")
@@ -422,7 +421,7 @@ class CartsControllerTests {
     val errorResponse =
       ProblemJsonDto(
         title = "Request validation error", detail = "The input request is invalid", status = 400)
-    BDDMockito.given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
       .uri("/carts")
@@ -459,7 +458,7 @@ class CartsControllerTests {
             returnWaitingUrl = URI.create("https://returnWaitingUrl")),
         emailNotice = "test@test.it")
 
-    BDDMockito.given(cartService.getCart(cartId)).willReturn(response)
+    given(cartService.getCart(cartId)).willReturn(response)
 
     val parameters = mapOf("idCart" to cartId)
 
