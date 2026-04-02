@@ -87,7 +87,7 @@ class CartsControllerTests {
     given(cartService.processCart(clientId, request)).willReturn(locationUrl)
     webClient
       .post()
-      .uri("/carts")
+      .uri("/v2/carts")
       .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(request)
