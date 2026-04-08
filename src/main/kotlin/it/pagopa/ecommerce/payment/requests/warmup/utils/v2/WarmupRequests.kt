@@ -25,6 +25,4 @@ object WarmupRequests {
           returnWaitingUrl = URI("www.warmup-req-waiting.it"),
         ),
       emailNotice = "my_email@mail.it")
-
-  fun getPaymentRequest(): String = "77777777777000000000000000000"
 }

@@ -9,7 +9,6 @@ import it.pagopa.ecommerce.payment.requests.services.BaseCartService
 import it.pagopa.ecommerce.payment.requests.services.CartRequest
 import it.pagopa.ecommerce.payment.requests.services.PaymentNoticeData
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
-import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
