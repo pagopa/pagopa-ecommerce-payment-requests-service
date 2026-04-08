@@ -715,6 +715,13 @@
   "methods":[{"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }]
 },
 {
+  "name":"it.pagopa.ecommerce.payment.requests.controllers.v2.CartsControllerV2",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.web.reactive.function.client.WebClient","java.lang.String"] },{"name":"postCarts","parameterTypes":["it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto","it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto","kotlin.coroutines.Continuation"] }, {"name":"postCarts$default","parameterTypes":["it.pagopa.ecommerce.payment.requests.controllers.v2.CartsControllerV2","it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto","it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto","kotlin.coroutines.Continuation","int","java.lang.Object"] }, {"name":"warmupPostCarts","parameterTypes":[] }]
+},
+{
   "name":"it.pagopa.ecommerce.payment.requests.controllers.v2.CartsControllerV2$$SpringCGLIB$$0",
   "fields":[{"name":"CGLIB$CALLBACK_FILTER"}, {"name":"CGLIB$FACTORY_DATA"}],
   "methods":[{"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }]
