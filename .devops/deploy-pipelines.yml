@@ -83,7 +83,7 @@ resources:
     - repository: pagopaCheckoutTests
       type: github
       name: pagopa/pagopa-checkout-tests
-      ref: PIDM-1550-v2-post-carts-integration-test
+      ref: main
       endpoint: 'io-azure-devops-github-ro'
 
 pool:
