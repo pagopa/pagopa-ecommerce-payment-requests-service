@@ -23,7 +23,7 @@ jobs:
           - path: 'api-spec/v2/payment-requests-api.yaml'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Rate My OpenAPI - ${{ matrix.spec.version }}
         uses: zuplo/rmoa-action@c4a74a8823496c6061cd6fb586d80db8c2fd7e34  # v1
