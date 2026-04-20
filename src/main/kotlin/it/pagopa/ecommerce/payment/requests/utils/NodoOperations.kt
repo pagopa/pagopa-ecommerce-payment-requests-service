@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component
 @Component
 class NodoOperations {
 
-  fun getEuroCentsFromNodoAmount(amountFromNodo: BigDecimal): Int =
-    amountFromNodo.multiply(BigDecimal.valueOf(100)).toInt()
+  fun getEuroCentsFromNodoAmount(amountFromNodo: BigDecimal): Long =
+    amountFromNodo.multiply(BigDecimal.valueOf(100)).toLong()
 }

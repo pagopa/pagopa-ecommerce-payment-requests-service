@@ -5,4 +5,4 @@ import org.springframework.data.annotation.PersistenceCreator
 
 data class PaymentInfo
 @PersistenceCreator
-constructor(val rptId: RptId, val description: String, val amount: Int, val companyName: String)
+constructor(val rptId: RptId, val description: String, val amount: Long, val companyName: String)
