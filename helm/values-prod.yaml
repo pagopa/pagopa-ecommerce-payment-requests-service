@@ -87,6 +87,8 @@ microservice-chart:
   envConfig:
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
+    REDIS_TIMEOUT: "1s"
+    REDIS_CONNECTION_TIMEOUT: "1s"
     CHECKOUT_URL: https://api.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
     NODO_HOSTNAME: https://api.platform.pagopa.it
     NODE_FOR_PSP_URI: /nodo-auth/node-for-psp/v1
