@@ -101,6 +101,8 @@ stages:
     jobs:
       - job: make_integration_test
         steps:
+          - script: cp .env.example .env
+            displayName: 'Setup env'
           - checkout: pagopaEcommerceLocal
           - script: |
               echo "##[debug] Change placeholder for ecommerce-payment-request-service set branch: $(BRANCH_NAME)"
