@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import it.pagopa.ecommerce.generated.payment.requests.server.model.*
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.*
 import it.pagopa.ecommerce.generated.transactions.model.CtFaultBean
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException

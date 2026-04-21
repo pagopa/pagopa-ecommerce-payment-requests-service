@@ -1,0 +1,331 @@
+package it.pagopa.ecommerce.payment.requests.controllers.v2
+
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ProblemJsonDto
+import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
+import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.services.v2.CartService
+import it.pagopa.ecommerce.payment.requests.tests.utils.v2.CartRequests
+import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.NullSource
+import org.junit.jupiter.params.provider.ValueSource
+import org.mockito.ArgumentMatchers
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.kotlin.given
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
+import org.springframework.context.annotation.Import
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
+
+@OptIn(ExperimentalCoroutinesApi::class)
+@WebFluxTest(CartsControllerV2::class)
+@Import(BeanValidationConfiguration::class)
+@TestPropertySource(locations = ["classpath:application.test.properties"])
+class CartsControllerTests {
+
+  @Autowired lateinit var webClient: WebTestClient
+
+  @MockitoBean lateinit var cartService: CartService
+
+  @Mock private lateinit var requestBodyUriSpec: WebClient.RequestBodyUriSpec
+
+  @Mock private lateinit var requestHeadersSpec: WebClient.RequestHeadersSpec<*>
+
+  @Mock private lateinit var responseSpec: WebClient.ResponseSpec
+
+  @InjectMocks
+  val cartsController: CartsControllerV2 = CartsControllerV2(primaryApiKey = "primaryKey")
+
+  private val cartsMaxAllowedPaymentNotices = 5
+
+  private val objectMapper = ObjectMapper()
+
+  @ParameterizedTest
+  @ValueSource(strings = ["/v2/carts", "/v2/carts/"])
+  fun `post cart succeeded with one payment notice ignoring trailing slash`(path: String) =
+    runTest {
+      val request = CartRequests.withOnePaymentNotice()
+      val clientId = ClientIdDto.WISP_REDIRECT
+      val locationUrl =
+        "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+      given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+      webClient
+        .post()
+        .uri(path)
+        .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+        .header("x-api-key", "secondary-key")
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(request)
+        .exchange()
+        .expectStatus()
+        .is3xxRedirection
+        .expectHeader()
+        .location(locationUrl)
+    }
+
+  @Test
+  fun `should return unauthorized if create carts request has not api key header`() = runTest {
+    val request = CartRequests.withOnePaymentNotice()
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/v2/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
+  }
+
+  @Test
+  fun `should return unauthorized if create carts request has wrong api key header`() = runTest {
+    val request = CartRequests.withOnePaymentNotice()
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/v2/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "the-real-wrong-api-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
+  }
+
+  @Test
+  fun `post cart KO with multiple payment notices`() = runTest {
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
+    val clientId = ClientIdDto.WISP_REDIRECT
+    given(cartService.processCart(clientId, request))
+      .willThrow(
+        RestApiException(
+          httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+          title = "Multiple payment notices not processable",
+          description = "Too many payment notices, expected max one"))
+    val errorResponse =
+      ProblemJsonDto(
+        status = 422,
+        title = "Multiple payment notices not processable",
+        detail = "Too many payment notices, expected max one")
+
+    webClient
+      .post()
+      .uri("/v2/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(422)
+      .expectBody()
+      .json(objectMapper.writeValueAsString(errorResponse))
+  }
+
+  @Test
+  fun `post cart KO with internal server error while invoke checkPosition`() = runTest {
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
+    val clientId = ClientIdDto.WISP_REDIRECT
+    given(cartService.processCart(clientId, request))
+      .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR))
+    val errorResponse = ProblemJsonDto(status = 502, title = "Bad gateway")
+    webClient
+      .post()
+      .uri("/v2/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(502)
+      .expectBody()
+      .json(objectMapper.writeValueAsString(errorResponse))
+  }
+
+  @Test
+  fun `post cart KO with 404 while invoke checkPosition`() = runTest {
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
+    val clientId = ClientIdDto.WISP_REDIRECT
+    given(cartService.processCart(clientId, request))
+      .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.NOT_FOUND))
+    val errorResponse = ProblemJsonDto(status = 500, title = "Internal server error")
+    webClient
+      .post()
+      .uri("/v2/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(500)
+      .expectBody()
+      .json(objectMapper.writeValueAsString(errorResponse))
+  }
+
+  @Test
+  fun `post cart KO with 400 while invoke checkPosition`() = runTest {
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    val request = CartRequests.withMultiplePaymentNotices(cartsMaxAllowedPaymentNotices)
+    val clientId = ClientIdDto.WISP_REDIRECT
+    given(cartService.processCart(clientId, request))
+      .willThrow(CheckPositionErrorException(httpStatus = HttpStatus.UNPROCESSABLE_ENTITY))
+    val errorResponse = ProblemJsonDto(status = 422, title = "Invalid payment info")
+    webClient
+      .post()
+      .uri("/v2/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isEqualTo(422)
+      .expectBody()
+      .json(objectMapper.writeValueAsString(errorResponse))
+  }
+
+  @Test
+  fun `invalid request ko`() = runTest {
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    val request = CartRequests.invalidRequest()
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val errorResponse =
+      ProblemJsonDto(
+        status = 400, title = "Request validation error", detail = "The input request is invalid")
+    given(cartService.processCart(clientId, request)).willReturn("")
+    webClient
+      .post()
+      .uri("/v2/carts")
+      .header("x-api-key", "primary-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isBadRequest
+      .expectBody()
+      .json(objectMapper.writeValueAsString(errorResponse))
+  }
+
+  @Test
+  fun `controller throw generic exception`() = runTest {
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    val request = CartRequests.withOnePaymentNotice()
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val errorResponse =
+      ProblemJsonDto(
+        title = "Error processing the request",
+        detail = "An internal error occurred processing the request",
+        status = 500)
+    given(cartService.processCart(clientId, request))
+      .willThrow(RuntimeException("Test unmanaged exception"))
+    webClient
+      .post()
+      .uri("/v2/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .is5xxServerError
+      .expectBody()
+      .json(objectMapper.writeValueAsString(errorResponse))
+  }
+
+  @Test
+  fun `warm up controller`() {
+    val webClient = Mockito.mock(WebClient::class.java)
+    val requestBodyUriSpec = Mockito.mock(WebClient.RequestBodyUriSpec::class.java)
+    val requestBodySpec = Mockito.mock(WebClient.RequestBodySpec::class.java)
+    val requestHeadersSpec = Mockito.mock(WebClient.RequestHeadersSpec::class.java)
+    val responseSpec = Mockito.mock(WebClient.ResponseSpec::class.java)
+
+    given(webClient.post()).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.uri(ArgumentMatchers.any<String>())).willReturn(requestBodySpec)
+    given(requestBodySpec.header(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .willReturn(requestBodySpec)
+    given(
+        requestBodySpec.body(
+          ArgumentMatchers.any(), ArgumentMatchers.eq(CartRequestDto::class.java)))
+      .willReturn(requestHeadersSpec)
+    given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+    given(responseSpec.onStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .willReturn(responseSpec)
+    given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
+
+    val controller = CartsControllerV2(webClient = webClient, primaryApiKey = "primaryApiKey")
+    controller.warmupPostCarts()
+    Mockito.verify(webClient, Mockito.times(1)).post()
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["foo@foo.it", "FOO@FOO.IT", "FoO@fOo.It"])
+  @NullSource
+  fun `post cart succeeded with mail multiple case`(email: String?) = runTest {
+    val request = CartRequests.withOnePaymentNotice(email)
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/v2/carts")
+      .header("x-client-id", ClientIdDto.WISP_REDIRECT.value)
+      .header("x-api-key", "primary-key")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .is3xxRedirection
+      .expectHeader()
+      .location(locationUrl)
+  }
+
+  @Test
+  fun `post cart KO with invalid email`() = runTest {
+    val request = CartRequests.withOnePaymentNotice("email")
+    val clientId = ClientIdDto.WISP_REDIRECT
+    val locationUrl = "http://checkout-url.it/77777777777302000100440009424?clientId=WISP_REDIRECT"
+    val errorResponse =
+      ProblemJsonDto(
+        title = "Request validation error", detail = "The input request is invalid", status = 400)
+    given(cartService.processCart(clientId, request)).willReturn(locationUrl)
+    webClient
+      .post()
+      .uri("/v2/carts")
+      .contentType(MediaType.APPLICATION_JSON)
+      .header("x-api-key", "primary-key")
+      .bodyValue(request)
+      .exchange()
+      .expectStatus()
+      .isBadRequest
+      .expectBody<ProblemJsonDto>()
+      .isEqualTo(errorResponse)
+  }
+}

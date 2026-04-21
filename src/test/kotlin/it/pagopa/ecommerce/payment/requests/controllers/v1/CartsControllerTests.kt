@@ -1,25 +1,31 @@
-package it.pagopa.ecommerce.payment.requests.controllers
+package it.pagopa.ecommerce.payment.requests.controllers.v1
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import it.pagopa.ecommerce.generated.payment.requests.server.model.*
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.CartRequestReturnUrlsDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentNoticeDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ProblemJsonDto
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
 import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
-import it.pagopa.ecommerce.payment.requests.services.CartService
-import it.pagopa.ecommerce.payment.requests.tests.utils.CartRequests
+import it.pagopa.ecommerce.payment.requests.services.v1.CartService
+import it.pagopa.ecommerce.payment.requests.tests.utils.v1.CartRequests
 import it.pagopa.ecommerce.payment.requests.validation.BeanValidationConfiguration
 import java.net.URI
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.NullSource
 import org.junit.jupiter.params.provider.ValueSource
-import org.mockito.BDDMockito.*
+import org.mockito.ArgumentMatchers
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.kotlin.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
@@ -361,24 +367,28 @@ class CartsControllerTests {
 
   @Test
   fun `warm up controller`() {
-    val webClient = mock(WebClient::class.java)
-    val requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec::class.java)
-    val requestBodySpec = mock(WebClient.RequestBodySpec::class.java)
-    val requestHeadersSpec = mock(WebClient.RequestHeadersSpec::class.java)
-    val responseSpec = mock(WebClient.ResponseSpec::class.java)
+    val webClient = Mockito.mock(WebClient::class.java)
+    val requestBodyUriSpec = Mockito.mock(WebClient.RequestBodyUriSpec::class.java)
+    val requestBodySpec = Mockito.mock(WebClient.RequestBodySpec::class.java)
+    val requestHeadersSpec = Mockito.mock(WebClient.RequestHeadersSpec::class.java)
+    val responseSpec = Mockito.mock(WebClient.ResponseSpec::class.java)
 
     given(webClient.post()).willReturn(requestBodyUriSpec)
-    given(requestBodyUriSpec.uri(any<String>())).willReturn(requestBodySpec)
-    given(requestBodySpec.header(any(), any())).willReturn(requestBodySpec)
-    given(requestBodySpec.body(any(), eq(CartRequestDto::class.java)))
+    given(requestBodyUriSpec.uri(ArgumentMatchers.any<String>())).willReturn(requestBodySpec)
+    given(requestBodySpec.header(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .willReturn(requestBodySpec)
+    given(
+        requestBodySpec.body(
+          ArgumentMatchers.any(), ArgumentMatchers.eq(CartRequestDto::class.java)))
       .willReturn(requestHeadersSpec)
     given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
-    given(responseSpec.onStatus(any(), any())).willReturn(responseSpec)
+    given(responseSpec.onStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .willReturn(responseSpec)
     given(responseSpec.toBodilessEntity()).willReturn(Mono.empty())
 
     val controller = CartsController(webClient = webClient, primaryApiKey = "primaryApiKey")
     controller.warmupPostCarts()
-    verify(webClient, times(1)).post()
+    Mockito.verify(webClient, Mockito.times(1)).post()
   }
 
   @ParameterizedTest
@@ -423,5 +433,43 @@ class CartsControllerTests {
       .isBadRequest
       .expectBody<ProblemJsonDto>()
       .isEqualTo(errorResponse)
+  }
+
+  @Test
+  fun `get cart by id with waiting url`() = runTest {
+    val cartId = UUID.randomUUID()
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+
+    val response =
+      CartRequestDto(
+        paymentNotices =
+          listOf(
+            PaymentNoticeDto(
+              noticeNumber = "",
+              fiscalCode = "",
+              amount = 10000,
+              companyName = "companyName",
+              description = "description")),
+        returnUrls =
+          CartRequestReturnUrlsDto(
+            returnErrorUrl = URI.create("https://returnErrorUrl"),
+            returnOkUrl = URI.create("https://returnOkUrl"),
+            returnCancelUrl = URI.create("https://returnCancelUrl"),
+            returnWaitingUrl = URI.create("https://returnWaitingUrl")),
+        emailNotice = "test@test.it")
+
+    given(cartService.getCart(cartId)).willReturn(response)
+
+    val parameters = mapOf("idCart" to cartId)
+
+    webClient
+      .get()
+      .uri("/carts/{idCart}", parameters)
+      .header("x-api-key", "primary-key")
+      .exchange()
+      .expectStatus()
+      .isOk
+      .expectBody()
+      .json(objectMapper.writeValueAsString(response))
   }
 }

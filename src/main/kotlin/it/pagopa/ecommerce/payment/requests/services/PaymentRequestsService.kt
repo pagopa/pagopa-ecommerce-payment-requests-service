@@ -2,7 +2,7 @@ package it.pagopa.ecommerce.payment.requests.services
 
 import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.api.common.Attributes
-import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentRequestsGetResponseDto
 import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes

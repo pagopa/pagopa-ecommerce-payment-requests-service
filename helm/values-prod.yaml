@@ -20,7 +20,7 @@ microservice-chart:
     envSecret: {}
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "3.4.1"
+    tag: "3.5.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -107,7 +107,7 @@ microservice-chart:
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"
-    SECURITY_API_KEY_SECURED_PATHS: "/carts,/payment-requests"
+    SECURITY_API_KEY_SECURED_PATHS: "/carts,/payment-requests,/v2/carts"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-access-key
     REDIS_HOST: redis-ecommerce-hostname

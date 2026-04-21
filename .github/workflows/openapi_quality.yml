@@ -19,7 +19,8 @@ jobs:
     strategy:
       matrix:
         spec:
-          - path: 'api-spec/payment-requests-api.yaml'
+          - path: 'api-spec/v1/payment-requests-api.yaml'
+          - path: 'api-spec/v2/payment-requests-api.yaml'
     steps:
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
