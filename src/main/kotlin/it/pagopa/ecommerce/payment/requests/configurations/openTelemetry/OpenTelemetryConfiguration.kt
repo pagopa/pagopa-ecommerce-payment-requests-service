@@ -27,7 +27,7 @@ class OpenTelemetryConfiguration {
   @Bean
   fun otelLettuceClientResources(openTelemetry: OpenTelemetry): ClientResources {
     val telemetry: LettuceTelemetry = LettuceTelemetry.builder(openTelemetry).build()
-    val tracing: Tracing = telemetry.newTracing()
+    val tracing: Tracing = telemetry.createTracing()
 
     return DefaultClientResources.builder().tracing(tracing).build()
   }
