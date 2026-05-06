@@ -157,6 +157,7 @@ components:
           maxLength: 11
         amount:
           type: integer
+          format: int64
           minimum: 1
         companyName:
           type: string
