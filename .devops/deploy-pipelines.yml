@@ -116,26 +116,17 @@ stages:
               CONTAINER_REGISTRY_SERVICE_CONN: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
               CONTAINER_REGISTRY_FQDN: $(UAT_CONTAINER_NAMESPACE)
               DOCKER_IMAGE_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
-              DOCKER_IMAGE_TAG: $(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
+              DOCKER_IMAGE_TAG: soak-$(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
               DOCKERFILE: ${{ variables.DOCKER_FILE_NAME }}
               DOCKER_BUILD_ARGS: --secret id=GITHUB_TOKEN,src=./github_ro_token
           - template: azure-templates/chart-current-version.yml
 
-  - stage: "Get_Release_Version"
-    displayName: "Get the app version to deploy"
-    dependsOn: Build_release_candidate
-    condition: in(dependencies.Build_release_candidate.result, 'Succeeded', 'Skipped')
-    jobs:
-      - job: "get_version"
-        steps:
-          - template: azure-templates/chart-current-version.yml
-
   - stage: "Deploy_UAT_Green"
     displayName: 'UAT green deployment'
-    dependsOn: Get_Release_Version
+    dependsOn: Build_release_candidate
     variables:
-      app_version: $[ stageDependencies.Get_Release_Version.get_version.outputs['chart_current_version.appVersion'] ]
+      app_version: soak-$(Build.SourceVersion)${{ variables.DOCKER_FILE_VERSION_SUFFIX }}
     jobs:
       - deployment: "Green_deployment"
         displayName: "Green deployment"
