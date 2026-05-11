@@ -20,7 +20,7 @@ microservice-chart:
     envSecret: {}
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
-    tag: "3.4.0"
+    tag: "3.7.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -87,6 +87,8 @@ microservice-chart:
   envConfig:
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
+    REDIS_TIMEOUT: "2s"
+    REDIS_CONNECTION_TIMEOUT: "2s"
     CHECKOUT_URL: https://api.platform.pagopa.it/ecommerce/checkout/v1/carts/{0}/redirect?clientId={1}
     NODO_HOSTNAME: https://api.platform.pagopa.it
     NODE_FOR_PSP_URI: /nodo-auth/node-for-psp/v1
@@ -105,7 +107,7 @@ microservice-chart:
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     PERSONAL_DATA_VAULT_API_BASE_PATH: "https://api.tokenizer.pdv.pagopa.it/tokenizer/v1"
-    SECURITY_API_KEY_SECURED_PATHS: "/carts,/payment-requests"
+    SECURITY_API_KEY_SECURED_PATHS: "/carts,/payment-requests,/v2/carts"
   envSecret:
     REDIS_PASSWORD: redis-ecommerce-access-key
     REDIS_HOST: redis-ecommerce-hostname

@@ -1198,88 +1198,88 @@
       "sha256": "dmrSoHg_JoeWLIrXTO7MOKKLn3Ki0IXuQ4t4E-ko0Mc="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-reactor-3.1:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-reactor-3.1:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-reactor-3.1",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "YO8n1N5oYd2v41ugw7-GC8u4A0E1xD-5rucnM02bBJ0="
+      "version": "2.26.0-alpha",
+      "sha256": "aRJ-7WkHfEeVt0UpmMNJorWxiMXokosXuYwxfNUkGGo="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:jar:2.18.1",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:jar:2.26.0",
       "artifactId": "opentelemetry-instrumentation-api",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1",
-      "sha256": "Ws2sAXZc_y-5whLYoF0gSo6SnvU8k-nfY8I-rDeFvJw="
+      "version": "2.26.0",
+      "sha256": "TeUmixDKz0t18N96zHRfDkPEnYhW5v6AhvOXTGLm-0A="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-api-incubator:jar:1.52.0-alpha",
+      "id": "io.opentelemetry:opentelemetry-api-incubator:jar:1.60.1-alpha",
       "artifactId": "opentelemetry-api-incubator",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0-alpha",
-      "sha256": "pCGmDP28--9VLWfiYZkjLMwhoog_35yJvtKx6EvqsbQ="
+      "version": "1.60.1-alpha",
+      "sha256": "ccpyct2sevsKWPDxoaEkI0tWgMuWoHghu75yt1wixEk="
     },
     {
-      "id": "io.opentelemetry.semconv:opentelemetry-semconv:jar:1.34.0",
+      "id": "io.opentelemetry.semconv:opentelemetry-semconv:jar:1.40.0",
       "artifactId": "opentelemetry-semconv",
       "groupId": "io.opentelemetry.semconv",
-      "version": "1.34.0",
-      "sha256": "FrMWzi8494OOLWVidOSIYMbUdHz1ca14Ed0wLyzZdoE="
+      "version": "1.40.0",
+      "sha256": "J-tlwUuRSHzCXTW9b0VRk6rJgdHr4blHLVFgzs5XO6Q="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-instrumentation-api-incubator:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-instrumentation-api-incubator:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-instrumentation-api-incubator",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "xrRF7mxKsTf2mLyZbD8z38ppuPbfneR18DmtW8vkPsQ="
+      "version": "2.26.0-alpha",
+      "sha256": "FGzFeUTT8rk2MzUPhLFlrS12Fth3kw8JZTdAQhkdHrc="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-api:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-api:jar:1.60.1",
       "artifactId": "opentelemetry-api",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "muyN_8ersS_DxhV8vDLUiaJ4crUXhNiBZP8zx1D0LD8="
+      "version": "1.60.1",
+      "sha256": "jk6pS76blNgjrG592nx0YkZZoTUsrwUpoH9D-GtsoNU="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-context:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-context:jar:1.60.1",
       "artifactId": "opentelemetry-context",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "gzHbu6rRKp2CBOYvwcqAiKClXixO4uKjVpssEvnRV_E="
+      "version": "1.60.1",
+      "sha256": "8xH4d3zxyogkwAoc754PFj2e_Cc4QNf2JbeYKynw1Tw="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-common:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-common:jar:1.60.1",
       "artifactId": "opentelemetry-common",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "4dV_ZqG0dJbzJZOQ50bs-l1Zvs420LBQ099Ar3ydgow="
+      "version": "1.60.1",
+      "sha256": "aZmjkyNvqljx2VScAVLBKYZCNfBZYnqscKfARZpQPFY="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations-support:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations-support:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-instrumentation-annotations-support",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "O__QzRf5FWzX6ngGo_B3QSqRKnbiTDrriusnnEvPg44="
+      "version": "2.26.0-alpha",
+      "sha256": "ueRNEGdJ0nqNG6SWZbvwYS_F80NhEBYsyBxFhdC0ZgA="
     },
     {
-      "id": "io.opentelemetry.semconv:opentelemetry-semconv-incubating:jar:1.34.0-alpha",
+      "id": "io.opentelemetry.semconv:opentelemetry-semconv-incubating:jar:1.40.0-alpha",
       "artifactId": "opentelemetry-semconv-incubating",
       "groupId": "io.opentelemetry.semconv",
-      "version": "1.34.0-alpha",
-      "sha256": "2ZtmjrAv4JQizkNtvkUa1LUKx0qTnkbFbGf5P-Nv04g="
+      "version": "1.40.0-alpha",
+      "sha256": "tz5yXpcOMSBnDT5kuP8Fj7pJWw6AQLJZtQ3TjgMDgOQ="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter:jar:2.18.1",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter:jar:2.26.0",
       "artifactId": "opentelemetry-spring-boot-starter",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1",
-      "sha256": "rBaEn8GT8-KjJOrlldbeh1h1bpn3PiLwcuWiEjz-TcE="
+      "version": "2.26.0",
+      "sha256": "l6dXsucwxr84WrznM0QBoVQODx_Xb8lYAgufH-wk5sg="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-boot-autoconfigure:jar:2.18.1",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-boot-autoconfigure:jar:2.26.0",
       "artifactId": "opentelemetry-spring-boot-autoconfigure",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1",
-      "sha256": "CF-zXVHve_oGacHUwq2CsHa_xCnWbGQNYIg8C3AmD_s="
+      "version": "2.26.0",
+      "sha256": "Iq0g5NRz4wlV3lkaqsUHa66nVqmF-XJ1bWgvUX1oBPY="
     },
     {
       "id": "javax.validation:validation-api:jar:2.0.1.Final",
@@ -1289,235 +1289,235 @@
       "sha256": "mHO0bfGDPJ7o9bwf9oUzdRFdrdiJe8taDf-1hIg17mw="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-kafka-clients-2.6:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-kafka-clients-2.6:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-kafka-clients-2.6",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "1ptMRCezW-0Xt2VaaF-fUwwcGP1G16ZWm8fdbkIhuzU="
+      "version": "2.26.0-alpha",
+      "sha256": "mXmTcqVg2RRnISvuU5uRf4gaZDMUEk1Mf2N3fTQiJ4I="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-kafka-clients-common-0.11:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-kafka-clients-common-0.11:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-kafka-clients-common-0.11",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "9A-6AxhmKF9N496fDQqTV7bsBMYzWGtp_7VGX1bPm9M="
+      "version": "2.26.0-alpha",
+      "sha256": "lBCbanrY2NoVvNF_iOHHg7OjVU1aJS1QDOG4uueS5KQ="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-mongo-3.1:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-mongo-3.1:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-mongo-3.1",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "YOHLqwsiNGGC7SXjZixJkQqC1ufEt1VSGgrnKSU3usw="
+      "version": "2.26.0-alpha",
+      "sha256": "3xv0cPkoCf6LH8R-N3Z7ZjkAyNywLsd6RqbBOk-SiY4="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-kafka-2.7:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-kafka-2.7:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-spring-kafka-2.7",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "pt5CwXgoJcXQnv8coa_RZscf8tQywjtymuUCaoTvANY="
+      "version": "2.26.0-alpha",
+      "sha256": "Sw28wNb3FxYN7q4_a2cfNTMcOCgP5-BZ2pWWgM2CbFk="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-web-3.1:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-web-3.1:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-spring-web-3.1",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "bbvM23SZKyhojFODmqXPpfvE9w92YHFd353E8KH5tVY="
+      "version": "2.26.0-alpha",
+      "sha256": "kISX3G6RLezNYRlCFpPWuN9QLxsdFO7CS61AMr9eSRw="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-webmvc-5.3:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-webmvc-5.3:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-spring-webmvc-5.3",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "LzTIEPukEYFYx3wGAqJF_2Yvr5NmrZIEy6wwr1AJ6TA="
+      "version": "2.26.0-alpha",
+      "sha256": "tlOFx9Dd3UZS8shjgUf8b8yw5ZSfXie2K0QsXtwPakA="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-webflux-5.3:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-webflux-5.3:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-spring-webflux-5.3",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "VH04NYFOrd4tIaAaEsOTGMwrFyQK0YZ5MXkbCkqEwmo="
+      "version": "2.26.0-alpha",
+      "sha256": "Y7OK15MsYpKNgdJle5buoVmgWidkkW_vUoVb8YTk1Sw="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-micrometer-1.5:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-micrometer-1.5:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-micrometer-1.5",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "aHRBXcKNLXnDQjIXoRK1_LFAUcUsLhwDrCRNpJ778w0="
+      "version": "2.26.0-alpha",
+      "sha256": "fa7sDQvZEUvLRXZt5ABvubNGJETM1YnTkSH7v3AYqoo="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-log4j-appender-2.17:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-log4j-appender-2.17:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-log4j-appender-2.17",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "YC7FKfZHXw0F2rcyWRT0-k-UoSDl_I9BV0gQvH9H_gM="
+      "version": "2.26.0-alpha",
+      "sha256": "OZeWD6Ww1HRXaYXebStZba3Kimigg5P6yLYDng7Sapc="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-log4j-context-data-2.17-autoconfigure:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-log4j-context-data-2.17-autoconfigure:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-log4j-context-data-2.17-autoconfigure",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "8tb0gE95bWVs1f3HtBJaZ1go-3pz3DXvvNfKYrmuM5U="
+      "version": "2.26.0-alpha",
+      "sha256": "9wL_PeW1-vudczXu52Xgfn4qls1tBbgW7s5U-yjt0l0="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-logback-appender-1.0",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "xzIOE5dlA8LDpMPjxc_p6_i0OtrYo-KFCMMl-rEmVQ4="
+      "version": "2.26.0-alpha",
+      "sha256": "NormvEI2FxcdouW8OztiT3wAtEHZ4KmK2ehn6y98-D0="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-logback-mdc-1.0:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-logback-mdc-1.0:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-logback-mdc-1.0",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "Lze1wCOV3Kp_BBcMGKkVJDZV4rFIKZYC8Bz9lVrAdjc="
+      "version": "2.26.0-alpha",
+      "sha256": "tHTJoS5BFLKF1bnAbDI9-ooQx-_8tfCle2yOOWwepbY="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-jdbc:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-jdbc:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-jdbc",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "84b2Cz8PM5Janm2T0Gh3jhAm6MGXQXCvp0AGxGOcwsM="
+      "version": "2.26.0-alpha",
+      "sha256": "ls9aJ_S45Of1fFYk5lh5YZn1CmyYKe5hbutc6H_Jfpg="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-runtime-telemetry-java8:jar:2.18.1-alpha",
-      "artifactId": "opentelemetry-runtime-telemetry-java8",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-runtime-telemetry:jar:2.26.0-alpha",
+      "artifactId": "opentelemetry-runtime-telemetry",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "9ZPfGUsngU_rWpH2CBQPshJLQQwTuiVMlWft2fAcsro="
+      "version": "2.26.0-alpha",
+      "sha256": "V4VRecnpKJ4YVsmL_Efgd62XSA5bcMmD9BZYeApGYRY="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-runtime-telemetry-java17:jar:2.18.1-alpha",
-      "artifactId": "opentelemetry-runtime-telemetry-java17",
-      "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "xtl9TdiqoMNt-G0tTDRkg7jCTBl0KONeWtQpa05uq1o="
-    },
-    {
-      "id": "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:jar:1.60.1",
       "artifactId": "opentelemetry-sdk-extension-autoconfigure",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "Y7awtb5DNG_8Ea8vNL5CDkzoJW7OKBuTOnAhrO257Yg="
+      "version": "1.60.1",
+      "sha256": "g1avJnlKqCi5tgSyRLjQZMh3s8LcEP0JxLDOkRV4QkA="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-sdk-autoconfigure-support:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-sdk-autoconfigure-support:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-sdk-autoconfigure-support",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "d3VqjPeyvLUhYNo92mbP_R3rJ6rZTUBxF4lPGSw15Ic="
+      "version": "2.26.0-alpha",
+      "sha256": "bQ_z_7yR4dIv2kKTpZfCFp3ZEzIeV7V9SsRESBmymo4="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-webmvc-6.0:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-declarative-config-bridge:jar:2.26.0-alpha",
+      "artifactId": "opentelemetry-declarative-config-bridge",
+      "groupId": "io.opentelemetry.instrumentation",
+      "version": "2.26.0-alpha",
+      "sha256": "-TTQXuZ9o_0vF4a8wW0uRvR5Rc-IIPBRCIFAPlf6IGQ="
+    },
+    {
+      "id": "io.opentelemetry.instrumentation:opentelemetry-spring-webmvc-6.0:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-spring-webmvc-6.0",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "m--vsjHDYcPx1MdOZeukDu1rRlW0FdeQE-fFt2n7sdo="
+      "version": "2.26.0-alpha",
+      "sha256": "qzzSG2dqVFi8_hlcxjVXKUSmbLfB0rEx7dXO3ShwnXo="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:jar:2.18.1",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:jar:2.26.0",
       "artifactId": "opentelemetry-instrumentation-annotations",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1",
-      "sha256": "0V5duGIkZ1cbeDQxSN7AofmeSrsjd3f1dQQ90yv_KdQ="
+      "version": "2.26.0",
+      "sha256": "LMOqj6l4QDqk-BOGfe4aZKC0UMELKsATooAb5zHnRWY="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:jar:1.60.1",
       "artifactId": "opentelemetry-sdk-extension-autoconfigure-spi",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "Q_MVZpc6ySlYzcROj4deW8LAr09A-0UKThuycXirLPc="
+      "version": "1.60.1",
+      "sha256": "bdCZZgWFWGt7Y1wNf39BLK-qKOgncAVFnruX1twtJfA="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-exporter-logging:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-exporter-logging:jar:1.60.1",
       "artifactId": "opentelemetry-exporter-logging",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "lfY_AayJp_QoMgD5VM3gzQf8dsOtCeAT2F50R-8N7B8="
+      "version": "1.60.1",
+      "sha256": "qZWJfkIK02Z_mcEFqHJwU3vJaFWi4jBQegixmpyEiYc="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-exporter-otlp:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-exporter-otlp:jar:1.60.1",
       "artifactId": "opentelemetry-exporter-otlp",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "lt8TxfZU_q2lRMqtk6qCL-id_o_LZHuE1_L3Oq1VzLo="
+      "version": "1.60.1",
+      "sha256": "bcnf7MfORGj0DOAc_jizje5FOgsxmLfKYK8GCg8gajU="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-sdk-trace:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-sdk-trace:jar:1.60.1",
       "artifactId": "opentelemetry-sdk-trace",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "EOY0zIZLJpJriTE7CvpQg_dHe14A_SHpfuVEPBf-f-0="
+      "version": "1.60.1",
+      "sha256": "ON-JJ_UYWZ2UwF1oWKGP90Xe1QAUtU4ouXYQQXTV6CY="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-sdk-metrics:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-sdk-metrics:jar:1.60.1",
       "artifactId": "opentelemetry-sdk-metrics",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "5wJQmuHHQa-z4SBHHqoBn4-J--KLB3pD98xE6d4iYUI="
+      "version": "1.60.1",
+      "sha256": "suHiwPcXNSAVL1dlUrN3rey7_zYyjgu8a99Io5DRP3E="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-sdk-logs:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-sdk-logs:jar:1.60.1",
       "artifactId": "opentelemetry-sdk-logs",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "j1N8YLsGjXuP4OSr3WzL0oAsT93p8zj42281wZcKXSM="
+      "version": "1.60.1",
+      "sha256": "6Yj5Ug0qv057dzHfgJSfwi_yNQrfKLjnSZI31c4LDe0="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-exporter-otlp-common:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-exporter-otlp-common:jar:1.60.1",
       "artifactId": "opentelemetry-exporter-otlp-common",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "L9J4y2gmqWq7MpVongfwiy_hwC-dPDQS6I3LQOxMWSo="
+      "version": "1.60.1",
+      "sha256": "LFb75eQQzHcgJqBoAAyD1eLSEp8QGcAXu9E8kh2BBE0="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-exporter-common:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-exporter-common:jar:1.60.1",
       "artifactId": "opentelemetry-exporter-common",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "DKkfuXfbdOzTagtZ4avYfIWrA5qcrXhx_iZSoDYJUc0="
+      "version": "1.60.1",
+      "sha256": "Pyv_Opg8W6eShz24O6OslQ7wSdDjIE9-r4qldEOalDg="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-exporter-sender-okhttp:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-exporter-sender-okhttp:jar:1.60.1",
       "artifactId": "opentelemetry-exporter-sender-okhttp",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "yUCsZnfYOhvnOOBoa_pwDnc0sDW7euUUv5ruk_2pmng="
+      "version": "1.60.1",
+      "sha256": "IFpNSynJIea-NcPxKfAeGyeo--6QcgmmTqh4mmxoe8U="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-sdk:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-sdk:jar:1.60.1",
       "artifactId": "opentelemetry-sdk",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "DUZ0ShgZ2rNJe4qm9Ud0eWHU2gkMD5ZWl2zFu1Q5-Gg="
+      "version": "1.60.1",
+      "sha256": "UmrsEEz6QggswEcwwiBum0EuX70RGtC4J-bawNre-WA="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-sdk-common:jar:1.52.0",
+      "id": "io.opentelemetry:opentelemetry-sdk-common:jar:1.60.1",
       "artifactId": "opentelemetry-sdk-common",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0",
-      "sha256": "Foi76dGjrI3xFLTXZk_AlY0qdE2FD3qNUk_DoVhhR1Y="
+      "version": "1.60.1",
+      "sha256": "dcyWcT4uEcmjDdpMuIzP7MIgk2fB6YC7lGxfyLtxhY8="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-resources:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-resources:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-resources",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "3MBv-bZP_oAHj3v7OmzrhoWI7414q4e_1oIZndJepJs="
+      "version": "2.26.0-alpha",
+      "sha256": "EvX6UCBOEk3dsu8t8_JMBMxGCysx50iCO2e1ynH7ZFI="
     },
     {
-      "id": "io.opentelemetry:opentelemetry-sdk-extension-incubator:jar:1.52.0-alpha",
+      "id": "io.opentelemetry:opentelemetry-sdk-extension-incubator:jar:1.60.1-alpha",
       "artifactId": "opentelemetry-sdk-extension-incubator",
       "groupId": "io.opentelemetry",
-      "version": "1.52.0-alpha",
-      "sha256": "AEUUFCvLw4A2p54Ph0QWIa0DYPN9cWGF25oK4dNYy1w="
+      "version": "1.60.1-alpha",
+      "sha256": "H93lHF5O35mfOOgpL7XiTXEAUVFdvIx3qewm7CGJd3o="
     },
     {
-      "id": "org.snakeyaml:snakeyaml-engine:jar:2.9",
+      "id": "org.snakeyaml:snakeyaml-engine:jar:2.10",
       "artifactId": "snakeyaml-engine",
       "groupId": "org.snakeyaml",
-      "version": "2.9",
-      "sha256": "L3qVdGG21wwABeLDW3ihyXvvbERnBMDuk5POmOSVi6g="
+      "version": "2.10",
+      "sha256": "yZ2f1mx8JR2IGpzZUIm3yARMKaGwKYPXA2mBvUNU7Dc="
     },
     {
       "id": "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:jar:2.18.3",
@@ -1527,53 +1527,39 @@
       "sha256": "PKAOR8_LQ-eUON3PyPxzXp66w4JPt3aROGCb5r1W5IM="
     },
     {
-      "id": "io.opentelemetry.contrib:opentelemetry-azure-resources:jar:1.47.0-alpha",
+      "id": "io.opentelemetry.contrib:opentelemetry-azure-resources:jar:1.54.0-alpha",
       "artifactId": "opentelemetry-azure-resources",
       "groupId": "io.opentelemetry.contrib",
-      "version": "1.47.0-alpha",
-      "sha256": "Dk4gV-mC8I2vNR2XQ0xkVqT2epqMwaTwSUvCHGg7t6Q="
+      "version": "1.54.0-alpha",
+      "sha256": "LEpA_2pXrE37JQkGbPgBdncSKWr4oOYLVrJSSWIF8C0="
     },
     {
-      "id": "com.squareup.okhttp3:okhttp:jar:4.12.0",
-      "artifactId": "okhttp",
+      "id": "com.squareup.okhttp3:okhttp-jvm:jar:5.3.2",
+      "artifactId": "okhttp-jvm",
       "groupId": "com.squareup.okhttp3",
-      "version": "4.12.0",
-      "sha256": "sQUAgbFLt6On5VpNPvAbXc-rxFO0VzpPwBl2cZHV9OA="
+      "version": "5.3.2",
+      "sha256": "x3H0gHW3Y_bDIgVeIRKalLfeTB-vP49YrOMgsMlRejA="
     },
     {
-      "id": "com.squareup.okio:okio:jar:3.6.0",
-      "artifactId": "okio",
-      "groupId": "com.squareup.okio",
-      "version": "3.6.0",
-      "sha256": "jmMpLlxTu5PEprDCE-efFZkP7SUME0Dxw0OIDhycObU="
-    },
-    {
-      "id": "com.squareup.okio:okio-jvm:jar:3.6.0",
+      "id": "com.squareup.okio:okio-jvm:jar:3.16.4",
       "artifactId": "okio-jvm",
       "groupId": "com.squareup.okio",
-      "version": "3.6.0",
-      "sha256": "Z1Q_Bzb8QirpJ-0OUEuYvF4mn9oNNQBXkzfLcT2ihBI="
+      "version": "3.16.4",
+      "sha256": "IZa5k800272Rnn4B9XpHgbWL7oD4YQYWPih8IDQ6lqc="
     },
     {
-      "id": "org.jetbrains.kotlin:kotlin-stdlib-common:jar:1.9.10",
-      "artifactId": "kotlin-stdlib-common",
-      "groupId": "org.jetbrains.kotlin",
-      "version": "1.9.10",
-      "sha256": "zeM0G6GKK6JisLfPbFWyDJDo1DTkLJoT5qP3cNuWWog="
-    },
-    {
-      "id": "io.opentelemetry.contrib:opentelemetry-aws-resources:jar:1.47.0-alpha",
+      "id": "io.opentelemetry.contrib:opentelemetry-aws-resources:jar:1.54.0-alpha",
       "artifactId": "opentelemetry-aws-resources",
       "groupId": "io.opentelemetry.contrib",
-      "version": "1.47.0-alpha",
-      "sha256": "maJeyOIE04B1DLHfavgX5dgIVudxCy0OOJwLkqeW0xU="
+      "version": "1.54.0-alpha",
+      "sha256": "TiV-xuPrSJw5qnNmS0-JDQQn9pxxvwldqlt2IqCa8wU="
     },
     {
-      "id": "io.opentelemetry.contrib:opentelemetry-gcp-resources:jar:1.47.0-alpha",
+      "id": "io.opentelemetry.contrib:opentelemetry-gcp-resources:jar:1.54.0-alpha",
       "artifactId": "opentelemetry-gcp-resources",
       "groupId": "io.opentelemetry.contrib",
-      "version": "1.47.0-alpha",
-      "sha256": "82kR-jgSYKj1cuCnfAy-1y5NV67g-irOTUL4jfl4hao="
+      "version": "1.54.0-alpha",
+      "sha256": "Q5iZK69dP3IOGkImA4IaRI1dSx7Ou0qZVMYIy6kflCs="
     },
     {
       "id": "com.google.cloud.opentelemetry:detector-resources-support:jar:0.36.0",
@@ -1583,32 +1569,39 @@
       "sha256": "03UkfnM5b0hXKtlgCL7h-aYwVGNBY7gKMIKYzlFyypw="
     },
     {
-      "id": "io.opentelemetry.contrib:opentelemetry-cloudfoundry-resources:jar:1.47.0-alpha",
+      "id": "io.opentelemetry.contrib:opentelemetry-cloudfoundry-resources:jar:1.54.0-alpha",
       "artifactId": "opentelemetry-cloudfoundry-resources",
       "groupId": "io.opentelemetry.contrib",
-      "version": "1.47.0-alpha",
-      "sha256": "BzOdSsqCQjwenyqx4k5QnIRBUn18-O5PlZ2WhsIP0E8="
+      "version": "1.54.0-alpha",
+      "sha256": "XRfyW8Kl29Sx1UWacbDHHP9EfJneWsX_0xLCkHsQq-I="
     },
     {
-      "id": "io.opentelemetry.contrib:opentelemetry-baggage-processor:jar:1.47.0-alpha",
+      "id": "io.opentelemetry.contrib:opentelemetry-baggage-processor:jar:1.54.0-alpha",
       "artifactId": "opentelemetry-baggage-processor",
       "groupId": "io.opentelemetry.contrib",
-      "version": "1.47.0-alpha",
-      "sha256": "x8DnCjMfS_yva0BcXAyyrtvU6v2sCiL6U4zeb8BcW1k="
+      "version": "1.54.0-alpha",
+      "sha256": "d617W1QMKPO9t9RouwuM-2Hug0sHE_IFqUatiCcr6kU="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-lettuce-5.1:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.contrib:opentelemetry-samplers:jar:1.54.0-alpha",
+      "artifactId": "opentelemetry-samplers",
+      "groupId": "io.opentelemetry.contrib",
+      "version": "1.54.0-alpha",
+      "sha256": "mbGwUR4oAmKBegntczkrepz24RyAcx9k1kYjqLhedjM="
+    },
+    {
+      "id": "io.opentelemetry.instrumentation:opentelemetry-lettuce-5.1:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-lettuce-5.1",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "U_GlmAskmHxJ1343Oxk_BNwW49NOREk5uiT_Bx3M4d8="
+      "version": "2.26.0-alpha",
+      "sha256": "l3u0Lr-H0vX33QIWFmet8FW5P_ElGEiafnAEXJ02aK0="
     },
     {
-      "id": "io.opentelemetry.instrumentation:opentelemetry-lettuce-common:jar:2.18.1-alpha",
+      "id": "io.opentelemetry.instrumentation:opentelemetry-lettuce-common:jar:2.26.0-alpha",
       "artifactId": "opentelemetry-lettuce-common",
       "groupId": "io.opentelemetry.instrumentation",
-      "version": "2.18.1-alpha",
-      "sha256": "QPyfZvxjSPocVlVNwNF4iv_dgROSUVtd_voVrvkBNL8="
+      "version": "2.26.0-alpha",
+      "sha256": "iMKzCa7aCwztjw1WNxB5gaOGiQvOIgncOUP-ES25VKU="
     }
   ]
 }

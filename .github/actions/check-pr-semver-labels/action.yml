@@ -21,7 +21,7 @@ runs:
   steps:
     - name: Retrieve semantic versioning labels on PR
       id: check_labels
-      uses: actions/github-script@v6.3.3
+      uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
       env:
         VALID_APP_VERSION_LABELS: patch, minor, major, ignore-for-release
         VALID_CHART_VERSION_LABELS: chart-patch, chart-minor, chart-major

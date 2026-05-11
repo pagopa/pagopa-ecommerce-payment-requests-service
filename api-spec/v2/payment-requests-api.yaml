@@ -1,0 +1,214 @@
+openapi: 3.0.0
+info:
+  version: 0.0.2
+  title: Pagopa eCommerce payment requests service - v2
+  description: >
+    pagoPA ecommerce microservice to manage carts (v2) with mandatory returnWaitingUrl for payment redirects
+  contact:
+    name: pagoPA - Touchpoints team
+    url: https://www.pagopa.it/
+  license:
+    name: EUPL-1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+servers:
+  - url: https://${host}
+    variables:
+      host:
+        description: The hostname of the API server
+        default: weuprod.ecommerce.internal.platform.pagopa.it
+        enum:
+          - weudev.ecommerce.internal.dev.platform.pagopa.it
+          - weuuat.ecommerce.internal.uat.platform.pagopa.it
+          - weuprod.ecommerce.internal.platform.pagopa.it
+tags:
+  - name: payment-requests
+    description: APIs for performing verification on payment notices and managing carts (v2)
+security:
+  - ApiKeyAuth: []
+paths:
+  /v2/carts:
+    post:
+      tags:
+        - Carts
+      operationId: PostCarts
+      summary: Create a cart (v2)
+      description: >
+        Create a cart of payment notices. In v2 the `returnWaitingUrl` field is mandatory in returnUrls.
+      parameters:
+        - in: header
+          name: x-client-id
+          required: true
+          description: Transaction origin (populated by APIM policy)
+          schema:
+            $ref: '#/components/schemas/ClientId'
+      requestBody:
+        description: New Cart related to payment requests
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartRequest'
+      responses:
+        '302':
+          description: Redirect to Checkout URL
+          headers:
+            Location:
+              description: CheckOut Url
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: Formally invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '422':
+          description: More than one payment notice present in the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+  schemas:
+    CartRequest:
+      description: Cart request body (v2)
+      type: object
+      required:
+        - paymentNotices
+        - returnUrls
+      properties:
+        emailNotice:
+          type: string
+          format: email
+          description: Email to which send the payment receipt
+        paymentNotices:
+          type: array
+          description: List of payment notices in the cart
+          minItems: 1
+          maxItems: 5
+          items:
+            $ref: '#/components/schemas/PaymentNotice'
+        returnUrls:
+          description: Structure containing all returning URLs after payment process
+          type: object
+          required:
+            - returnOkUrl
+            - returnCancelUrl
+            - returnErrorUrl
+            - returnWaitingUrl
+          properties:
+            returnOkUrl:
+              type: string
+              format: uri
+              description: Return URL in case of successful payment
+            returnCancelUrl:
+              type: string
+              format: uri
+              description: Return URL in case of payment cancellation
+            returnErrorUrl:
+              type: string
+              format: uri
+              description: Return URL in case of payment error
+            returnWaitingUrl:
+              type: string
+              format: uri
+              description: Return URL in case payment is still processing (waiting)
+        idCart:
+          type: string
+          description: the id of the cart from the EC
+        allCCP:
+          type: boolean
+          description: flag for internal purpose
+    PaymentNotice:
+      description: Payment notice information
+      type: object
+      required:
+        - noticeNumber
+        - fiscalCode
+        - amount
+        - companyName
+        - description
+      properties:
+        noticeNumber:
+          type: string
+          minLength: 18
+          maxLength: 18
+        fiscalCode:
+          type: string
+          minLength: 11
+          maxLength: 11
+        amount:
+          type: integer
+          minimum: 1
+        companyName:
+          type: string
+          maxLength: 140
+        description:
+          type: string
+          maxLength: 140
+    ClientId:
+      type: string
+      description: Enumerations of client ids set by APIM
+      enum:
+        - WISP_REDIRECT
+        - CHECKOUT
+        - CHECKOUT_CART
+    ProblemJson:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+          description: |-
+            An absolute URI that identifies the problem type. When dereferenced,
+            it SHOULD provide human-readable documentation for the problem type
+            (e.g., using HTML).
+          example: https://example.com/problem/constraint-violation
+        title:
+          type: string
+          description: |-
+            A short, summary of the problem type. Written in english and readable
+            for engineers (usually not suited for non technical stakeholders and
+            not localized); example: Service Unavailable
+        status:
+          $ref: '#/components/schemas/HttpStatusCode'
+        detail:
+          type: string
+          description: |-
+            A human readable explanation specific to this occurrence of the
+            problem.
+          example: There was an error processing the request
+        instance:
+          type: string
+          format: uri
+          description: |-
+            An absolute URI that identifies the specific occurrence of the problem.
+            It may or may not yield further information if dereferenced.
+    HttpStatusCode:
+      type: integer
+      format: int32
+      description: |-
+        The HTTP status code generated by the origin server for this occurrence
+        of the problem.
+      minimum: 100
+      maximum: 600
+      exclusiveMaximum: true
+      example: 200

@@ -18,4 +18,9 @@ constructor(
 
 data class ReturnUrls
 @PersistenceCreator
-constructor(val returnSuccessUrl: String, val returnErrorUrl: String, val returnCancelUrl: String)
+constructor(
+  val returnSuccessUrl: String,
+  val returnErrorUrl: String,
+  val returnCancelUrl: String,
+  val returnWaitingUrl: String?
+)

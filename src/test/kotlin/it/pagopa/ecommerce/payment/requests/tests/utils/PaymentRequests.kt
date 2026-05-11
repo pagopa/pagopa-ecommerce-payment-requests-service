@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.tests.utils
 
-import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentRequestsGetResponseDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentRequestsGetResponseDto
 
 object PaymentRequests {
 

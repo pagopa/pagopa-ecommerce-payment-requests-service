@@ -23,6 +23,8 @@ with redirects to [_pagoPA – Checkout_](https://checkout.pagopa.it).
 | REDIS_PASSWORD                    | Password used for connecting to Redis instance                                                      | string        |         |
 | REDIS_PORT                        | Port used for connecting to Redis instance                                                          | number        |         |
 | REDIS_SSL_ENABLED                 | Whether SSL is enabled when connecting to Redis                                                     | boolean       |         |
+| REDIS_TIMEOUT                     | Redis read timeout.                                                                                 | string        |         |
+| REDIS_CONNECTION_TIMEOUT          | Redis connection timeout.                                                                           | string        |         |
 | NODO_HOSTNAME                     | Nodo connection host name                                                                           | string        |         |
 | NODO_PER_PSP_URI                  | Nodo per PSP URI                                                                                    | string        |         |
 | NODE_FOR_PSP_URI                  | Nodo for PSP URI                                                                                    | string        |         |

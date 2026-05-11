@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.errorhandling
 
 import io.lettuce.core.RedisConnectionException
-import it.pagopa.ecommerce.generated.payment.requests.server.model.*
+import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.*
 import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException

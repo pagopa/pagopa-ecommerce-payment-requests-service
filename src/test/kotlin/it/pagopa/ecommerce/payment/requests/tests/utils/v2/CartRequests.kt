@@ -1,12 +1,12 @@
-package it.pagopa.ecommerce.payment.requests.tests.utils
+package it.pagopa.ecommerce.payment.requests.tests.utils.v2
 
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.CartRequestReturnUrlsDto
-import it.pagopa.ecommerce.generated.payment.requests.server.model.PaymentNoticeDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.CartRequestReturnUrlsDto
+import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.PaymentNoticeDto
 import java.net.URI
 
 object CartRequests {
-  fun withOnePaymentNotice() = CartRequests.withOnePaymentNotice("my_email@mail.it")
+  fun withOnePaymentNotice() = withOnePaymentNotice("my_email@mail.it")
 
   fun withOnePaymentNotice(email: String?): CartRequestDto {
     return CartRequestDto(
@@ -23,6 +23,7 @@ object CartRequests {
           returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
           returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
           returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
+          returnWaitingUrl = URI("www.comune.di.prova.it/pagopa/waiting.html"),
         ),
       idCart = "idCartExample",
       emailNotice = email)
@@ -47,6 +48,7 @@ object CartRequests {
           returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
           returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
           returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
+          returnWaitingUrl = URI("www.comune.di.prova.it/pagopa/waiting.html"),
         ))
   }
 
@@ -65,6 +67,7 @@ object CartRequests {
           returnOkUrl = URI("www.comune.di.prova.it/pagopa/success.html"),
           returnCancelUrl = URI("www.comune.di.prova.it/pagopa/cancel.html"),
           returnErrorUrl = URI("www.comune.di.prova.it/pagopa/error.html"),
+          returnWaitingUrl = URI("www.comune.di.prova.it/pagopa/waiting.html"),
         ))
   }
 }
