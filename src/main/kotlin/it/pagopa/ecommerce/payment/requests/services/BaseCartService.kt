@@ -31,7 +31,7 @@ data class PaymentNoticeData(
   val fiscalCode: String,
   val noticeNumber: String,
   val description: String,
-  val amount: Int,
+  val amount: Long,
   val companyName: String
 )
 
