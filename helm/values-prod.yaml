@@ -85,6 +85,7 @@ microservice-chart:
       maxSurge: 2
       maxUnavailable: 0
   envConfig:
+    ACTIVE_PROFILE: k8s
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
     REDIS_TIMEOUT: "2s"
