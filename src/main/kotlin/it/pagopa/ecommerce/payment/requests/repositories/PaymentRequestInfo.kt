@@ -14,7 +14,7 @@ constructor(
   val paFiscalCode: String?,
   val paName: String?,
   val description: String?,
-  val amount: Int?,
+  val amount: Long?,
   val dueDate: String?,
   val paymentToken: String?,
   val activationDate: String?,
