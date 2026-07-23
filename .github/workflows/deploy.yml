@@ -33,15 +33,23 @@ jobs:
           echo "SKIP_BUILD=${{ steps.configure_pipeline_parameters.outputs.SKIP_BUILD }}"
         shell: bash
       - name: Azure Pipelines Action
-        uses: jacopocarlini/azure-pipelines@b9721743a54e862597395b4a70727cfdc03028fb # v1.3
-        with:
-          azure-devops-project-url: https://dev.azure.com/pagopaspa/pagoPA-projects
-          azure-pipeline-name: 'pagopa-ecommerce-payment-requests-service.deploy'
-          azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
-          azure-template-parameters: |
-            {
-                "DEV_DEPLOY": "${{ steps.configure_pipeline_parameters.outputs.DEV_DEPLOY }}",
-                "SKIP_BUILD": "${{ steps.configure_pipeline_parameters.outputs.SKIP_BUILD }}",
-                "FORCE_REPLACE_DOCKER_IMAGE": "${{ steps.configure_pipeline_parameters.outputs.FORCE_REPLACE_DOCKER_IMAGE }}",
-                "UAT_PROD_DEPLOY": "${{ steps.configure_pipeline_parameters.outputs.UAT_PROD_DEPLOY }}"
-            }
+        run: |
+          curl -X POST \
+            -u ":${{ secrets.AZURE_DEVOPS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+                  "resources": {
+                    "repositories": {
+                      "self": {
+                        "refName": "${{ github.ref }}"
+                      }
+                    }
+                  },
+                  "templateParameters": {
+                    "DEV_DEPLOY": "${{ steps.configure_pipeline_parameters.outputs.DEV_DEPLOY }}",
+                    "SKIP_BUILD": "${{ steps.configure_pipeline_parameters.outputs.SKIP_BUILD }}",
+                    "FORCE_REPLACE_DOCKER_IMAGE": "${{ steps.configure_pipeline_parameters.outputs.FORCE_REPLACE_DOCKER_IMAGE }}",
+                    "UAT_PROD_DEPLOY": "${{ steps.configure_pipeline_parameters.outputs.UAT_PROD_DEPLOY }}"
+                  }
+                }' \
+            "https://dev.azure.com/pagopaspa/pagoPA-projects/_apis/pipelines/1812/runs?api-version=7.0"
