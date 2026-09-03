@@ -1,13 +1,12 @@
 name: OpenAPI Quality Check
 
-# this action runs only when OpenAPI spec files are modified
+# runs when the specs or the check itself change, on any base branch
 on:
   pull_request:
-    branches:
-      - main
     paths:
       - 'api-spec/**/*.yaml'
       - 'api-spec/**/*.yml'
+      - '.github/workflows/openapi_quality.yml'
 
 permissions:
   contents: read
@@ -15,21 +14,23 @@ permissions:
 jobs:
   openapi_quality:
     runs-on: ubuntu-latest
-    name: OpenAPI Quality Check
+    name: Lint ${{ matrix.spec.version }}
     strategy:
+      fail-fast: false
       matrix:
         spec:
           - path: 'api-spec/v1/payment-requests-api.yaml'
+            version: 'v1'
           - path: 'api-spec/v2/payment-requests-api.yaml'
+            version: 'v2'
     steps:
       - name: Checkout code
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 #v4
 
-      - name: Rate My OpenAPI - ${{ matrix.spec.version }}
-        uses: zuplo/rmoa-action@c4a74a8823496c6061cd6fb586d80db8c2fd7e34  # v1
+      # blocks on errors; warnings stay visible until the spec is clean
+      - name: Lint ${{ matrix.spec.path }}
+        # note: ruleset bundled with the shared action, can be overridden if needed
+        uses: pagopa/github-actions-template/openapi-lint@bfb849a1e43acbc9347afae2428a799e0d2efe88
         with:
-          filepath: ${{ matrix.spec.path }}
-          apikey: ${{ secrets.RATEMYOPENAPI_API_KEY }}
-          minimum-score: 80
-          max-warnings: 25
-          max-errors: 5
+          spec_path: ${{ matrix.spec.path }}
+          fail_severity: error

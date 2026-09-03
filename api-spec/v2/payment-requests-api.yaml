@@ -12,6 +12,7 @@ info:
     url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 servers:
   - url: https://${host}
+    x-internal: true # required by owasp:api9:2023-inventory-access
     variables:
       host:
         description: The hostname of the API server
