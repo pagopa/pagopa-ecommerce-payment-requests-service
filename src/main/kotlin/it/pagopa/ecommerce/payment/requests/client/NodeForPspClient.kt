@@ -43,9 +43,8 @@ class NodeForPspClient(
       .bodyToMono(VerifyPaymentNoticeRes::class.java)
       .doOnSuccess {
         LogTracingUtils.loggerTracingUtils()
-          .details(mapOf("payment_token" to request.value.qrCode.noticeNumber))
-          .logDebug(logger, "Payment activated")
-      }
+          .attributes(mapOf(AttributeKeys.CTX_RPT_IDS to request.value.qrCode.fiscalCode + request.value.qrCode.noticeNumber))
+          .logDebug(logger, "Node verifyPaymentNotice OK")
       .doOnError(ResponseStatusException::class.java) {
         LogTracingUtils.loggerTracingUtils().failure().logError(logger, it, "Response status error")
       }
