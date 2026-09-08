@@ -121,6 +121,7 @@ class PaymentRequestsService(
           .flatMap { verifyPaymentNoticeResponse ->
             val isNodoError = isNodoError(verifyPaymentNoticeResponse)
             LogTracingUtils.loggerTracingUtils()
+              .success()
               .details(
                 mapOf(
                   "outcome" to verifyPaymentNoticeResponse.outcome.toString(),
