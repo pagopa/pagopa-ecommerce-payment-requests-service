@@ -451,7 +451,7 @@
                             <schemas>
                                 <schema>
                                     <url>
-                                        https://raw.githubusercontent.com/pagopa/pagopa-infra/main/src/domains/nodo-app/api/legacy/nodopagamenti_api/nodeForPsp/v1/nodeForPsp.wsdl
+                                        https://raw.githubusercontent.com/pagopa/pagopa-infra/refs/tags/v1.921.0/src/domains/nodo-app/api/legacy/nodopagamenti_api/nodeForPsp/v1/nodeForPsp.wsdl
                                     </url>
                                 </schema>
                             </schemas>
