@@ -23,7 +23,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
     LogTracingUtils.loggerTracingUtils()
       .success()
       .details(mapOf("controllers_count" to restControllers.size.toString()))
-      .logInfo(logger, "Controllers warm-up founded")
+      .logDebug(logger, "Controllers warm-up founded")
     restControllers.forEach(this::warmUpController)
   }
 
