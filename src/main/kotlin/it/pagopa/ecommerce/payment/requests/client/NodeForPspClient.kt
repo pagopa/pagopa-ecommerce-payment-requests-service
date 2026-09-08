@@ -2,6 +2,7 @@ package it.pagopa.ecommerce.payment.requests.client
 
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
 import jakarta.xml.bind.JAXBElement
 import org.slf4j.LoggerFactory
@@ -41,8 +42,14 @@ class NodeForPspClient(
       }
       .bodyToMono(VerifyPaymentNoticeRes::class.java)
       .doOnSuccess {
-        logger.debug("Payment activated with payment token [{}]", request.value.qrCode.noticeNumber)
+        LogTracingUtils.loggerTracingUtils()
+          .details(mapOf("payment_token" to request.value.qrCode.noticeNumber))
+          .logDebug(logger, "Payment activated")
       }
-      .doOnError(ResponseStatusException::class.java) { logger.error("Response status error", it) }
-      .doOnError(Exception::class.java) { logger.error("Generic error", it) }
+      .doOnError(ResponseStatusException::class.java) {
+        LogTracingUtils.loggerTracingUtils().failure().logError(logger, it, "Response status error")
+      }
+      .doOnError(Exception::class.java) {
+        LogTracingUtils.loggerTracingUtils().failure().logError(logger, it, "Generic error")
+      }
 }

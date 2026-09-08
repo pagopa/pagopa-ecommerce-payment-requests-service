@@ -75,6 +75,10 @@
             <artifactId>reactor-kotlin-extensions</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>context-propagation</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
         </dependency>
@@ -447,7 +451,7 @@
                             <schemas>
                                 <schema>
                                     <url>
-                                        https://raw.githubusercontent.com/pagopa/pagopa-infra/main/src/core/api/nodopagamenti_api/nodeForPsp/v1/nodeForPsp.wsdl
+                                        https://raw.githubusercontent.com/pagopa/pagopa-infra/main/src/domains/nodo-app/api/legacy/nodopagamenti_api/nodeForPsp/v1/nodeForPsp.wsdl
                                     </url>
                                 </schema>
                             </schemas>

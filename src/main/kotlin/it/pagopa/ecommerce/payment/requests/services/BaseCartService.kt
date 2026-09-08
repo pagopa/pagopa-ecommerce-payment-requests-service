@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.*
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.payment.requests.repositories.*
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
@@ -67,7 +68,10 @@ abstract class BaseCartService(
 
   protected suspend fun processCartInternal(clientIdValue: String, request: CartRequest): String {
     val receivedNotices = request.paymentNotices.size
-    logger.info("Received [$receivedNotices] payment notices")
+    LogTracingUtils.loggerTracingUtils()
+      .success()
+      .details(mapOf("payment_notices" to receivedNotices.toString()))
+      .logInfo(logger, "Received payment notices successfully")
 
     if (receivedNotices > maxAllowedPaymentNotices) {
       logger.error("Too many payment notices, expected only one")
@@ -125,12 +129,15 @@ abstract class BaseCartService(
           .orElse(Mono.just(CartInfo(id, paymentInfos, request.idCart, returnUrls, null)))
       }
       .flatMap {
-        logger.info("Saving cart ${it.id} for payments $paymentInfos")
+        LogTracingUtils.loggerTracingUtils()
+          .success()
+          .details(
+            mapOf("cart_info" to it.id.toString(), "payment_info" to paymentInfos.toString()))
+          .logInfo(logger, "Saved cart for payments successfully")
         cartsRedisTemplateWrapper.save(it).thenReturn(it)
       }
       .map {
         val retUrl = MessageFormat.format(checkoutUrl, it.id, clientIdValue)
-        logger.info("Return URL: $retUrl")
         retUrl
       }
       .awaitSingle()

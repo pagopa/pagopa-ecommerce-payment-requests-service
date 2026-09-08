@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.validation
 
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -52,6 +53,8 @@ class ApiKeyFilter(
         secondaryApiKey -> "secondary"
         else -> "unknown"
       }
-    logger.debug("API key type used for path $path: $apiKeyType")
+    LogTracingUtils.loggerTracingUtils()
+      .details(mapOf("path" to path, "api_key_type" to apiKeyType))
+      .logDebug(logger, "API key type used")
   }
 }

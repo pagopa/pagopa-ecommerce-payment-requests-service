@@ -12,6 +12,7 @@ import it.pagopa.ecommerce.payment.requests.configurations.openTelemetry.util.Op
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.InvalidRptException
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.payment.requests.repositories.PaymentRequestInfo
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.PaymentRequestsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.NodoOperations
@@ -58,14 +59,9 @@ class PaymentRequestsService(
       getPaymentInfoFromCache(rptIdRecord)
         .switchIfEmpty(
           Mono.defer {
-            getPaymentInfoFromNodo(rptIdRecord, paymentContextCode)
-              .doOnNext {
-                logger.info(
-                  "PaymentRequestInfo from nodo pagoPA for {}",
-                  rptId,
-                )
-              }
-              .flatMap { paymentRequestInfoRepository.save(it).thenReturn(it) }
+            getPaymentInfoFromNodo(rptIdRecord, paymentContextCode).flatMap {
+              paymentRequestInfoRepository.save(it).thenReturn(it)
+            }
           })
         .map { paymentInfo ->
           PaymentRequestsGetResponseDto(
@@ -77,26 +73,41 @@ class PaymentRequestsService(
             amount = paymentInfo.amount!!,
             paymentContextCode = paymentContextCode)
         }
-        .doOnNext { logger.info("PaymentRequestInfo retrieved for {}", rptId) }
+        .doOnNext {
+          LogTracingUtils.loggerTracingUtils()
+            .success()
+            .details(mapOf("payment_request_info" to rptId))
+            .logInfo(logger, "PaymentRequestInfo retrieved successfully")
+        }
     return paymentInfo.awaitSingle()
   }
 
   suspend fun getPaymentInfoFromCache(rptId: RptId): Mono<PaymentRequestInfo> {
     return paymentRequestInfoRepository
       .findById(rptId.value)
-      .doOnNext { logger.info("PaymentRequestInfo cache hit for {}", rptId) }
+      .doOnNext {
+        LogTracingUtils.loggerTracingUtils()
+          .success()
+          .details(mapOf("payment_request_info" to rptId.toString()))
+          .logInfo(logger, "PaymentRequestInfo cache hit")
+      }
       .switchIfEmpty {
-        logger.info("PaymentRequestInfo cache miss for {}", rptId)
+        LogTracingUtils.loggerTracingUtils()
+          .success()
+          .details(mapOf("payment_request_info" to rptId.toString()))
+          .logInfo(logger, "PaymentRequestInfo cache miss")
         Mono.empty()
       }
   }
 
   fun getPaymentInfoFromNodo(rptId: RptId, paymentContextCode: String): Mono<PaymentRequestInfo> =
     Mono.just(rptId).flatMap {
-      logger.info(
-        "Calling Nodo for VerifyPaymentNotice for get payment info for rptId: [{}]. PaymentContextCode: [{}]",
-        rptId.value,
-        paymentContextCode)
+      LogTracingUtils.loggerTracingUtils()
+        .success()
+        .details(
+          mapOf(
+            "payment_request_info" to rptId.value, "payment_context_code" to paymentContextCode))
+        .logInfo(logger, "Calling Nodo for VerifyPaymentNotice for get payment info")
 
       val verifyPaymentNoticeReq = nodoConfig.baseVerifyPaymentNoticeReq()
       val qrCode = CtQrCode()
@@ -109,11 +120,13 @@ class PaymentRequestsService(
             objectFactoryNodeForPsp.createVerifyPaymentNoticeReq(verifyPaymentNoticeReq))
           .flatMap { verifyPaymentNoticeResponse ->
             val isNodoError = isNodoError(verifyPaymentNoticeResponse)
-            logger.info(
-              "VerifyPaymentNotice: outcome: [{}] fault code: [{}] is nodo error: [{}]",
-              verifyPaymentNoticeResponse.outcome,
-              verifyPaymentNoticeResponse?.fault?.faultCode,
-              isNodoError)
+            LogTracingUtils.loggerTracingUtils()
+              .details(
+                mapOf(
+                  "outcome" to verifyPaymentNoticeResponse.outcome.toString(),
+                  "fault_code" to verifyPaymentNoticeResponse?.fault?.faultCode,
+                  "is_nodo_error" to isNodoError.toString()))
+              .logInfo(logger, "Executed VerifyPaymentNotice")
             traceVerifyNodoOutcome(verifyPaymentNoticeResponse?.fault?.faultCode, isNodoError)
             if (isNodoError) {
               Mono.error(NodoErrorException(verifyPaymentNoticeResponse.fault))
