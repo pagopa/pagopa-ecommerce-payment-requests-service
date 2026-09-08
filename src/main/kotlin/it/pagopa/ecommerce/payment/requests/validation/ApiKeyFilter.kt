@@ -54,6 +54,7 @@ class ApiKeyFilter(
         else -> "unknown"
       }
     LogTracingUtils.loggerTracingUtils()
+      .success()
       .details(mapOf("path" to path, "api_key_type" to apiKeyType))
       .logDebug(logger, "API key type used")
   }
