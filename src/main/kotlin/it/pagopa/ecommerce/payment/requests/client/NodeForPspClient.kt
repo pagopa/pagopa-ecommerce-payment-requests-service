@@ -43,12 +43,28 @@ class NodeForPspClient(
       .bodyToMono(VerifyPaymentNoticeRes::class.java)
       .doOnSuccess {
         LogTracingUtils.loggerTracingUtils()
-          .attributes(mapOf(AttributeKeys.CTX_RPT_IDS to request.value.qrCode.fiscalCode + request.value.qrCode.noticeNumber))
+          .attributes(
+            mapOf(
+              LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+                request.value.qrCode.fiscalCode + request.value.qrCode.noticeNumber))
           .logDebug(logger, "Node verifyPaymentNotice OK")
+      }
       .doOnError(ResponseStatusException::class.java) {
-        LogTracingUtils.loggerTracingUtils().failure().logError(logger, it, "Response status error")
+        LogTracingUtils.loggerTracingUtils()
+          .failure()
+          .attributes(
+            mapOf(
+              LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+                request.value.qrCode.fiscalCode + request.value.qrCode.noticeNumber))
+          .logError(logger, it, "Response status error")
       }
       .doOnError(Exception::class.java) {
-        LogTracingUtils.loggerTracingUtils().failure().logError(logger, it, "Generic error")
+        LogTracingUtils.loggerTracingUtils()
+          .failure()
+          .attributes(
+            mapOf(
+              LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+                request.value.qrCode.fiscalCode + request.value.qrCode.noticeNumber))
+          .logErrorWithStackTrace(logger, it, "Generic error")
       }
 }

@@ -39,6 +39,7 @@ class LogTracingUtils private constructor() {
       "ctx_authorization_request_id",
       "{authorizationRequestId-not-found}",
     ),
+    CTX_RPT_IDS("ctx_rpt_ids", "{rptIds-not-found}"),
     CTX_WALLET_ID("ctx_wallet_id", "{walletId-not-found}"),
     CTX_EVENT_CODE("ctx_event_code", "{eventCode-not-found}"),
     CTX_EVENT_ID("ctx_event_id", "{eventId-not-found}"),
