@@ -107,7 +107,7 @@ class PaymentRequestsService(
         .details(
           mapOf(
             "payment_request_info" to rptId.value, "payment_context_code" to paymentContextCode))
-        .logInfo(logger, "Calling Nodo for VerifyPaymentNotice for get payment info")
+        .logDebug(logger, "Calling Nodo for VerifyPaymentNotice for get payment info")
 
       val verifyPaymentNoticeReq = nodoConfig.baseVerifyPaymentNoticeReq()
       val qrCode = CtQrCode()
