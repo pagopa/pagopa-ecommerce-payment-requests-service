@@ -71,7 +71,7 @@ abstract class BaseCartService(
     LogTracingUtils.loggerTracingUtils()
       .success()
       .details(mapOf("payment_notices" to receivedNotices.toString()))
-      .logInfo(logger, "Received payment notices successfully")
+      .logDebug(logger, "Received payment notices successfully")
 
     if (receivedNotices > maxAllowedPaymentNotices) {
       logger.error("Too many payment notices, expected only one")
