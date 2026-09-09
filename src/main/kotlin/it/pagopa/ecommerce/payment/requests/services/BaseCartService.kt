@@ -69,17 +69,28 @@ abstract class BaseCartService(
 
   protected suspend fun processCartInternal(clientIdValue: String, request: CartRequest): String {
     val receivedNotices = request.paymentNotices.size
-    LogTracingUtils.loggerTracingUtils()
-      .success()
-      .attributes(
-        mapOf(
-          LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
-            request.paymentNotices.joinToString(",") { p -> p.fiscalCode + p.noticeNumber }))
-      .details(mapOf("payment_notices" to receivedNotices.toString()))
-      .logDebug(logger, "Received payment notices successfully")
+    if (logger.isDebugEnabled) {
+      LogTracingUtils.loggerTracingUtils()
+        .success()
+        .attributes(
+          mapOf(
+            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+              request.paymentNotices.joinToString(",") { p -> p.fiscalCode + p.noticeNumber }))
+        .details(mapOf("payment_notices" to receivedNotices.toString()))
+        .logDebug(logger, "Received payment notices successfully")
+    }
 
     if (receivedNotices > maxAllowedPaymentNotices) {
-      logger.error("Too many payment notices, expected only one")
+      LogTracingUtils.loggerTracingUtils()
+        .failure()
+        .attributes(
+          mapOf(
+            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+              request.paymentNotices.joinToString(",") { p -> p.fiscalCode + p.noticeNumber }))
+        .logError(
+          logger,
+          Exception("Exception processing request"),
+          "Too many payment notices, expected only one")
       throw RestApiException(
         httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
         title = "Multiple payment notices not processable",
@@ -93,11 +104,21 @@ abstract class BaseCartService(
       }
 
     if (receivedNotices != paymentInfos.map { it.rptId }.toSet().size) {
-      logger.error("Duplicate payment notice values found")
-      throw RestApiException(
-        httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-        title = "Invalid payment info",
-        description = "Duplicate payment notice values found.")
+      val ex =
+        RestApiException(
+          httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+          title = "Invalid payment info",
+          description = "Duplicate payment notice values found.")
+
+      LogTracingUtils.loggerTracingUtils()
+        .failure()
+        .attributes(
+          mapOf(
+            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+              request.paymentNotices.joinToString(",") { p -> p.fiscalCode + p.noticeNumber }))
+        .logError(logger, ex, "Duplicate payment notice values found")
+
+      throw ex
     }
 
     val checkPositionDto =
@@ -116,10 +137,17 @@ abstract class BaseCartService(
       .checkPosition(checkPositionDto)
       .filter { it.outcome == CheckPositionResponseDto.OutcomeEnum.OK }
       .switchIfEmpty {
-        throw RestApiException(
-          httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-          title = "Invalid payment info",
-          description = "Invalid payment notice data")
+        val ex =
+          RestApiException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            title = "Invalid payment info",
+            description = "Invalid payment notice data")
+
+        LogTracingUtils.loggerTracingUtils()
+          .failure()
+          .logError(logger, ex, "Invalid payment notice data")
+
+        throw ex
       }
       .flatMap {
         val id = UUID.randomUUID()

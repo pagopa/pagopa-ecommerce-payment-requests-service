@@ -42,12 +42,14 @@ class NodeForPspClient(
       }
       .bodyToMono(VerifyPaymentNoticeRes::class.java)
       .doOnSuccess {
-        LogTracingUtils.loggerTracingUtils()
-          .attributes(
-            mapOf(
-              LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
-                request.value.qrCode.fiscalCode + request.value.qrCode.noticeNumber))
-          .logDebug(logger, "Node verifyPaymentNotice OK")
+        if (logger.isDebugEnabled) {
+          LogTracingUtils.loggerTracingUtils()
+            .attributes(
+              mapOf(
+                LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+                  request.value.qrCode.fiscalCode + request.value.qrCode.noticeNumber))
+            .logDebug(logger, "Node verifyPaymentNotice OK")
+        }
       }
       .doOnError(ResponseStatusException::class.java) {
         LogTracingUtils.loggerTracingUtils()

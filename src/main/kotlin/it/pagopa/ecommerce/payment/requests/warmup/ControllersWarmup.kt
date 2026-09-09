@@ -20,10 +20,12 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
   override fun onApplicationEvent(event: ContextRefreshedEvent) {
     val restControllers =
       event.applicationContext.getBeansWithAnnotation<RestController>().map { it.value }
-    LogTracingUtils.loggerTracingUtils()
-      .success()
-      .details(mapOf("controllers_count" to restControllers.size.toString()))
-      .logDebug(logger, "Controllers warm-up founded")
+    if (logger.isDebugEnabled) {
+      LogTracingUtils.loggerTracingUtils()
+        .success()
+        .details(mapOf("controllers_count" to restControllers.size.toString()))
+        .logDebug(logger, "Controllers warm-up founded")
+    }
     restControllers.forEach(this::warmUpController)
   }
 

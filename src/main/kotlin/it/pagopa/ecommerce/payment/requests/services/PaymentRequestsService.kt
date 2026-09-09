@@ -105,11 +105,13 @@ class PaymentRequestsService(
 
   fun getPaymentInfoFromNodo(rptId: RptId, paymentContextCode: String): Mono<PaymentRequestInfo> =
     Mono.just(rptId).flatMap {
-      LogTracingUtils.loggerTracingUtils()
-        .success()
-        .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value))
-        .details(mapOf("payment_context_code" to paymentContextCode))
-        .logDebug(logger, "Calling Nodo for VerifyPaymentNotice for get payment info")
+      if (logger.isDebugEnabled) {
+        LogTracingUtils.loggerTracingUtils()
+          .success()
+          .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value))
+          .details(mapOf("payment_context_code" to paymentContextCode))
+          .logDebug(logger, "Calling Nodo for VerifyPaymentNotice for get payment info")
+      }
 
       val verifyPaymentNoticeReq = nodoConfig.baseVerifyPaymentNoticeReq()
       val qrCode = CtQrCode()

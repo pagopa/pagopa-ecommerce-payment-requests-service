@@ -70,10 +70,10 @@ class LogTracingUtilsTest {
 
     doAnswer {
         assertEquals("failure", MDC.get("event_outcome"))
-        assertEquals(RuntimeException::class.java.name, MDC.get("error_type"))
-        assertEquals("Something went wrong", MDC.get("error_message"))
-        assertNotNull(MDC.get("error_stack_trace"))
-        assertTrue(MDC.get("error_stack_trace").contains("Something went wrong"))
+        assertEquals(RuntimeException::class.java.name, MDC.get("error.type"))
+        assertEquals("Something went wrong", MDC.get("error.message"))
+        assertNotNull(MDC.get("error.stack_trace"))
+        assertTrue(MDC.get("error.stack_trace").contains("Something went wrong"))
         null
       }
       .`when`(mockLogger)
@@ -86,8 +86,8 @@ class LogTracingUtilsTest {
 
     // Assert
     verify(mockLogger).error("Test error message")
-    assertNull(MDC.get("error_type"))
-    assertNull(MDC.get("error_stack_trace"))
+    assertNull(MDC.get("error.type"))
+    assertNull(MDC.get("error.stack_trace"))
   }
 
   @Test
@@ -153,8 +153,8 @@ class LogTracingUtilsTest {
     val exceptionNoMessage = Exception()
 
     doAnswer {
-        assertEquals(Exception::class.java.name, MDC.get("error_type"))
-        assertEquals("{errorMessage-not-found}", MDC.get("error_message"))
+        assertEquals(Exception::class.java.name, MDC.get("error.type"))
+        assertEquals("{errorMessage-not-found}", MDC.get("error.message"))
         null
       }
       .`when`(mockLogger)
