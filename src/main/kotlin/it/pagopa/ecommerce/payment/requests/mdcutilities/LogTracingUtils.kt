@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.util.EnumMap
+import java.util.*
 import org.slf4j.Logger
 import org.slf4j.MDC
 import org.slf4j.event.Level
@@ -132,6 +132,8 @@ class LogTracingUtils private constructor() {
     private const val SUCCESS = "success"
     private const val FAILURE = "failure"
     const val AZURE_KEY_VAULT_DEPENDENCY: String = "azure-key-vault"
+    const val REDIS_DEPENDENCY: String = "eCommerce-redis"
+    const val MONGO_DEPENDENCY: String = "eCommerce-mongodb"
 
     private val OBJECT_MAPPER: ObjectMapper =
       ObjectMapper()

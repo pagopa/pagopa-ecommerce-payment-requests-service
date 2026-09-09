@@ -75,6 +75,7 @@ class PaymentRequestsService(
         }
         .doOnNext {
           LogTracingUtils.loggerTracingUtils()
+            .dependency(LogTracingUtils.REDIS_DEPENDENCY)
             .success()
             .details(mapOf("payment_request_info" to rptId))
             .logInfo(logger, "PaymentRequestInfo retrieved successfully")
@@ -87,12 +88,14 @@ class PaymentRequestsService(
       .findById(rptId.value)
       .doOnNext {
         LogTracingUtils.loggerTracingUtils()
+          .dependency(LogTracingUtils.REDIS_DEPENDENCY)
           .success()
           .details(mapOf("payment_request_info" to rptId.toString()))
           .logInfo(logger, "PaymentRequestInfo cache hit")
       }
       .switchIfEmpty {
         LogTracingUtils.loggerTracingUtils()
+          .dependency(LogTracingUtils.REDIS_DEPENDENCY)
           .success()
           .details(mapOf("payment_request_info" to rptId.toString()))
           .logInfo(logger, "PaymentRequestInfo cache miss")

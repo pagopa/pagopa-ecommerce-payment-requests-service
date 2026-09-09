@@ -130,6 +130,7 @@ abstract class BaseCartService(
       }
       .flatMap {
         LogTracingUtils.loggerTracingUtils()
+          .dependency(LogTracingUtils.REDIS_DEPENDENCY)
           .success()
           .details(
             mapOf("cart_info" to it.id.toString(), "payment_info" to paymentInfos.toString()))
