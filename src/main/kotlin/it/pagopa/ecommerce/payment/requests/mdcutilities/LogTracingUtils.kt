@@ -49,9 +49,9 @@ class LogTracingUtils private constructor() {
     CTX_DETAILS("ctx_details", "{details-not-found}"),
     EVENT_OUTCOME("event_outcome", "{eventOutcome-not-found}"),
     DEPENDENCY("dependency", "{dependency-not-found}"),
-    ERROR_TYPE("error_type", "{errorType-not-found}"),
-    ERROR_MESSAGE("error_message", "{errorMessage-not-found}"),
-    ERROR_STACK_TRACE("error_stack_trace", "{errorStackTrace-not-found}"),
+    ERROR_TYPE("error.type", "{errorType-not-found}"),
+    ERROR_MESSAGE("error.message", "{errorMessage-not-found}"),
+    ERROR_STACK_TRACE("error.stack_trace", "{errorStackTrace-not-found}"),
   }
 
   fun attributes(attributes: Map<AttributeKeys, String>) = apply { this.attributes = attributes }
