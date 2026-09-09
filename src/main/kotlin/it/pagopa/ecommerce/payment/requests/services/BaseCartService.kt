@@ -11,6 +11,7 @@ import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
 import java.text.MessageFormat
 import java.util.*
+import kotlin.collections.joinToString
 import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -70,6 +71,10 @@ abstract class BaseCartService(
     val receivedNotices = request.paymentNotices.size
     LogTracingUtils.loggerTracingUtils()
       .success()
+      .attributes(
+        mapOf(
+          LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+            request.paymentNotices.joinToString(",") { p -> p.fiscalCode + p.noticeNumber }))
       .details(mapOf("payment_notices" to receivedNotices.toString()))
       .logDebug(logger, "Received payment notices successfully")
 
@@ -132,6 +137,10 @@ abstract class BaseCartService(
         LogTracingUtils.loggerTracingUtils()
           .dependency(LogTracingUtils.REDIS_DEPENDENCY)
           .success()
+          .attributes(
+            mapOf(
+              LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+                paymentInfos.joinToString(",") { p -> p.rptId.value }))
           .details(
             mapOf("cart_info" to it.id.toString(), "payment_info" to paymentInfos.toString()))
           .logInfo(logger, "Saved cart for payments successfully")

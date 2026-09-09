@@ -77,7 +77,7 @@ class PaymentRequestsService(
           LogTracingUtils.loggerTracingUtils()
             .dependency(LogTracingUtils.REDIS_DEPENDENCY)
             .success()
-            .details(mapOf("payment_request_info" to rptId))
+            .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId))
             .logInfo(logger, "PaymentRequestInfo retrieved successfully")
         }
     return paymentInfo.awaitSingle()
@@ -90,14 +90,14 @@ class PaymentRequestsService(
         LogTracingUtils.loggerTracingUtils()
           .dependency(LogTracingUtils.REDIS_DEPENDENCY)
           .success()
-          .details(mapOf("payment_request_info" to rptId.toString()))
+          .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value))
           .logInfo(logger, "PaymentRequestInfo cache hit")
       }
       .switchIfEmpty {
         LogTracingUtils.loggerTracingUtils()
           .dependency(LogTracingUtils.REDIS_DEPENDENCY)
           .success()
-          .details(mapOf("payment_request_info" to rptId.toString()))
+          .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value))
           .logInfo(logger, "PaymentRequestInfo cache miss")
         Mono.empty()
       }
@@ -107,9 +107,8 @@ class PaymentRequestsService(
     Mono.just(rptId).flatMap {
       LogTracingUtils.loggerTracingUtils()
         .success()
-        .details(
-          mapOf(
-            "payment_request_info" to rptId.value, "payment_context_code" to paymentContextCode))
+        .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value))
+        .details(mapOf("payment_context_code" to paymentContextCode))
         .logDebug(logger, "Calling Nodo for VerifyPaymentNotice for get payment info")
 
       val verifyPaymentNoticeReq = nodoConfig.baseVerifyPaymentNoticeReq()
@@ -125,6 +124,7 @@ class PaymentRequestsService(
             val isNodoError = isNodoError(verifyPaymentNoticeResponse)
             LogTracingUtils.loggerTracingUtils()
               .success()
+              .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value))
               .details(
                 mapOf(
                   "outcome" to verifyPaymentNoticeResponse.outcome.toString(),
