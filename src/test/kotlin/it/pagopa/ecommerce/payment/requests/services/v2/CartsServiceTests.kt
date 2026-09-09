@@ -1,5 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.services.v2
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.payment.requests.server.v2.model.ClientIdDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.kotlin.*
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import reactor.core.publisher.Mono
 
@@ -54,7 +57,14 @@ class CartsServiceTests {
       given(tokenizerMailUtils.toConfidential(Email(request.emailNotice)))
         .willReturn(Mono.just(Confidential<Email>(tokenizedEmail.toString())))
       given(cartRedisTemplateWrapper.save(any())).willReturn(Mono.just(true))
-      assertEquals(locationUrl, cartService.processCart(clientId, request))
+      val logger = LoggerFactory.getLogger(CartService::class.java) as Logger
+      val previousLevel = logger.level
+      logger.level = Level.DEBUG
+      try {
+        assertEquals(locationUrl, cartService.processCart(clientId, request))
+      } finally {
+        logger.level = previousLevel
+      }
       verify(cartRedisTemplateWrapper, times(1)).save(any())
     }
   }

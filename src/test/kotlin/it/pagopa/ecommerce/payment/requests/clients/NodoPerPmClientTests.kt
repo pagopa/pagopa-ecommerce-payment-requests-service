@@ -1,5 +1,7 @@
 package it.pagopa.ecommerce.payment.requests.clients
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.AvanzamentoPagamentoDto.EsitoEnum
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
@@ -22,6 +24,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.mockito.kotlin.verify
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.test.context.TestPropertySource
@@ -74,8 +77,17 @@ class NodoPerPmClientTests {
     given(responseSpec.bodyToMono(CheckPositionResponseDto::class.java))
       .willReturn(Mono.just(response))
 
+    val logger = LoggerFactory.getLogger(NodoPerPmClient::class.java) as Logger
+    val previousLevel = logger.level
+    logger.level = Level.DEBUG
+
     /** test */
-    val testResponse = client.checkPosition(checkPositionDto).block()
+    val testResponse =
+      try {
+        client.checkPosition(checkPositionDto).block()
+      } finally {
+        logger.level = previousLevel
+      }
 
     /** asserts */
     Assertions.assertThat(testResponse!!.outcome.value).isEqualTo(EsitoEnum.OK.value)
