@@ -21,6 +21,11 @@ constructor(private val emailConfidentialDataManager: ConfidentialDataManager) {
   fun toEmail(tokenizedEmail: Confidential<Email>): Mono<Email> {
     return emailConfidentialDataManager
       .decrypt(tokenizedEmail) { Email(it) }
+      .doOnSuccess {
+        LogTracingUtils.loggerTracingUtils()
+          .success()
+          .logDebug(logger, "Received mail from tokenized email successfully")
+      }
       .doOnError { e ->
         LogTracingUtils.loggerTracingUtils()
           .failure()
@@ -29,11 +34,18 @@ constructor(private val emailConfidentialDataManager: ConfidentialDataManager) {
   }
 
   fun toConfidential(clearText: Email): Mono<Confidential<Email>> {
-    return emailConfidentialDataManager.encrypt(clearText).doOnError { e ->
-      LogTracingUtils.loggerTracingUtils()
-        .failure()
-        .logError(logger, e, "Exception tokenizing confidential data")
-    }
+    return emailConfidentialDataManager
+      .encrypt(clearText)
+      .doOnSuccess {
+        LogTracingUtils.loggerTracingUtils()
+          .success()
+          .logDebug(logger, "Tokenized mail successfully")
+      }
+      .doOnError { e ->
+        LogTracingUtils.loggerTracingUtils()
+          .failure()
+          .logError(logger, e, "Exception tokenizing mail")
+      }
   }
 
   fun toConfidential(email: String?): Mono<Confidential<Email>> {
