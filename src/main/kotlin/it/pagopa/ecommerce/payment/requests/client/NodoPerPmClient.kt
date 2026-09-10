@@ -45,14 +45,16 @@ public class NodoPerPmClient(
       }
       .bodyToMono(CheckPositionResponseDto::class.java)
       .doOnSuccess {
-        if (logger.isDebugEnabled) {
-          val ctxRptIds =
-            request.positionslist.joinToString(",") { it.fiscalCode + it.noticeNumber }
-
-          LogTracingUtils.loggerTracingUtils()
-            .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to ctxRptIds))
-            .logDebug(logger, "Check position called successfully")
-        }
+        LogTracingUtils.loggerTracingUtils()
+          .success()
+          .logInfo(logger, "Check position called successfully")
+      }
+      .contextWrite { context ->
+        LogTracingUtils.enrichContextForEvent(
+          mapOf(
+            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+              request.positionslist.joinToString(",") { it.fiscalCode + it.noticeNumber }),
+          context)
       }
   }
 }

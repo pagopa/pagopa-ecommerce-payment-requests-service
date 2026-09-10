@@ -69,28 +69,15 @@ abstract class BaseCartService(
 
   protected suspend fun processCartInternal(clientIdValue: String, request: CartRequest): String {
     val receivedNotices = request.paymentNotices.size
+
     if (logger.isDebugEnabled) {
       LogTracingUtils.loggerTracingUtils()
         .success()
-        .attributes(
-          mapOf(
-            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
-              request.paymentNotices.joinToString(",") { p -> p.fiscalCode + p.noticeNumber }))
         .details(mapOf("payment_notices" to receivedNotices.toString()))
         .logDebug(logger, "Received payment notices successfully")
     }
 
     if (receivedNotices > maxAllowedPaymentNotices) {
-      LogTracingUtils.loggerTracingUtils()
-        .failure()
-        .attributes(
-          mapOf(
-            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
-              request.paymentNotices.joinToString(",") { p -> p.fiscalCode + p.noticeNumber }))
-        .logError(
-          logger,
-          Exception("Exception processing request"),
-          "Too many payment notices, expected only one")
       throw RestApiException(
         httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
         title = "Multiple payment notices not processable",
@@ -104,21 +91,10 @@ abstract class BaseCartService(
       }
 
     if (receivedNotices != paymentInfos.map { it.rptId }.toSet().size) {
-      val ex =
-        RestApiException(
-          httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-          title = "Invalid payment info",
-          description = "Duplicate payment notice values found.")
-
-      LogTracingUtils.loggerTracingUtils()
-        .failure()
-        .attributes(
-          mapOf(
-            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
-              request.paymentNotices.joinToString(",") { p -> p.fiscalCode + p.noticeNumber }))
-        .logError(logger, ex, "Duplicate payment notice values found")
-
-      throw ex
+      throw RestApiException(
+        httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+        title = "Invalid payment info",
+        description = "Duplicate payment notice values found.")
     }
 
     val checkPositionDto =
@@ -137,17 +113,10 @@ abstract class BaseCartService(
       .checkPosition(checkPositionDto)
       .filter { it.outcome == CheckPositionResponseDto.OutcomeEnum.OK }
       .switchIfEmpty {
-        val ex =
-          RestApiException(
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            title = "Invalid payment info",
-            description = "Invalid payment notice data")
-
-        LogTracingUtils.loggerTracingUtils()
-          .failure()
-          .logError(logger, ex, "Invalid payment notice data")
-
-        throw ex
+        throw RestApiException(
+          httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+          title = "Invalid payment info",
+          description = "Invalid payment notice data")
       }
       .flatMap {
         val id = UUID.randomUUID()
@@ -161,18 +130,21 @@ abstract class BaseCartService(
           }
           .orElse(Mono.just(CartInfo(id, paymentInfos, request.idCart, returnUrls, null)))
       }
-      .flatMap {
+      .flatMap { cartsRedisTemplateWrapper.save(it).thenReturn(it) }
+      .doOnSuccess {
         LogTracingUtils.loggerTracingUtils()
           .dependency(LogTracingUtils.REDIS_DEPENDENCY)
           .success()
-          .attributes(
-            mapOf(
-              LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
-                paymentInfos.joinToString(",") { p -> p.rptId.value }))
           .details(
             mapOf("cart_info" to it.id.toString(), "payment_info" to paymentInfos.toString()))
           .logInfo(logger, "Saved cart for payments successfully")
-        cartsRedisTemplateWrapper.save(it).thenReturn(it)
+      }
+      .contextWrite { context ->
+        LogTracingUtils.enrichContextForEvent(
+          mapOf(
+            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+              paymentInfos.joinToString(",") { p -> p.rptId.value }),
+          context)
       }
       .map {
         val retUrl = MessageFormat.format(checkoutUrl, it.id, clientIdValue)

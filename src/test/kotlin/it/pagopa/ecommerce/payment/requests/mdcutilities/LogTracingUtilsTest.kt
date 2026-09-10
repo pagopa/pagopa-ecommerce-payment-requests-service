@@ -41,12 +41,12 @@ class LogTracingUtilsTest {
     val attributes =
       mapOf(
         AttributeKeys.EVENT_ACTION to "test-action",
-        AttributeKeys.CTX_TRANSACTION_ID to "12345",
+        AttributeKeys.CTX_EVENT_CODE to "12345",
       )
 
     doAnswer {
         assertEquals("test-action", MDC.get("event_action"))
-        assertEquals("12345", MDC.get("ctx_transaction_id"))
+        assertEquals("12345", MDC.get("ctx_event_code"))
         assertEquals("success", MDC.get("event_outcome"))
         null
       }
@@ -59,7 +59,7 @@ class LogTracingUtilsTest {
     // Assert
     verify(mockLogger).info("Test info message")
     assertNull(MDC.get("event_action"), "MDC should be cleaned up after logging")
-    assertNull(MDC.get("correlation.id"))
+    assertNull(MDC.get("ctx_event_code"))
     assertNull(MDC.get("event_outcome"))
   }
 
@@ -172,11 +172,11 @@ class LogTracingUtilsTest {
     // Arrange
     val attributes =
       EnumMap<AttributeKeys, String>(AttributeKeys::class.java).apply {
-        put(AttributeKeys.CTX_TRANSACTION_ID, null)
+        put(AttributeKeys.CTX_EVENT_CODE, null)
       }
 
     doAnswer {
-        assertNull(MDC.get("ctx_transaction_id"))
+        assertNull(MDC.get("ctx_event_code"))
         null
       }
       .`when`(mockLogger)
@@ -222,7 +222,7 @@ class LogTracingUtilsTest {
     val tracingEntries =
       EnumMap<AttributeKeys, String>(AttributeKeys::class.java).apply {
         put(AttributeKeys.EVENT_ACTION, "event_action")
-        put(AttributeKeys.CTX_TRANSACTION_ID, null)
+        put(AttributeKeys.CTX_EVENT_CODE, null)
       }
 
     // Act
@@ -230,6 +230,6 @@ class LogTracingUtilsTest {
 
     // Assert
     assertEquals("event_action", enrichedContext.get<String>("event_action"))
-    assertEquals("{transactionId-not-found}", enrichedContext.get<String>("ctx_transaction_id"))
+    assertEquals("{eventCode-not-found}", enrichedContext.get<String>("ctx_event_code"))
   }
 }

@@ -82,14 +82,7 @@ class CartService(
           .details(mapOf("cart_id" to cartId.toString()))
           .logInfo(logger, "Retrieved Cart info successfully")
       }
-      .switchIfEmpty {
-        val ex = CartNotFoundException(cartId.toString())
-        LogTracingUtils.loggerTracingUtils()
-          .failure()
-          .details(mapOf("cart_id" to cartId.toString()))
-          .logError(logger, ex, "Exception to retrieve Cart info")
-        throw ex
-      }
+      .switchIfEmpty { throw CartNotFoundException(cartId.toString()) }
       .flatMap { cartWithTokenizedEmail ->
         val paymentNotices =
           cartWithTokenizedEmail.payments.map {

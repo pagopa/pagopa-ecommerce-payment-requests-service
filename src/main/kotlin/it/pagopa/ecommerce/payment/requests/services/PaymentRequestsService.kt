@@ -77,8 +77,11 @@ class PaymentRequestsService(
           LogTracingUtils.loggerTracingUtils()
             .dependency(LogTracingUtils.REDIS_DEPENDENCY)
             .success()
-            .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId))
             .logInfo(logger, "PaymentRequestInfo retrieved successfully")
+        }
+        .contextWrite { context ->
+          LogTracingUtils.enrichContextForEvent(
+            mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId), context)
         }
     return paymentInfo.awaitSingle()
   }
@@ -90,16 +93,18 @@ class PaymentRequestsService(
         LogTracingUtils.loggerTracingUtils()
           .dependency(LogTracingUtils.REDIS_DEPENDENCY)
           .success()
-          .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value))
           .logInfo(logger, "PaymentRequestInfo cache hit")
       }
       .switchIfEmpty {
         LogTracingUtils.loggerTracingUtils()
           .dependency(LogTracingUtils.REDIS_DEPENDENCY)
           .success()
-          .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value))
           .logInfo(logger, "PaymentRequestInfo cache miss")
         Mono.empty()
+      }
+      .contextWrite { context ->
+        LogTracingUtils.enrichContextForEvent(
+          mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value), context)
       }
   }
 
@@ -108,7 +113,6 @@ class PaymentRequestsService(
       if (logger.isDebugEnabled) {
         LogTracingUtils.loggerTracingUtils()
           .success()
-          .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value))
           .details(mapOf("payment_context_code" to paymentContextCode))
           .logDebug(logger, "Calling Nodo for VerifyPaymentNotice for get payment info")
       }
@@ -126,7 +130,6 @@ class PaymentRequestsService(
             val isNodoError = isNodoError(verifyPaymentNoticeResponse)
             LogTracingUtils.loggerTracingUtils()
               .success()
-              .attributes(mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value))
               .details(
                 mapOf(
                   "outcome" to verifyPaymentNoticeResponse.outcome.toString(),
@@ -156,6 +159,10 @@ class PaymentRequestsService(
                   isAllCCP = null,
                   creditorReferenceId = null))
             }
+          }
+          .contextWrite { context ->
+            LogTracingUtils.enrichContextForEvent(
+              mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value), context)
           }
       return@flatMap paymentRequestInfo
     }

@@ -16,8 +16,7 @@ class MDCFilter : WebFilter {
   companion object {
     val contextBound =
       setOf(
-        LogTracingUtils.AttributeKeys.CTX_TRANSACTION_ID.key,
-        LogTracingUtils.AttributeKeys.CTX_WALLET_ID.key,
+        LogTracingUtils.AttributeKeys.CTX_RPT_IDS.key,
         LogTracingUtils.AttributeKeys.EVENT_ACTION.key,
         LogTracingUtils.AttributeKeys.CTX_AUTHORIZATION_REQUEST_ID.key,
       )

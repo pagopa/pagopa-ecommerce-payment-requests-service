@@ -24,11 +24,13 @@ constructor(private val emailConfidentialDataManager: ConfidentialDataManager) {
       .doOnSuccess {
         LogTracingUtils.loggerTracingUtils()
           .success()
+          .dependency(LogTracingUtils.PERSONAL_DATA_VAULT_DEPENDENCY)
           .logDebug(logger, "Received mail from tokenized email successfully")
       }
       .doOnError { e ->
         LogTracingUtils.loggerTracingUtils()
           .failure()
+          .dependency(LogTracingUtils.PERSONAL_DATA_VAULT_DEPENDENCY)
           .logError(logger, e, "Exception get mail from tokenized email")
       }
   }
@@ -39,11 +41,13 @@ constructor(private val emailConfidentialDataManager: ConfidentialDataManager) {
       .doOnSuccess {
         LogTracingUtils.loggerTracingUtils()
           .success()
+          .dependency(LogTracingUtils.PERSONAL_DATA_VAULT_DEPENDENCY)
           .logDebug(logger, "Tokenized mail successfully")
       }
       .doOnError { e ->
         LogTracingUtils.loggerTracingUtils()
           .failure()
+          .dependency(LogTracingUtils.PERSONAL_DATA_VAULT_DEPENDENCY)
           .logError(logger, e, "Exception tokenizing mail")
       }
   }
