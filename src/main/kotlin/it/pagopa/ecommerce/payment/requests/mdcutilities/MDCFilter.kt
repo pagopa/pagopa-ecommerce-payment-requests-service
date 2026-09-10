@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
+import reactor.core.publisher.Hooks
 import reactor.core.publisher.Mono
 import reactor.util.context.Context
 
@@ -24,6 +25,7 @@ class MDCFilter : WebFilter {
 
   @PostConstruct
   fun initMdcMicrometerRegistry() {
+    Hooks.enableAutomaticContextPropagation()
     LogTracingUtils.AttributeKeys.entries
       .filter { contextBound.contains(it.key) }
       .forEach { entry ->
@@ -32,8 +34,7 @@ class MDCFilter : WebFilter {
             entry.key,
             { MDC.get(entry.key) },
             { value -> MDC.put(entry.key, value) },
-            { MDC.remove(entry.key) },
-          )
+            { MDC.remove(entry.key) })
       }
   }
 
