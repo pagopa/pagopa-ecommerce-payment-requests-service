@@ -25,7 +25,7 @@ constructor(private val emailConfidentialDataManager: ConfidentialDataManager) {
         LogTracingUtils.loggerTracingUtils()
           .success()
           .dependency(LogTracingUtils.PERSONAL_DATA_VAULT_DEPENDENCY)
-          .logDebug(logger, "Received mail from tokenized email successfully")
+          .logDebug(logger, "Mail decrypted successfully")
       }
       .doOnError { e ->
         LogTracingUtils.loggerTracingUtils()
