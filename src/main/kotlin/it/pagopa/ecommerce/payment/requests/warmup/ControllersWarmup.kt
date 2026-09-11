@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.warmup
 
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.payment.requests.warmup.annotations.WarmupFunction
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.hasAnnotation
@@ -19,7 +20,12 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
   override fun onApplicationEvent(event: ContextRefreshedEvent) {
     val restControllers =
       event.applicationContext.getBeansWithAnnotation<RestController>().map { it.value }
-    logger.info("Found controllers: [{}]", restControllers.size)
+    if (logger.isDebugEnabled) {
+      LogTracingUtils.loggerTracingUtils()
+        .success()
+        .details(mapOf("controllers_count" to restControllers.size.toString()))
+        .logDebug(logger, "Controllers warm-up founded")
+    }
     restControllers.forEach(this::warmUpController)
   }
 
@@ -34,29 +40,42 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
               warmUpMethods++
               val result: Result<*>
               val intertime = measureTimeMillis {
-                result = runCatching {
-                  logger.info("Invoking function: [{}]", method.toString())
-                  method.call(controllerToWarmUpInstance)
-                }
+                result = runCatching { method.call(controllerToWarmUpInstance) }
               }
               result
                 .onSuccess { _ ->
-                  logger.info(
-                    "Warmup function: [{}] -> elapsed time: [{}].", method.toString(), intertime)
+                  LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                      mapOf(
+                        "warmup_methods_count" to method.toString(),
+                        "elapsed_time" to intertime.toString()))
+                    .logInfo(logger, "Controllers warm-up completed")
                 }
                 .getOrElse { exception ->
-                  logger.error(
-                    "Warmup function: [$method] execution error! Elapsed time: [${intertime}].",
-                    exception)
+                  LogTracingUtils.loggerTracingUtils()
+                    .failure()
+                    .details(
+                      mapOf(
+                        "warmup_methods" to method.toString(),
+                        "elapsed_time" to intertime.toString()))
+                    .logError(logger, exception, "Controllers warm-up execution error!")
                 }
             }
         }
-        .getOrElse { logger.error("Exception performing controller warm up ", it) }
+        .getOrElse {
+          LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logErrorWithStackTrace(logger, it, "Exception performing controllers warm-up")
+        }
     }
-    logger.info(
-      "Controller: [{}] warm-up executed functions: [{}], elapsed time: [{}] ms",
-      controllerToWarmUpKClass,
-      warmUpMethods,
-      elapsedTime)
+    LogTracingUtils.loggerTracingUtils()
+      .success()
+      .details(
+        mapOf(
+          "controller" to controllerToWarmUpKClass.toString(),
+          "warmup_methods_count" to warmUpMethods.toString(),
+          "elapsed_time_ms" to elapsedTime.toString()))
+      .logInfo(logger, "Controllers warm-up completed")
   }
 }

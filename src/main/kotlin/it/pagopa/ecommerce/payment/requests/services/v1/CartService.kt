@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.ClientIdDt
 import it.pagopa.ecommerce.generated.payment.requests.server.v1.model.PaymentNoticeDto
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.exceptions.CartNotFoundException
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.payment.requests.repositories.ReturnUrls
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.services.BaseCartService
@@ -74,6 +75,12 @@ class CartService(
   suspend fun getCart(cartId: UUID): CartRequestDto {
     return cartsRedisTemplateWrapper
       .findById(cartId.toString())
+      .doOnNext {
+        LogTracingUtils.loggerTracingUtils()
+          .dependency(LogTracingUtils.REDIS_DEPENDENCY)
+          .success()
+          .logInfo(logger, "Retrieved Cart info successfully")
+      }
       .switchIfEmpty { throw CartNotFoundException(cartId.toString()) }
       .flatMap { cartWithTokenizedEmail ->
         val paymentNotices =
@@ -109,6 +116,10 @@ class CartService(
               returnUrls = returnUrls,
               emailNotice = null,
               idCart = idCart))
+      }
+      .contextWrite { context ->
+        LogTracingUtils.enrichContextForEvent(
+          mapOf(LogTracingUtils.AttributeKeys.CTX_CART_ID to cartId.toString()), context)
       }
       .awaitSingle()
   }

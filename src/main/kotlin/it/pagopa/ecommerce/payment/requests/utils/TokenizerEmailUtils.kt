@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.utils
 
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.ConfidentialDataManager
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Confidential
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
@@ -14,24 +15,41 @@ import reactor.core.publisher.Mono
 @Slf4j
 class TokenizerEmailUtils
 @Autowired
-constructor(emailConfidentialDataManager: ConfidentialDataManager) {
-  private val emailConfidentialDataManager: ConfidentialDataManager
+constructor(private val emailConfidentialDataManager: ConfidentialDataManager) {
   private val logger: Logger = LoggerFactory.getLogger(javaClass)
-
-  init {
-    this.emailConfidentialDataManager = emailConfidentialDataManager
-  }
 
   fun toEmail(tokenizedEmail: Confidential<Email>): Mono<Email> {
     return emailConfidentialDataManager
       .decrypt(tokenizedEmail) { Email(it) }
-      .doOnError { e -> logger.error("Exception get mail from tokenized email", e) }
+      .doOnSuccess {
+        LogTracingUtils.loggerTracingUtils()
+          .success()
+          .dependency(LogTracingUtils.PERSONAL_DATA_VAULT_DEPENDENCY)
+          .logDebug(logger, "Mail decrypted successfully")
+      }
+      .doOnError { e ->
+        LogTracingUtils.loggerTracingUtils()
+          .failure()
+          .dependency(LogTracingUtils.PERSONAL_DATA_VAULT_DEPENDENCY)
+          .logError(logger, e, "Exception get mail from tokenized email")
+      }
   }
 
   fun toConfidential(clearText: Email): Mono<Confidential<Email>> {
-    return emailConfidentialDataManager.encrypt(clearText).doOnError { e ->
-      logger.error("Exception tokenizing confidential data", e)
-    }
+    return emailConfidentialDataManager
+      .encrypt(clearText)
+      .doOnSuccess {
+        LogTracingUtils.loggerTracingUtils()
+          .success()
+          .dependency(LogTracingUtils.PERSONAL_DATA_VAULT_DEPENDENCY)
+          .logDebug(logger, "Tokenized mail successfully")
+      }
+      .doOnError { e ->
+        LogTracingUtils.loggerTracingUtils()
+          .failure()
+          .dependency(LogTracingUtils.PERSONAL_DATA_VAULT_DEPENDENCY)
+          .logError(logger, e, "Exception tokenizing mail")
+      }
   }
 
   fun toConfidential(email: String?): Mono<Confidential<Email>> {

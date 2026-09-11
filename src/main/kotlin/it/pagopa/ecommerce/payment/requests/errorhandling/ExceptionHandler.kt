@@ -6,8 +6,8 @@ import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorExcepti
 import it.pagopa.ecommerce.payment.requests.exceptions.NodoErrorException
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.exceptions.ValidationFailedException
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import jakarta.validation.ValidationException
-import java.util.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -38,14 +38,18 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
    */
   @ExceptionHandler(RestApiException::class)
   fun handleException(e: RestApiException): ResponseEntity<ProblemJsonDto> {
-    logger.error("Exception processing request", e)
+    LogTracingUtils.loggerTracingUtils()
+      .failure()
+      .logError(logger, e, "Exception processing request")
     return ResponseEntity.status(e.httpStatus)
       .body(ProblemJsonDto(title = e.title, detail = e.description, status = e.httpStatus.value()))
   }
 
   @ExceptionHandler(CheckPositionErrorException::class)
   fun handleException(e: CheckPositionErrorException): ResponseEntity<ProblemJsonDto> {
-    logger.error("Nodo error checkPosition request", e)
+    LogTracingUtils.loggerTracingUtils()
+      .failure()
+      .logError(logger, e, "Nodo error checkPosition request")
     val response: ResponseEntity<ProblemJsonDto> =
       when (e.httpStatus) {
         HttpStatus.INTERNAL_SERVER_ERROR ->
@@ -71,7 +75,9 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
   @ExceptionHandler(ApiError::class)
   fun handleException(e: ApiError): ResponseEntity<ProblemJsonDto> {
     val restApiException = e.toRestException()
-    logger.error("Exception processing request", e)
+    LogTracingUtils.loggerTracingUtils()
+      .failure()
+      .logError(logger, e, "Exception processing request")
     return ResponseEntity.status(restApiException.httpStatus)
       .body(
         ProblemJsonDto(
@@ -103,7 +109,9 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
       } else {
         e
       }
-    logger.error("Input request is not valid", exceptionToLog)
+    LogTracingUtils.loggerTracingUtils()
+      .failure()
+      .logError(logger, exceptionToLog, "Input request is not valid")
     return ResponseEntity.badRequest()
       .body(
         ProblemJsonDto(
@@ -115,7 +123,7 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
   @ExceptionHandler(
     RedisSystemException::class, RedisConnectionException::class, WebClientRequestException::class)
   fun genericBadGateweyHandler(e: Exception): ResponseEntity<ProblemJsonDto> {
-    logger.error("Error processing request", e)
+    LogTracingUtils.loggerTracingUtils().failure().logError(logger, e, "Error processing request")
     return ResponseEntity(
       ProblemJsonDto(status = HttpStatus.BAD_GATEWAY.value(), title = "Bad gateway"),
       HttpStatus.BAD_GATEWAY)
@@ -232,9 +240,12 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
             faultCodeDetail = faultCode),
           HttpStatus.BAD_GATEWAY)
 
-    logger.error(
-      "Nodo error processing request with fault code: [$faultCode] mapped to http status code: [${response.statusCode}]",
-      e)
+    LogTracingUtils.loggerTracingUtils()
+      .failure()
+      .details(
+        mapOf(
+          "fault_code" to faultCode, "http_status_code" to response.statusCode.value().toString()))
+      .logError(logger, e, "Nodo error processing request")
     return response
   }
 
@@ -243,7 +254,9 @@ class ExceptionHandler(@Value("#{\${fields_to_obscure}}") val fieldToObscure: Se
    */
   @ExceptionHandler(Exception::class)
   fun handleGenericException(e: Exception): ResponseEntity<ProblemJsonDto> {
-    logger.error("Unhandled exception", e)
+    LogTracingUtils.loggerTracingUtils()
+      .failure()
+      .logErrorWithStackTrace(logger, e, "Unhandled exception")
     return ResponseEntity.internalServerError()
       .body(
         ProblemJsonDto(

@@ -40,9 +40,4 @@ class NodeForPspClient(
         }
       }
       .bodyToMono(VerifyPaymentNoticeRes::class.java)
-      .doOnSuccess {
-        logger.debug("Payment activated with payment token [{}]", request.value.qrCode.noticeNumber)
-      }
-      .doOnError(ResponseStatusException::class.java) { logger.error("Response status error", it) }
-      .doOnError(Exception::class.java) { logger.error("Generic error", it) }
 }
