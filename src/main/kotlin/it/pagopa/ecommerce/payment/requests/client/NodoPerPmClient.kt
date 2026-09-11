@@ -49,12 +49,5 @@ public class NodoPerPmClient(
           .success()
           .logInfo(logger, "Check position called successfully")
       }
-      .contextWrite { context ->
-        LogTracingUtils.enrichContextForEvent(
-          mapOf(
-            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
-              request.positionslist.joinToString(",") { it.fiscalCode + it.noticeNumber }),
-          context)
-      }
   }
 }

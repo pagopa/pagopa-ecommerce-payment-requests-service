@@ -79,7 +79,6 @@ class CartService(
         LogTracingUtils.loggerTracingUtils()
           .dependency(LogTracingUtils.REDIS_DEPENDENCY)
           .success()
-          .details(mapOf("cart_id" to cartId.toString()))
           .logInfo(logger, "Retrieved Cart info successfully")
       }
       .switchIfEmpty { throw CartNotFoundException(cartId.toString()) }
@@ -117,6 +116,10 @@ class CartService(
               returnUrls = returnUrls,
               emailNotice = null,
               idCart = idCart))
+      }
+      .contextWrite { context ->
+        LogTracingUtils.enrichContextForEvent(
+          mapOf(LogTracingUtils.AttributeKeys.CTX_CART_ID to cartId.toString()), context)
       }
       .awaitSingle()
   }

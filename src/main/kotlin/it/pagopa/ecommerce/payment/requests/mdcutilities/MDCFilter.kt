@@ -18,6 +18,7 @@ class MDCFilter : WebFilter {
     val contextBound =
       setOf(
         LogTracingUtils.AttributeKeys.CTX_RPT_IDS.key,
+        LogTracingUtils.AttributeKeys.CTX_CART_ID.key,
         LogTracingUtils.AttributeKeys.EVENT_ACTION.key,
         LogTracingUtils.AttributeKeys.CTX_AUTHORIZATION_REQUEST_ID.key,
       )

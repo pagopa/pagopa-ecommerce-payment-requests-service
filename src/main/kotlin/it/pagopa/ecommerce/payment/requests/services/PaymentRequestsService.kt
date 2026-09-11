@@ -60,7 +60,12 @@ class PaymentRequestsService(
         .switchIfEmpty(
           Mono.defer {
             getPaymentInfoFromNodo(rptIdRecord, paymentContextCode).flatMap {
-              paymentRequestInfoRepository.save(it).thenReturn(it)
+              paymentRequestInfoRepository.save(it).thenReturn(it).doOnNext {
+                LogTracingUtils.loggerTracingUtils()
+                  .dependency(LogTracingUtils.REDIS_DEPENDENCY)
+                  .success()
+                  .logInfo(logger, "PaymentRequestInfo saved successfully")
+              }
             }
           })
         .map { paymentInfo ->
@@ -101,10 +106,6 @@ class PaymentRequestsService(
           .success()
           .logInfo(logger, "PaymentRequestInfo cache miss")
         Mono.empty()
-      }
-      .contextWrite { context ->
-        LogTracingUtils.enrichContextForEvent(
-          mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value), context)
       }
   }
 
@@ -159,10 +160,6 @@ class PaymentRequestsService(
                   isAllCCP = null,
                   creditorReferenceId = null))
             }
-          }
-          .contextWrite { context ->
-            LogTracingUtils.enrichContextForEvent(
-              mapOf(LogTracingUtils.AttributeKeys.CTX_RPT_IDS to rptId.value), context)
           }
       return@flatMap paymentRequestInfo
     }

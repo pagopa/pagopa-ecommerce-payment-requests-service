@@ -54,11 +54,4 @@ class NodeForPspClient(
           .failure()
           .logErrorWithStackTrace(logger, it, "Generic error")
       }
-      .contextWrite { context ->
-        LogTracingUtils.enrichContextForEvent(
-          mapOf(
-            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
-              request.value.qrCode.fiscalCode + request.value.qrCode.noticeNumber),
-          context)
-      }
 }
