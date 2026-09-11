@@ -129,7 +129,7 @@ class LogTracingUtils private constructor() {
   companion object {
     private const val SUCCESS = "success"
     private const val FAILURE = "failure"
-    const val PERSONAL_DATA_VAULT_DEPENDENCY: String = "eCommerce-personal-data-vault"
+    const val PERSONAL_DATA_VAULT_DEPENDENCY: String = "personal-data-vault"
     const val REDIS_DEPENDENCY: String = "eCommerce-redis"
 
     private val OBJECT_MAPPER: ObjectMapper =
