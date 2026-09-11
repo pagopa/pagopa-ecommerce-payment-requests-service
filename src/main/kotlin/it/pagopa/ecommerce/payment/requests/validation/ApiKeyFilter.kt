@@ -33,7 +33,10 @@ class ApiKeyFilter(
     if (securedPaths.any { path.startsWith(it) }) {
       val apiKey = exchange.request.headers.getFirst("x-api-key")
       if (!isValidApiKey(apiKey)) {
-        logger.error("Unauthorized request for path $path - Missing or invalid API key")
+        LogTracingUtils.loggerTracingUtils()
+          .failure()
+          .details(mapOf("path" to path))
+          .logError(logger, null, "Unauthorized request - Missing or invalid API key")
         exchange.response.statusCode = HttpStatus.UNAUTHORIZED
         return exchange.response.setComplete()
       }

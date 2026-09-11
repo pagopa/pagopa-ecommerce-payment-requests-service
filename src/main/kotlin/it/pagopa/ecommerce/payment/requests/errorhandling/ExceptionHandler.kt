@@ -8,7 +8,6 @@ import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
 import it.pagopa.ecommerce.payment.requests.exceptions.ValidationFailedException
 import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import jakarta.validation.ValidationException
-import java.util.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value

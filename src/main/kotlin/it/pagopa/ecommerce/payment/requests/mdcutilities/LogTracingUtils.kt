@@ -80,7 +80,7 @@ class LogTracingUtils private constructor() {
 
   fun logTrace(logger: Logger, message: String) = log(logger, Level.TRACE, message)
 
-  fun logError(logger: Logger, error: Throwable, message: String) =
+  fun logError(logger: Logger, error: Throwable?, message: String) =
     apply { this.error = error }.log(logger, Level.ERROR, message)
 
   fun logErrorWithStackTrace(logger: Logger, error: Throwable, message: String) =
@@ -132,6 +132,7 @@ class LogTracingUtils private constructor() {
     private const val FAILURE = "failure"
     const val PERSONAL_DATA_VAULT_DEPENDENCY: String = "personal-data-vault"
     const val REDIS_DEPENDENCY: String = "eCommerce-redis"
+    const val NODO_DEPENDENCY: String = "nodo"
 
     private val OBJECT_MAPPER: ObjectMapper =
       ObjectMapper()

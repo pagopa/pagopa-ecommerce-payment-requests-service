@@ -2,7 +2,6 @@ package it.pagopa.ecommerce.payment.requests.client
 
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeReq
 import it.pagopa.ecommerce.generated.transactions.model.VerifyPaymentNoticeRes
-import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.payment.requests.utils.soap.SoapEnvelope
 import jakarta.xml.bind.JAXBElement
 import org.slf4j.LoggerFactory
@@ -41,17 +40,4 @@ class NodeForPspClient(
         }
       }
       .bodyToMono(VerifyPaymentNoticeRes::class.java)
-      .doOnSuccess {
-        if (logger.isDebugEnabled) {
-          LogTracingUtils.loggerTracingUtils().logDebug(logger, "Node verifyPaymentNotice OK")
-        }
-      }
-      .doOnError(ResponseStatusException::class.java) {
-        LogTracingUtils.loggerTracingUtils().failure().logError(logger, it, "Response status error")
-      }
-      .doOnError(Exception::class.java) {
-        LogTracingUtils.loggerTracingUtils()
-          .failure()
-          .logErrorWithStackTrace(logger, it, "Generic error")
-      }
 }

@@ -47,6 +47,8 @@ public class NodoPerPmClient(
       .doOnSuccess {
         LogTracingUtils.loggerTracingUtils()
           .success()
+          .dependency(LogTracingUtils.NODO_DEPENDENCY)
+          .details(mapOf("positions_list" to request.positionslist.toString()))
           .logInfo(logger, "Check position called successfully")
       }
   }
