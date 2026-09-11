@@ -80,7 +80,6 @@ class PaymentRequestsService(
         }
         .doOnNext {
           LogTracingUtils.loggerTracingUtils()
-            .dependency(LogTracingUtils.REDIS_DEPENDENCY)
             .success()
             .logInfo(logger, "PaymentRequestInfo retrieved successfully")
         }
