@@ -34,14 +34,9 @@ class LogTracingUtils private constructor() {
 
   enum class AttributeKeys(val key: String, val defaultValue: String) {
     EVENT_ACTION("event_action", "{eventAction-not-found}"),
-    CTX_AUTHORIZATION_REQUEST_ID(
-      "ctx_authorization_request_id",
-      "{authorizationRequestId-not-found}",
-    ),
     CTX_RPT_IDS("ctx_rpt_ids", "{rptIds-not-found}"),
     CTX_CART_ID("ctx_cart_id", "{cartId-not-found}"),
     CTX_EVENT_CODE("ctx_event_code", "{eventCode-not-found}"),
-    CTX_EVENT_ID("ctx_event_id", "{eventId-not-found}"),
   }
 
   private enum class AttributeKeysPrivate(val key: String, val defaultValue: String) {

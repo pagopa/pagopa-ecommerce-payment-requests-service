@@ -20,7 +20,6 @@ class MDCFilter : WebFilter {
         LogTracingUtils.AttributeKeys.CTX_RPT_IDS.key,
         LogTracingUtils.AttributeKeys.CTX_CART_ID.key,
         LogTracingUtils.AttributeKeys.EVENT_ACTION.key,
-        LogTracingUtils.AttributeKeys.CTX_AUTHORIZATION_REQUEST_ID.key,
       )
   }
 

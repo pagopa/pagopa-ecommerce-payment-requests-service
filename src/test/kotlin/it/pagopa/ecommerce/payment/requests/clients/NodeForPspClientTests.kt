@@ -1,7 +1,5 @@
 package it.pagopa.ecommerce.payment.requests.clients
 
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
 import it.pagopa.ecommerce.generated.transactions.model.CtQrCode
 import it.pagopa.ecommerce.generated.transactions.model.ObjectFactory
 import it.pagopa.ecommerce.generated.transactions.model.StOutcome
@@ -21,7 +19,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.mockito.kotlin.verify
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatusCode
 import org.springframework.test.context.TestPropertySource
 import org.springframework.web.reactive.function.client.ClientResponse
@@ -80,17 +77,9 @@ class NodeForPspClientTests {
     given(responseSpec.bodyToMono(VerifyPaymentNoticeRes::class.java))
       .willReturn(Mono.just(response))
 
-    val logger = LoggerFactory.getLogger(NodeForPspClient::class.java) as Logger
-    val previousLevel = logger.level
-    logger.level = Level.DEBUG
-
     /** test */
     val testResponse =
-      try {
-        client.verifyPaymentNotice(objectFactory.createVerifyPaymentNoticeReq(request)).block()
-      } finally {
-        logger.level = previousLevel
-      }
+      client.verifyPaymentNotice(objectFactory.createVerifyPaymentNoticeReq(request)).block()
 
     /** asserts */
     assertThat(testResponse?.fiscalCodePA).isEqualTo(fiscalCode)
