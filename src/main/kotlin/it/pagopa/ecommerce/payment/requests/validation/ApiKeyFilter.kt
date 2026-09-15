@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.payment.requests.validation
 
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -32,7 +33,10 @@ class ApiKeyFilter(
     if (securedPaths.any { path.startsWith(it) }) {
       val apiKey = exchange.request.headers.getFirst("x-api-key")
       if (!isValidApiKey(apiKey)) {
-        logger.error("Unauthorized request for path $path - Missing or invalid API key")
+        LogTracingUtils.loggerTracingUtils()
+          .failure()
+          .details(mapOf("path" to path))
+          .logError(logger, null, "Unauthorized request - Missing or invalid API key")
         exchange.response.statusCode = HttpStatus.UNAUTHORIZED
         return exchange.response.setComplete()
       }
@@ -52,6 +56,11 @@ class ApiKeyFilter(
         secondaryApiKey -> "secondary"
         else -> "unknown"
       }
-    logger.debug("API key type used for path $path: $apiKeyType")
+    if (logger.isDebugEnabled) {
+      LogTracingUtils.loggerTracingUtils()
+        .success()
+        .details(mapOf("path" to path, "api_key_type" to apiKeyType))
+        .logDebug(logger, "API key type used")
+    }
   }
 }

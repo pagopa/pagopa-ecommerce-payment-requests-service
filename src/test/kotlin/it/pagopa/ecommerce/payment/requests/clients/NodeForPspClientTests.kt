@@ -24,6 +24,7 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClient.*
+import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
 
 @ExtendWith(MockitoExtension::class)
@@ -86,6 +87,78 @@ class NodeForPspClientTests {
     assertThat(testResponse?.outcome).isEqualTo(StOutcome.OK)
     /** Verify that the header ocp-apim-subscription-key is correctly set */
     verify(requestBodyUriSpec).header("ocp-apim-subscription-key", "nodoPerPspApiKey")
+  }
+
+  @Test
+  fun `should propagate response status exception`() = runTest {
+    val objectFactory = ObjectFactory()
+    val fiscalCode = "77777777777"
+    val paymentNotice = "302000100000009424"
+    val request = objectFactory.createVerifyPaymentNoticeReq()
+    val qrCode = CtQrCode()
+    qrCode.fiscalCode = fiscalCode
+    qrCode.noticeNumber = paymentNotice
+    request.qrCode = qrCode
+
+    /** precondition */
+    given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.uri(any<String>(), any<Array<*>>())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.body(any(), eq(SoapEnvelope::class.java)))
+      .willReturn(requestHeadersSpec)
+    given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+    given(
+        responseSpec.onStatus(
+          any<Predicate<HttpStatusCode>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
+      .willReturn(responseSpec)
+    given(responseSpec.bodyToMono(VerifyPaymentNoticeRes::class.java))
+      .willReturn(
+        Mono.error(
+          ResponseStatusException(
+            org.springframework.http.HttpStatus.BAD_GATEWAY, "nodo verifyPaymentNotice error")))
+
+    /** test + asserts */
+    assertThat(
+        runCatching {
+            client.verifyPaymentNotice(objectFactory.createVerifyPaymentNoticeReq(request)).block()
+          }
+          .exceptionOrNull())
+      .isInstanceOf(ResponseStatusException::class.java)
+  }
+
+  @Test
+  fun `should propagate generic exception`() = runTest {
+    val objectFactory = ObjectFactory()
+    val fiscalCode = "77777777777"
+    val paymentNotice = "302000100000009424"
+    val request = objectFactory.createVerifyPaymentNoticeReq()
+    val qrCode = CtQrCode()
+    qrCode.fiscalCode = fiscalCode
+    qrCode.noticeNumber = paymentNotice
+    request.qrCode = qrCode
+
+    /** precondition */
+    given(nodoWebClient.post()).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.uri(any<String>(), any<Array<*>>())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.header(any(), any())).willReturn(requestBodyUriSpec)
+    given(requestBodyUriSpec.body(any(), eq(SoapEnvelope::class.java)))
+      .willReturn(requestHeadersSpec)
+    given(requestHeadersSpec.retrieve()).willReturn(responseSpec)
+    given(
+        responseSpec.onStatus(
+          any<Predicate<HttpStatusCode>>(), any<Function<ClientResponse, Mono<out Throwable>>>()))
+      .willReturn(responseSpec)
+    given(responseSpec.bodyToMono(VerifyPaymentNoticeRes::class.java))
+      .willReturn(Mono.error(RuntimeException("generic nodo error")))
+
+    /** test + asserts */
+    assertThat(
+        runCatching {
+            client.verifyPaymentNotice(objectFactory.createVerifyPaymentNoticeReq(request)).block()
+          }
+          .exceptionOrNull())
+      .isInstanceOf(RuntimeException::class.java)
+      .hasMessageContaining("generic nodo error")
   }
 
   @Test

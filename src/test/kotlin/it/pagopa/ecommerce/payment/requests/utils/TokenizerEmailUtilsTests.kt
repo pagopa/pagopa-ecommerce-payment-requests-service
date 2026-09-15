@@ -50,4 +50,35 @@ class TokenizerEmailUtilsTests {
       tokenizerEmailUtils.toConfidential(invalidEmail).block()
     }
   }
+
+  @Test
+  fun shouldPropagateEncryptError() {
+    val email = Email("test@test.com")
+    val expectedException = RuntimeException("encrypt error")
+
+    /* preconditions */ given(confidentialDataManager.encrypt(email))
+      .willReturn(Mono.error(expectedException))
+
+    /* test */
+    StepVerifier.create(tokenizerEmailUtils.toConfidential(email))
+      .expectErrorMatches { it === expectedException }
+      .verify()
+  }
+
+  @Test
+  fun shouldPropagateDecryptError() {
+    val emailToken = UUID.randomUUID()
+    val tokenizedEmail: Confidential<Email> = Confidential(emailToken.toString())
+    val expectedException = RuntimeException("decrypt error")
+
+    /* preconditions */ given(
+        confidentialDataManager.decrypt(
+          ArgumentMatchers.eq(tokenizedEmail), ArgumentMatchers.any()))
+      .willReturn(Mono.error(expectedException))
+
+    /* test */
+    StepVerifier.create(tokenizerEmailUtils.toEmail(tokenizedEmail))
+      .expectErrorMatches { it === expectedException }
+      .verify()
+  }
 }

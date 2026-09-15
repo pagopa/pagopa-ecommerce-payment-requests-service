@@ -4,12 +4,14 @@ import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.*
 import it.pagopa.ecommerce.payment.requests.client.NodoPerPmClient
 import it.pagopa.ecommerce.payment.requests.domain.RptId
 import it.pagopa.ecommerce.payment.requests.exceptions.RestApiException
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.payment.requests.repositories.*
 import it.pagopa.ecommerce.payment.requests.repositories.redistemplate.CartsRedisTemplateWrapper
 import it.pagopa.ecommerce.payment.requests.utils.TokenizerEmailUtils
 import it.pagopa.ecommerce.payment.requests.utils.confidential.domain.Email
 import java.text.MessageFormat
 import java.util.*
+import kotlin.collections.joinToString
 import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -67,10 +69,15 @@ abstract class BaseCartService(
 
   protected suspend fun processCartInternal(clientIdValue: String, request: CartRequest): String {
     val receivedNotices = request.paymentNotices.size
-    logger.info("Received [$receivedNotices] payment notices")
+
+    if (logger.isDebugEnabled) {
+      LogTracingUtils.loggerTracingUtils()
+        .success()
+        .details(mapOf("payment_notices" to receivedNotices.toString()))
+        .logDebug(logger, "Received payment notices successfully")
+    }
 
     if (receivedNotices > maxAllowedPaymentNotices) {
-      logger.error("Too many payment notices, expected only one")
       throw RestApiException(
         httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
         title = "Multiple payment notices not processable",
@@ -84,7 +91,6 @@ abstract class BaseCartService(
       }
 
     if (receivedNotices != paymentInfos.map { it.rptId }.toSet().size) {
-      logger.error("Duplicate payment notice values found")
       throw RestApiException(
         httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
         title = "Invalid payment info",
@@ -124,13 +130,24 @@ abstract class BaseCartService(
           }
           .orElse(Mono.just(CartInfo(id, paymentInfos, request.idCart, returnUrls, null)))
       }
-      .flatMap {
-        logger.info("Saving cart ${it.id} for payments $paymentInfos")
-        cartsRedisTemplateWrapper.save(it).thenReturn(it)
+      .flatMap { cartsRedisTemplateWrapper.save(it).thenReturn(it) }
+      .doOnSuccess {
+        LogTracingUtils.loggerTracingUtils()
+          .dependency(LogTracingUtils.REDIS_DEPENDENCY)
+          .success()
+          .details(
+            mapOf("cart_info" to it.id.toString(), "payment_info" to paymentInfos.toString()))
+          .logInfo(logger, "Saved cart for payments successfully")
+      }
+      .contextWrite { context ->
+        LogTracingUtils.enrichContextForEvent(
+          mapOf(
+            LogTracingUtils.AttributeKeys.CTX_RPT_IDS to
+              paymentInfos.joinToString(",") { p -> p.rptId.value }),
+          context)
       }
       .map {
         val retUrl = MessageFormat.format(checkoutUrl, it.id, clientIdValue)
-        logger.info("Return URL: $retUrl")
         retUrl
       }
       .awaitSingle()

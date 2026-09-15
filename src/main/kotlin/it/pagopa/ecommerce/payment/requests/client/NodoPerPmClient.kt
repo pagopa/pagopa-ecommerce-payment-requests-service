@@ -4,6 +4,7 @@ import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseDto
 import it.pagopa.ecommerce.generated.nodoperpm.v1.dto.CheckPositionResponseErrorDto
 import it.pagopa.ecommerce.payment.requests.exceptions.CheckPositionErrorException
+import it.pagopa.ecommerce.payment.requests.mdcutilities.LogTracingUtils
 import java.util.function.Predicate
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -44,8 +45,11 @@ public class NodoPerPmClient(
       }
       .bodyToMono(CheckPositionResponseDto::class.java)
       .doOnSuccess {
-        logger.debug(
-          "Check position called successfully with list [{}]", request.positionslist.toString())
+        LogTracingUtils.loggerTracingUtils()
+          .success()
+          .dependency(LogTracingUtils.NODO_DEPENDENCY)
+          .details(mapOf("positions_list" to request.positionslist.toString()))
+          .logInfo(logger, "Check position called successfully")
       }
   }
 }
