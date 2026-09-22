@@ -107,7 +107,7 @@ stages:
     displayName: 'Fake build and deploy for DEV deployment'
     condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
     jobs:
-      - job: test_fake_build_and_deploy
+      - job: test_fake_buil_and_deploy
         displayName: 'Fake build and deploy for DEV deployment'
         steps:
           - task: Bash@3
@@ -115,7 +115,7 @@ stages:
             inputs:
               targetType: "inline"
               script: |
-                echo "Fake stage of build and deploy in 
+                echo "Fake stage of build and deploy in DEV" 
 
   - stage: 'Build_for_DEV'
     displayName: 'Build for DEV'
