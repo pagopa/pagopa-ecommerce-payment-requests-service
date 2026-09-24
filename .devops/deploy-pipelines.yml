@@ -225,7 +225,7 @@ stages:
               # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
               # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
               # masked in the logs — do not paste the raw token into this file.
-              githubToken: $(TO_DO_ADD_NEW_TOKEN)
+              githubToken: $(ECOMMERCE_TAS_GITHUB_TOKEN)
               # Optional overrides — exposed inline because they are typically
               # set-once-and-forget (not toggled from the portal at run-time):
               # pythonVersion: "3.11"
@@ -256,7 +256,7 @@ stages:
               # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
               # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
               # masked in the logs — do not paste the raw token into this file.
-              githubToken: $(TO_DO_ADD_NEW_TOKEN)
+              githubToken: $(ECOMMERCE_TAS_GITHUB_TOKEN)
               # Optional overrides — exposed inline because they are typically
               # set-once-and-forget (not toggled from the portal at run-time):
               # pythonVersion: "3.11"
@@ -527,7 +527,7 @@ stages:
               # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
               # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
               # masked in the logs — do not paste the raw token into this file.
-              githubToken: $(TO_DO_ADD_NEW_TOKEN)
+              githubToken: $(ECOMMERCE_TAS_GITHUB_TOKEN)
               # Optional overrides — exposed inline because they are typically
               # set-once-and-forget (not toggled from the portal at run-time):
               # pythonVersion: "3.11"
@@ -558,7 +558,7 @@ stages:
               # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
               # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
               # masked in the logs — do not paste the raw token into this file.
-              githubToken: $(TO_DO_ADD_NEW_TOKEN)
+              githubToken: $(ECOMMERCE_TAS_GITHUB_TOKEN)
               # Optional overrides — exposed inline because they are typically
               # set-once-and-forget (not toggled from the portal at run-time):
               # pythonVersion: "3.11"
