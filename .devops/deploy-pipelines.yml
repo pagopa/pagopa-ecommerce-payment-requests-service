@@ -103,24 +103,9 @@ pool:
 # --- START Deploy DEV --- #
 stages:
 
-  - stage: 'test_fake_build_and_deploy'
-    displayName: 'Fake build and deploy for DEV deployment'
-    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
-    jobs:
-      - job: test_fake_buil_and_deploy
-        displayName: 'Fake build and deploy for DEV deployment'
-        steps:
-          - task: Bash@3
-            displayName: "Fake build and deploy for DEV deployment"
-            inputs:
-              targetType: "inline"
-              script: |
-                echo "Fake stage of build and deploy in DEV" 
-
   - stage: 'Build_for_DEV'
     displayName: 'Build for DEV'
-    condition: false
-    #condition: and(succeeded(), not(${{ parameters.SKIP_BUILD }}), eq(${{parameters.DEV_DEPLOY}}, true))
+    condition: and(succeeded(), not(${{ parameters.SKIP_BUILD }}), eq(${{parameters.DEV_DEPLOY}}, true))
     jobs:
       - job: Build_docker
         displayName: Build docker with Build.SourceVersion as TAG
@@ -144,8 +129,7 @@ stages:
   - stage: 'Deploy_for_DEV'
     displayName: 'Deploy DEV'
     dependsOn: Build_for_DEV
-    #condition: or(succeeded(), ${{ parameters.SKIP_BUILD }}, eq(${{parameters.DEV_DEPLOY}}, true) )
-    condition: false
+    condition: or(succeeded(), ${{ parameters.SKIP_BUILD }}, eq(${{parameters.DEV_DEPLOY}}, true) )
     jobs:
       - deployment: "deploy"
         environment: 'DEV'
@@ -203,7 +187,7 @@ stages:
               CHECKOUT_RESOURCE_REPO_NAME: pagopaCheckoutTests
 
   - stage: TAS_tests_DEV
-    dependsOn: test_fake_build_and_deploy
+    dependsOn: Deploy_for_DEV
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
