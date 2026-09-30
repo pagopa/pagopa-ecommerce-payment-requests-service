@@ -94,7 +94,7 @@ resources:
     - repository: tas
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/heads/PQ-456-add-qa-tas-template-dependsOn   # template repo branch (→ refs/tags/v1 once merged)
+      ref: refs/tags/tas-integration-tests/v1.0.0
       endpoint: 'io-azure-devops-github-ro'   # ← GitHub service connection name (Project settings → Service connections)
 
 pool:
