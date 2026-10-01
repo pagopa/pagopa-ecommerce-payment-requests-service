@@ -94,7 +94,7 @@ resources:
     - repository: tas
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/tas-integration-tests/v1.0.0
+      ref: main
       endpoint: 'io-azure-devops-github-ro'   # ← GitHub service connection name (Project settings → Service connections)
 
 pool:
