@@ -94,7 +94,7 @@ resources:
     - repository: tas
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: main
+      ref: master
       endpoint: 'io-azure-devops-github-ro'   # ← GitHub service connection name (Project settings → Service connections)
 
 pool:
