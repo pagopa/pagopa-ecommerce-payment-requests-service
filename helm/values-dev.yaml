@@ -71,18 +71,11 @@ microservice-chart:
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
-      - type: azure-monitor
+      - type: cpu
+        # Required
+        metricType: Utilization # Allowed types are 'Utilization' or 'AverageValue'
         metadata:
-          tenantId: 7788edaf-0346-4068-9d79-c868aed15b3d
-          subscriptionId: bbe47ad4-08b3-4925-94c5-1278e5819b86
-          resourceGroupName: pagopa-d-ecommerce-sec-rg
-          resourceURI: Microsoft.KeyVault/vaults/pagopa-d-ecommerce-kv
-          metricName: ServiceApiHit
-          # metricNamespace: Microsoft.KeyVault/vaults
-          # metricFilter: namespace eq 'default'
-          # metricAggregationInterval: "-1:1:0"
-          metricAggregationType: Count
-          targetValue: "30"
+          value: "80"
   terminationGracePeriodSeconds: 30
   strategy:
     type: "RollingUpdate"
