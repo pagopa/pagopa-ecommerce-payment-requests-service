@@ -64,9 +64,6 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
-        server-id: github
-        server-username: ${{ github.actor }}
-        server-password: ${{ secrets.PACKAGE_TOKEN }}
 
     # Add any setup steps before running the `github/codeql-action/init` action.
     # This includes steps like installing compilers or runtimes (`actions/setup-node`
