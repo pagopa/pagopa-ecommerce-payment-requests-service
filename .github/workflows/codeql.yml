@@ -71,6 +71,11 @@ jobs:
     # Add any setup steps before running the `github/codeql-action/init` action.
     # This includes steps like installing compilers or runtimes (`actions/setup-node`
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v9418214df1f2c4b8128c770156c409013b07d6b9
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: ${{ matrix.build-mode }}    
     - name: Run manual build steps
       if: matrix.build-mode == 'manual'
       env:
