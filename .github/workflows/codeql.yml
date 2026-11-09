@@ -66,6 +66,7 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: 'maven'
+        server-id: github
 
     # Add any setup steps before running the `github/codeql-action/init` action.
     # This includes steps like installing compilers or runtimes (`actions/setup-node`
@@ -82,6 +83,8 @@ jobs:
     - if: matrix.build-mode == 'manual'
       env:
         MAVEN_OPTS: "-Xmx3g"
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         ./mvnw clean compile -B -e
     - name: Perform CodeQL Analysis
