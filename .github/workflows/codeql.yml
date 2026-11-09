@@ -65,6 +65,7 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
+        cache: 'maven'
 
     # Add any setup steps before running the `github/codeql-action/init` action.
     # This includes steps like installing compilers or runtimes (`actions/setup-node`
@@ -79,12 +80,10 @@ jobs:
       with:
         validate-wrappers: true
     - if: matrix.build-mode == 'manual'
+      env:
+        MAVEN_OPTS: "-Xmx3g"
       run: |
-        ./gradlew compileKotlin \
-          -Pkotlin.incremental=false \
-          -Pkotlin.daemon.jvmargs="-Xmx3g" \
-          -Dorg.gradle.jvmargs="-Xmx3g" \
-          --no-daemon --rerun-tasks --stacktrace
+        ./mvnw clean compile -B -e
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@1fc58d04a4d4374f921bdac573c3811c240f9c26
       with:
