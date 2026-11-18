@@ -15,6 +15,7 @@ microservice-chart:
       repository: pagopapcommonacr.azurecr.io/pagopaecommercepaymentrequestsservice
       tag: "latest"
     envConfig:
+      JAVA_OPTS: "-XX:-UseBASE64Intrinsics"
       ECS_SERVICE_NAME: pagopa-ecommerce-payment-requests-service-blue
       OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-payment-requests-service-blue,deployment.environment=prod"
     envSecret: {}
@@ -85,6 +86,7 @@ microservice-chart:
       maxSurge: 2
       maxUnavailable: 0
   envConfig:
+    JAVA_OPTS: "-XX:-UseBASE64Intrinsics"
     ACTIVE_PROFILE: k8s
     REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
