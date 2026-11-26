@@ -49,6 +49,13 @@ microservice-chart:
     host: "weuprod.ecommerce.internal.platform.pagopa.it"
     path: /pagopa-ecommerce-payment-requests-service/(.*)
     servicePort: 8080
+    haproxy:
+      create: true
+      host: "haproxy.ecommerce.internal.platform.pagopa.it"
+      path: "/pagopa-ecommerce-payment-requests-service/"
+      rewriteTarget: '/\1'
+      annotations:
+        haproxy.org/check: "true"
   serviceAccount:
     create: false
     annotations: {}
